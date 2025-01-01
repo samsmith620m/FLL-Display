@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLL Match Timer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0" />
+</head>
+<body>
+    <div class="match-selector">
+        <button id="prevMatch">Previous Match</button>
+        <span id="currentMatch">Match 1</span>
+        <button id="nextMatch">Next Match</button>
+    </div>
+    <div class="team-display">
+        <span id="team1"></span>
+        <span id="team2"></span>
+        <span id="team3"></span>
+        <span id="team4"></span>
+    </div>
+
+    <div class="container">
+        <div id="timer"></div>
+        <div class="timer-buttons">
+            <button id="startBtn">Start</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+    <button id="menuBtn">
+        <span class="material-symbols-rounded">
+            settings
+        </span>
+        Configure
+    </button>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div id="menuModal" class="modal-content">
+            <h2>Schedule Menu</h2>
+            <button id="closeMenuBtn">
+                <span class="material-symbols-rounded">
+                    close
+                </span>
+                Close
+            </button>
+    
+            <table id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th>Match</th>
+                        <th>Team 1</th>
+                        <th>Team 2</th>
+                        <th>Team 3</th>
+                        <th>Team 4</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleTableBody">
+                    <!-- Table rows will be dynamically added here -->
+                </tbody>
+            </table>
+            <button id="addMatchBtn">
+                <span class="material-symbols-rounded">
+                    add
+                </span>
+                Add Match
+            </button>
+            <div class="action-buttons">
+                <button id="discardChangesBtn">
+                    <span class="material-symbols-rounded">
+                        delete
+                    </span>
+                    Discard Changes
+                </button>
+                <button id="saveChangesBtn">
+                    <span class="material-symbols-rounded">
+                        save
+                    </span>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
+

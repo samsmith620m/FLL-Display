@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLL Timer - Display</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="display-page">
+        <div class="display-content">
+            <!-- Text Display -->
+            <div id="textDisplay" class="display-mode">
+                <h1 class="display-title">Display</h1>
+            </div>
+            
+            <!-- Match Timer Display -->
+            <div id="timerDisplay" class="display-mode" style="display: none;">
+                <div class="match-header">
+                    <div class="match-number-display">
+                        <div class="match-label">Match</div>
+                        <div class="match-number">1</div>
+                    </div>
+                </div>
+                <div class="teams-container">
+                    <div class="team-card">
+                        <div class="team-label">Team</div>
+                        <div class="team-number">1234</div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-label">Team</div>
+                        <div class="team-number">5678</div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-label">Team</div>
+                        <div class="team-number">9012</div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-label">Team</div>
+                        <div class="team-number">3456</div>
+                    </div>
+                </div>
+                <div class="timer-container">
+                    <div class="timer-time">2:30</div>
+                    <div class="timer-status">Ready</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="display.js"></script>
+</body>
+</html>

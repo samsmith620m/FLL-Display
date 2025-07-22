@@ -1,0 +1,117 @@
+/* FLL Timer Design System */
+/* This file contains all design tokens, primitives, and semantic color/spacing definitions */
+
+@font-face {
+    font-family: 'Digital-7 Mono';
+    src: url('digital-7-mono.ttf') format('truetype');
+}
+
+:root {
+    /* --- PRIMITIVES --- */
+    /* Color Primitives */
+    
+    --fllt-color-white: #ffffff;
+    --fllt-color-gray-95: #f1f1f1;
+    --fllt-color-gray-75: #b9b9b9;
+    --fllt-color-gray-50: #777777;
+    --fllt-color-gray-25: #3c3c3c;
+    --fllt-color-gray-10: #1b1b1b;
+    --fllt-color-black: #000000;
+
+    --fllt-color-blue-75: #97B8FF;
+    --fllt-color-blue-60: #4E8EFF;
+    --fllt-color-blue-40: #355DA3;
+    
+    --fllt-color-green-75: #5FD068;
+    --fllt-color-green-60: #00A837;
+    --fllt-color-green-40: #2D6B32;
+
+    --fllt-color-red-75: #FF9F97;
+    --fllt-color-red-60: #FF534E;
+    --fllt-color-red-40: #B02C2C;
+
+    --fllt-color-itd-blue-75: #67C4EC;
+    --fllt-color-itd-blue-60: #009CCA;
+    --fllt-color-itd-blue-40: #006686;
+
+    --fllt-color-itd-orange-75: #FFA273;
+    --fllt-color-itd-orange-60: #F16600;
+    --fllt-color-itd-orange-40: #9F4200;
+
+    --fllt-color-itd-yellow-75: #E7AF47;
+    --fllt-color-itd-yellow-60: #BE8600;
+    --fllt-color-itd-yellow-40: #7D5700;
+
+    --fllt-color-itd-teal-75: #5DCBB5;
+    --fllt-color-itd-teal-60: #00A38D;
+    --fllt-color-itd-teal-40: #006B5C;
+
+    /* Spacing Primitives */
+    --fllt-spacing-xs: 4px;
+    --fllt-spacing-sm: 8px;
+    --fllt-spacing-md: 16px;
+    --fllt-spacing-lg: 32px;
+    --fllt-spacing-xl: 64px;
+    
+    /* --- LEVEL 1 SEMANTICS --- */
+    /* Semantic Colors - Brand & Theme */
+
+    --fllt-color-theme-primary: var(--fllt-color-itd-blue-60);
+    --fllt-color-theme-primary-shade: var(--fllt-color-itd-blue-40);
+    --fllt-color-theme-accent: var(--fllt-color-itd-yellow-60);
+    --fllt-color-theme-accent-shade: var(--fllt-color-itd-yellow-40);
+
+    /* Semantic Colors - Neutral */
+    --fllt-color-neutral-primary: var(--fllt-color-gray-10);
+    --fllt-color-neutral-secondary: var(--fllt-color-gray-25);
+    --fllt-color-neutral-tertiary: var(--fllt-color-gray-75);
+
+    /* Semantic Colors - Surface */
+    --fllt-color-surface-1: var(--fllt-color-white);
+    --fllt-color-surface-2: var(--fllt-color-gray-95);
+
+    /* Semantic Colors - Messaging */
+    --fllt-color-messaging-informational: var(--fllt-color-blue-60);
+    --fllt-color-messaging-informational-shade: var(--fllt-color-blue-40);
+
+    --fllt-color-messaging-success: var(--fllt-color-green-60);
+    --fllt-color-messaging-success-shade: var(--fllt-color-green-40);
+    
+    --fllt-color-messaging-critical: var(--fllt-color-red-60);
+    --fllt-color-messaging-critical-shade: var(--fllt-color-red-40);
+
+    /* --- LEVEL 2 SEMANTICS --- */
+    /* Component-Level Semantic Colors */
+
+    /* Static Surface Colors */
+    --fllt-color-static-surface-primary: var(--fllt-color-white);
+    --fllt-color-static-surface-secondary: var(--fllt-color-gray-75);
+
+    /* Interactive Surface Colors */
+    --fllt-color-interactive-surface-theme-default: var(--fllt-color-theme-primary);
+    --fllt-color-interactive-surface-theme-active: var(--fllt-color-theme-primary-shade);
+
+    --fllt-color-interactive-surface-neutral-default: var(--fllt-color-surface-1);
+    --fllt-color-interactive-surface-neutral-active: var(--fllt-color-surface-2);
+
+    /* Border Colors */
+    --fllt-color-border-theme-default: var(--fllt-color-theme-primary);
+    --fllt-color-border-theme-active: var(--fllt-color-theme-primary-shade);
+    --fllt-color-border-base: var(--fllt-color-neutral-tertiary);
+    --fllt-color-border-interactive: var(--fllt-color-neutral-secondary);
+
+    /* Text Colors */
+    --fllt-color-text-primary: var(--fllt-color-neutral-primary);
+    --fllt-color-text-inverse: var(--fllt-color-white);
+    --fllt-color-text-theme: var(--fllt-color-theme-primary);
+    --fllt-color-text-theme-active: var(--fllt-color-theme-primary-shade);
+}
+
+/* --- DESIGN SYSTEM UTILITIES --- */
+
+/* Base Reset - Part of Design System */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

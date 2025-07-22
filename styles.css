@@ -1,217 +1,834 @@
-@font-face {
-    font-family: 'Digital-7 Mono';
-    src: url('digital-7-mono.ttf') format('truetype');
-}
+/* FLL Timer - Component Styles */
+/* 
+ * Design tokens and primitives are imported from design-system.css
+ * This file contains only component-specific styles and layouts
+ * 
+ * Structure:
+ * - Component Styles (buttons, forms, etc.)
+ * - Layout Styles (page structure, grids)
+ * - Display Specific Styles (timer display, text display)
+ * - Responsive Design (media queries)
+ */
+
+@import url('design-system.css');
+
+/* --- COMPONENT STYLES --- */
 
 body {
     font-family: Arial, sans-serif;
+    background-color: var(--fllt-color-white);
+    color: var(--fllt-color-gray-10);
+}
+
+/* --- BUTTON COMPONENTS --- */
+
+/* Button styles */
+button {
+    height: auto;
+    min-height: 44px;
+    font-size: 18px;
+    padding-inline: var(--fllt-spacing-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fllt-spacing-sm);
+    border-radius: var(--fllt-spacing-sm);
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:disabled {
+        pointer-events: none;
+        opacity: 40%;
+        background-color: var(--fllt-color-gray-75) !important;
+        color: var(--fllt-color-gray-50) !important;
+        border-color: var(--fllt-color-gray-75) !important;
+    }
+
+    &.primary {
+        background-color: var(--fllt-color-gray-10);
+        color: var(--fllt-color-white);
+        border: none;
+
+        &:hover:not(:disabled) {
+            background-color: var(--fllt-color-gray-25);
+        }
+    }
+
+    &.secondary {
+        background-color: var(--fllt-color-white);
+        color: var(--fllt-color-gray-10);
+        border: 2px solid var(--fllt-color-gray-50);
+
+        &:hover:not(:disabled) {
+            border-color: var(--fllt-color-gray-10);
+            background-color: var(--fllt-color-gray-95);
+        }
+    }
+
+    &.danger {
+        background-color: var(--fllt-color-red-60);
+        color: var(--fllt-color-white);
+        border: none;
+
+        &:hover:not(:disabled) {
+            background-color: var(--fllt-color-red-50);
+        }
+    }
+}
+
+/* Button text structure for match control buttons */
+.button-main {
+    display: block;
+    line-height: 1.2;
+}
+
+.button-sub {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.8;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+/* --- PAGE LAYOUT COMPONENTS --- */
+
+/* Control Page Styles */
+.control-page {
+    min-height: 100vh;
+    padding: var(--fllt-spacing-lg);
+    display: grid;
+    grid-template-areas: 
+        "header"
+        "content";
+    grid-template-rows: auto 1fr;
+    gap: var(--fllt-spacing-lg);
+}
+
+.control-header {
+    grid-area: header;
+    display: grid;
+    grid-template-areas: "title buttons";
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding-bottom: var(--fllt-spacing-lg);
+    border-bottom: 1px solid var(--fllt-color-gray-75);
+}
+
+.control-header h1 {
+    grid-area: title;
+    color: var(--fllt-color-gray-10);
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.header-buttons {
+    grid-area: buttons;
+    display: flex;
+    gap: var(--fllt-spacing-xl);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.button-group {
+    display: flex;
+    gap: var(--fllt-spacing-sm);
+    align-items: center;
+}
+
+.control-content {
+    grid-area: content;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f0f0f0;
+    gap: var(--fllt-spacing-lg);
 }
 
-.team-display {
+.display-type-section {
+    background-color: var(--fllt-color-gray-95);
+    padding: var(--fllt-spacing-md) var(--fllt-spacing-lg);
+    border-radius: var(--fllt-spacing-sm);
+    border-left: var(--fllt-spacing-xs) solid var(--fllt-color-blue-60);
+}
+
+.display-type-section h2 {
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-md);
+    font-size: 20px;
+}
+
+.display-type-form {
     display: flex;
-    justify-content: space-around;
-    width: 100%;
-    padding: 10px 0;
+    flex-direction: column;
+    gap: var(--fllt-spacing-sm);
 }
 
-.team-display span {
-    font-size: 18px;
-}
-
-.container {
-    text-align: center;
-    margin-top: 50px;
-}
-
-#timer {
-    font-family: 'Digital-7 Mono', monospace;
-    font-size: 72px;
-    margin: 20px 0;
-}
-
-.timer-buttons {
-    display: flex;
-    gap: 16px;
-    margin: 16px;
-}
-
-button {
-    height: 44px;
-    font-size: 18px;
-    padding-inline: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-button:disabled {
-    pointer-events: none;
-}
-
-button > span {
-    margin-left: -4px;
-}
-
-.match-selector {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-    margin-bottom: 32px;
-    justify-content: space-between;
-
-}
-
-/* Add these styles to your existing CSS */
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 80%;
-    max-height: 80%;
-    overflow-y: auto;
-}
-
-#closeMenuBtn {
-    float: right;
-    cursor: pointer;
-}
-
-/* Style for forms */
-form {
-    margin-bottom: 20px;
-}
-
-form input {
+.display-type-form label {
     display: block;
-    margin-bottom: 10px;
-    width: 100%;
-    padding: 5px;
+    font-weight: 500;
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-sm);
 }
 
-form button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
+.display-type-toggle {
+    display: flex;
+    background-color: var(--fllt-color-gray-90);
+    border-radius: var(--fllt-spacing-sm);
+    padding: var(--fllt-spacing-xs);
+    gap: var(--fllt-spacing-xs);
+    width: fit-content;
+}
+
+.toggle-btn {
+    height: 40px;
+    padding: var(--fllt-spacing-sm) var(--fllt-spacing-md);
     border: none;
+    border-radius: var(--fllt-spacing-xs);
+    background-color: transparent;
+    color: var(--fllt-color-gray-50);
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-form button:hover {
-    background-color: #45a049;
+.toggle-btn:hover {
+    background-color: var(--fllt-color-gray-80);
+    color: var(--fllt-color-gray-25);
 }
 
-/* Style for the schedule list */
-#scheduleList {
-    list-style-type: none;
-    padding: 0;
+.toggle-btn.active {
+    background-color: var(--fllt-color-white);
+    color: var(--fllt-color-gray-10);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-#scheduleList li {
-    margin-bottom: 5px;
+.toggle-btn.active:hover {
+    background-color: var(--fllt-color-white);
+    color: var(--fllt-color-gray-10);
 }
 
-/* Add these styles to your existing CSS */
+.text-display-config {
+    margin-top: var(--fllt-spacing-md);
+    padding-top: var(--fllt-spacing-md);
+    border-top: 1px solid var(--fllt-color-gray-85);
+}
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 90%;
-    max-height: 90%;
-    overflow-y: auto;
+.text-display-config label {
+    display: block;
+    font-weight: 500;
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-sm);
+}
+
+.text-display-config input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--fllt-spacing-md);
+    border: 1px solid var(--fllt-color-gray-75);
+    border-radius: var(--fllt-spacing-xs);
+    font-size: 16px;
+    background-color: var(--fllt-color-white);
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-sm);
+}
+
+.text-display-config input:focus {
+    outline: none;
+    border-color: var(--fllt-color-gray-10);
+}
+
+.match-timer-config {
+    margin-top: var(--fllt-spacing-md);
+    padding-top: var(--fllt-spacing-md);
+    border-top: 1px solid var(--fllt-color-gray-85);
+}
+
+.match-timer-config label {
+    display: block;
+    font-weight: 500;
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-sm);
+}
+
+.match-timer-config .match-control-buttons {
+    display: flex;
+    gap: var(--fllt-spacing-sm);
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--fllt-spacing-sm);
+}
+
+.match-timer-config .match-control-buttons button {
+    flex-direction: column;
+    padding: var(--fllt-spacing-sm) var(--fllt-spacing-md);
+    min-height: 60px;
+}
+
+
+
+.config-section {
+    background-color: var(--fllt-color-gray-95);
+    padding: var(--fllt-spacing-lg);
+    border-radius: var(--fllt-spacing-sm);
+}
+
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fllt-spacing-sm);
+}
+
+.config-form label {
+    display: block;
+    font-weight: 500;
+    color: var(--fllt-color-gray-10);
+}
+
+.config-form input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--fllt-spacing-md);
+    border: 1px solid var(--fllt-color-gray-75);
+    border-radius: var(--fllt-spacing-xs);
+    font-size: 16px;
+}
+
+.config-form input:focus {
+    outline: none;
+    border-color: var(--fllt-color-gray-10);
+}
+
+/* Match Schedule Styles */
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--fllt-spacing-md);
+    flex-wrap: wrap;
+    gap: var(--fllt-spacing-sm);
+}
+
+.schedule-header h2 {
+    color: var(--fllt-color-gray-10);
+    margin: 0;
+}
+
+.schedule-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--fllt-spacing-md);
+}
+
+.match-count {
+    color: var(--fllt-color-gray-50);
+    font-size: 14px;
+    font-style: italic;
+}
+
+.schedule-container {
     position: relative;
 }
 
-#closeMenuBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-}
-
-#scheduleTable {
+.match-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    background-color: var(--fllt-color-gray-100);
+    border-radius: var(--fllt-border-radius-md);
+    overflow: hidden;
 }
 
-#scheduleTable th, #scheduleTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.match-table th,
+.match-table td {
+    padding: var(--fllt-spacing-sm) var(--fllt-spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--fllt-color-gray-80);
+}
+
+.match-table th {
+    background-color: var(--fllt-color-gray-90);
+    color: var(--fllt-color-gray-10);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: var(--fllt-spacing-xs);
+}
+
+.match-table td {
+    background-color: var(--fllt-color-gray-95);
+    color: var(--fllt-color-gray-10);
+}
+
+.match-table tbody tr:hover {
+    background-color: var(--fllt-color-gray-90);
+}
+
+.match-table tbody tr:hover td {
+    background-color: var(--fllt-color-gray-90);
+}
+
+.current-match-row {
+    background-color: var(--fllt-color-green-95) !important;
+}
+
+.current-match-row td {
+    background-color: var(--fllt-color-green-95) !important;
+    border-color: var(--fllt-color-green-80);
+}
+
+.current-match-row:hover td {
+    background-color: var(--fllt-color-green-90) !important;
+}
+
+.match-number {
+    font-weight: 600;
+    color: var(--fllt-color-gray-10);
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 16px;
+}
+
+.team-input {
+    width: 100%;
+    max-width: 80px;
+    padding: var(--fllt-spacing-xs);
+    border: 1px solid var(--fllt-color-gray-70);
+    border-radius: var(--fllt-border-radius-sm);
+    background-color: var(--fllt-color-gray-90);
+    color: var(--fllt-color-gray-10);
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 14px;
     text-align: center;
 }
 
-#scheduleTable th {
-    background-color: #f2f2f2;
+.team-input:focus {
+    outline: none;
+    border-color: var(--fllt-color-gray-10);
+    background-color: var(--fllt-color-gray-85);
 }
 
-#scheduleTable input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 5px;
-}
-
-#addMatchBtn {
-    margin-bottom: 20px;
-}
-
-.action-buttons {
+.match-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    gap: var(--fllt-spacing-xs);
 }
 
-.delete-btn {
-    background-color: #f44336;
+.match-actions .button {
+    padding: var(--fllt-spacing-xs) var(--fllt-spacing-sm);
+    font-size: 12px;
+    min-width: auto;
+}
+
+.remove-match-btn {
+    background-color: var(--fllt-color-red-60);
     color: white;
     border: none;
-    padding: 5px 10px;
+    border-radius: var(--fllt-border-radius-sm);
+    padding: var(--fllt-spacing-xs) var(--fllt-spacing-sm);
+    font-size: 12px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.delete-btn:hover {
-    background-color: #d32f2f;
+.remove-match-btn:hover {
+    background-color: var(--fllt-color-red-50);
 }
 
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+.no-matches {
+    text-align: center;
+    padding: var(--fllt-spacing-xl);
+    color: var(--fllt-color-gray-50);
+    font-style: italic;
+    background-color: var(--fllt-color-gray-95);
+    border-radius: var(--fllt-border-radius-md);
+    border: 2px dashed var(--fllt-color-gray-80);
+}
+
+.field-description {
+    color: var(--fllt-color-gray-50);
+    font-size: 14px;
+    margin: 0;
+    font-style: italic;
+}
+
+.info-section {
+    background-color: var(--fllt-color-gray-95);
+    padding: var(--fllt-spacing-md) var(--fllt-spacing-lg);
+    border-radius: var(--fllt-spacing-sm);
+    border-left: var(--fllt-spacing-xs) solid var(--fllt-color-gray-50);
+}
+
+.info-section h2 {
+    color: var(--fllt-color-gray-10);
+    margin-bottom: var(--fllt-spacing-md);
+    font-size: 20px;
+}
+
+.info-section p {
+    color: var(--fllt-color-gray-25);
+    line-height: 1.5;
     margin: 0;
 }
 
-/* Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
+/* --- DISPLAY PAGE COMPONENTS --- */
+
+/* Display Page Styles */
+.display-page {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--fllt-color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-input:invalid {
-    border: 2px solid red;
-    outline: none;
-    background-color: #ffdddd;
+.display-content {
+    text-align: center;
+}
+
+.display-mode {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.display-title {
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 128px;
+    color: var(--fllt-color-gray-10);
+    letter-spacing: var(--fllt-spacing-xs);
+}
+
+/* Match Header */
+.match-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--fllt-spacing-lg);
+}
+
+.match-number-display {
+    background: var(--fllt-color-gray-85);
+    border: 3px solid var(--fllt-color-gray-60);
+    border-radius: var(--fllt-border-radius-lg);
+    padding: var(--fllt-spacing-md) var(--fllt-spacing-xl);
+    text-align: center;
+    min-width: 150px;
+}
+
+.match-label {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    color: var(--fllt-color-gray-50);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--fllt-spacing-xs);
+    margin-bottom: var(--fllt-spacing-xs);
+}
+
+.match-number {
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 48px;
+    color: var(--fllt-color-gray-10);
+    font-weight: bold;
+    letter-spacing: var(--fllt-spacing-sm);
+    line-height: 1;
+}
+
+/* Teams Display */
+.teams-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--fllt-spacing-lg);
+    margin-bottom: var(--fllt-spacing-xl);
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background: var(--fllt-color-gray-90);
+    border: 2px solid var(--fllt-color-gray-70);
+    border-radius: var(--fllt-border-radius-md);
+    padding: var(--fllt-spacing-md) var(--fllt-spacing-lg);
+    text-align: center;
+    min-width: 120px;
+}
+
+.team-label {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: var(--fllt-color-gray-50);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--fllt-spacing-xs);
+    margin-bottom: var(--fllt-spacing-xs);
+}
+
+.team-number {
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 32px;
+    color: var(--fllt-color-gray-10);
+    font-weight: bold;
+    letter-spacing: var(--fllt-spacing-xs);
+}
+
+.timer-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fllt-spacing-lg);
+}
+
+.timer-time {
+    font-family: 'Digital-7 Mono', monospace;
+    font-size: 256px;
+    color: var(--fllt-color-gray-10);
+    letter-spacing: var(--fllt-spacing-sm);
+    line-height: 0.8;
+    min-width: 4ch;
+}
+
+.timer-status {
+    font-family: Arial, sans-serif;
+    font-size: 48px;
+    color: var(--fllt-color-gray-50);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--fllt-spacing-xs);
+}
+
+.timer-time.running {
+    color: var(--fllt-color-green-60);
+}
+
+.timer-time.warning {
+    color: var(--fllt-color-itd-yellow-60);
+}
+
+.timer-time.critical {
+    color: var(--fllt-color-red-60);
+    animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.7;
+    }
+}
+
+/* --- RESPONSIVE DESIGN --- */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .control-page {
+        padding: var(--fllt-spacing-md);
+    }
+    
+    .control-header {
+        grid-template-areas: 
+            "title"
+            "buttons";
+        grid-template-columns: 1fr;
+        gap: var(--fllt-spacing-md);
+        text-align: center;
+    }
+    
+    .header-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--fllt-spacing-md);
+    }
+    
+    .button-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .config-form input {
+        max-width: none;
+    }
+    
+    .display-type-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .text-display-config input {
+        max-width: none;
+    }
+    
+    .match-timer-config .match-control-buttons {
+        justify-content: center;
+    }
+    
+    .match-timer-config .match-control-buttons button {
+        min-height: 55px;
+    }
+    
+    .schedule-controls {
+        flex-direction: column;
+        gap: var(--fllt-spacing-sm);
+        align-items: flex-start;
+    }
+    
+    .match-table {
+        font-size: 14px;
+    }
+    
+    .match-table th,
+    .match-table td {
+        padding: var(--fllt-spacing-xs) var(--fllt-spacing-sm);
+    }
+    
+    .team-input {
+        max-width: 60px;
+        font-size: 12px;
+    }
+    
+    .display-title {
+        font-size: 64px;
+    }
+    
+    .timer-time {
+        font-size: 128px;
+    }
+    
+    .timer-status {
+        font-size: 32px;
+    }
+    
+    .teams-container {
+        gap: var(--fllt-spacing-md);
+        margin-bottom: var(--fllt-spacing-lg);
+    }
+    
+    .team-card {
+        min-width: 100px;
+        padding: var(--fllt-spacing-sm) var(--fllt-spacing-md);
+    }
+    
+    .team-number {
+        font-size: 24px;
+    }
+    
+    .match-header {
+        margin-bottom: var(--fllt-spacing-md);
+    }
+    
+    .match-number-display {
+        min-width: 120px;
+        padding: var(--fllt-spacing-sm) var(--fllt-spacing-lg);
+    }
+    
+    .match-label {
+        font-size: 16px;
+    }
+    
+    .match-number {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .control-page {
+        padding: var(--fllt-spacing-sm);
+    }
+    
+    .info-section,
+    .config-section,
+    .display-type-section {
+        padding: var(--fllt-spacing-md);
+    }
+    
+    .schedule-controls {
+        flex-direction: column;
+        gap: var(--fllt-spacing-xs);
+        align-items: stretch;
+    }
+    
+    .schedule-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--fllt-spacing-xs);
+    }
+    
+    .match-table {
+        font-size: 12px;
+    }
+    
+    .match-table th,
+    .match-table td {
+        padding: var(--fllt-spacing-xs);
+    }
+    
+    .team-input {
+        max-width: 50px;
+        font-size: 11px;
+    }
+    
+    .remove-match-btn {
+        font-size: 10px;
+        padding: var(--fllt-spacing-xs);
+    }
+    
+    .display-title {
+        font-size: 48px;
+    }
+    
+    .timer-time {
+        font-size: 96px;
+    }
+    
+    .timer-status {
+        font-size: 24px;
+    }
+    
+    .teams-container {
+        gap: var(--fllt-spacing-sm);
+        margin-bottom: var(--fllt-spacing-md);
+    }
+    
+    .team-card {
+        min-width: 80px;
+        padding: var(--fllt-spacing-xs) var(--fllt-spacing-sm);
+    }
+    
+    .team-label {
+        font-size: 12px;
+    }
+    
+    .team-number {
+        font-size: 20px;
+    }
+    
+    .match-header {
+        margin-bottom: var(--fllt-spacing-sm);
+    }
+    
+    .match-number-display {
+        min-width: 100px;
+        padding: var(--fllt-spacing-xs) var(--fllt-spacing-md);
+    }
+    
+    .match-label {
+        font-size: 14px;
+    }
+    
+    .match-number {
+        font-size: 28px;
+    }
+    
+    .match-timer-config .match-control-buttons button {
+        min-height: 50px;
+        font-size: 16px;
+    }
+    
+    .match-timer-config .match-control-buttons .button-sub {
+        font-size: 10px;
+    }
 }

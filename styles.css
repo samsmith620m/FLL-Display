@@ -101,8 +101,9 @@ button {
     display: grid;
     grid-template-areas: 
         "header"
-        "content";
-    grid-template-rows: auto 1fr;
+        "content"
+        "footer";
+    grid-template-rows: auto 1fr auto;
     gap: var(--fllt-spacing-lg);
 }
 
@@ -143,6 +144,59 @@ button {
     display: flex;
     flex-direction: column;
     gap: var(--fllt-spacing-lg);
+}
+
+.control-footer {
+    grid-area: footer;
+    margin: 0 calc(-1 * var(--fllt-spacing-lg)) calc(-1 * var(--fllt-spacing-lg));
+    background-color: var(--fllt-color-gray-25);
+    padding: var(--fllt-spacing-lg);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0;
+    text-align: left;
+}
+
+.footer-greeting {
+    color: var(--fllt-color-white);
+    line-height: 1.6;
+    margin: 0 0 var(--fllt-spacing-md) 0;
+    font-size: 24px;
+    font-weight: 700
+}
+
+.footer-message {
+    color: var(--fllt-color-white);
+    line-height: 1.6;
+    margin: 0 0 var(--fllt-spacing-md) 0;
+    font-size: 16px;
+    max-width: 72ch;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--fllt-spacing-sm);
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--fllt-color-white);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-links .separator {
+    color: var(--fllt-color-white);
+    font-weight: 300;
 }
 
 .display-type-section {
@@ -732,6 +786,25 @@ button {
     .match-number {
         font-size: 36px;
     }
+    
+    .control-footer {
+        margin: 0 calc(-1 * var(--fllt-spacing-md)) calc(-1 * var(--fllt-spacing-md));
+        padding: var(--fllt-spacing-lg) var(--fllt-spacing-md) var(--fllt-spacing-lg);
+    }
+    
+    .footer-message {
+        font-size: 15px;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: var(--fllt-spacing-xs);
+        align-items: flex-start;
+    }
+    
+    .footer-links .separator {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -830,5 +903,14 @@ button {
     
     .match-timer-config .match-control-buttons .button-sub {
         font-size: 10px;
+    }
+    
+    .control-footer {
+        margin: 0 calc(-1 * var(--fllt-spacing-sm)) calc(-1 * var(--fllt-spacing-sm));
+        padding: var(--fllt-spacing-lg) var(--fllt-spacing-sm) var(--fllt-spacing-lg);
+    }
+    
+    .footer-message {
+        font-size: 14px;
     }
 }

@@ -475,7 +475,7 @@ function renderMatchSchedule() {
         // Actions column
         const actionsCell = document.createElement('td');
         const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-match-btn';
+        removeBtn.className = 'danger';
         removeBtn.textContent = 'Remove';
         removeBtn.addEventListener('click', () => {
             if (confirm(`Are you sure you want to remove Match ${match.matchNumber}?`)) {

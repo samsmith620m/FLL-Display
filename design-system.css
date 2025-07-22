@@ -1,4 +1,4 @@
-/* FLL Timer Design System */
+/* FLL Display Design System */
 /* This file contains all design tokens, primitives, and semantic color/spacing definitions */
 
 @font-face {
@@ -6,105 +6,117 @@
     src: url('digital-7-mono.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Inter';
+    src: url('InterVariable.ttf') format('truetype');
+}
+
 :root {
     /* --- PRIMITIVES --- */
     /* Color Primitives */
     
-    --fllt-color-white: #ffffff;
-    --fllt-color-gray-95: #f1f1f1;
-    --fllt-color-gray-75: #b9b9b9;
-    --fllt-color-gray-50: #777777;
-    --fllt-color-gray-25: #3c3c3c;
-    --fllt-color-gray-10: #1b1b1b;
-    --fllt-color-black: #000000;
+    --flld-color-white: #ffffff;
+    --flld-color-gray-95: #f1f1f1;
+    --flld-color-gray-75: #b9b9b9;
+    --flld-color-gray-50: #777777;
+    --flld-color-gray-25: #3c3c3c;
+    --flld-color-gray-10: #1b1b1b;
+    --flld-color-black: #000000;
 
-    --fllt-color-blue-75: #97B8FF;
-    --fllt-color-blue-60: #4E8EFF;
-    --fllt-color-blue-40: #355DA3;
+    --flld-color-blue-75: #97B8FF;
+    --flld-color-blue-60: #4E8EFF;
+    --flld-color-blue-40: #355DA3;
     
-    --fllt-color-green-75: #5FD068;
-    --fllt-color-green-60: #00A837;
-    --fllt-color-green-40: #2D6B32;
+    --flld-color-green-75: #5FD068;
+    --flld-color-green-60: #00A837;
+    --flld-color-green-40: #2D6B32;
 
-    --fllt-color-red-75: #FF9F97;
-    --fllt-color-red-60: #FF534E;
-    --fllt-color-red-40: #B02C2C;
+    --flld-color-red-75: #FF9F97;
+    --flld-color-red-60: #FF534E;
+    --flld-color-red-40: #B02C2C;
 
-    --fllt-color-itd-blue-75: #67C4EC;
-    --fllt-color-itd-blue-60: #009CCA;
-    --fllt-color-itd-blue-40: #006686;
+    --flld-color-itd-blue-75: #67C4EC;
+    --flld-color-itd-blue-60: #009CCA;
+    --flld-color-itd-blue-40: #006686;
 
-    --fllt-color-itd-orange-75: #FFA273;
-    --fllt-color-itd-orange-60: #F16600;
-    --fllt-color-itd-orange-40: #9F4200;
+    --flld-color-itd-orange-75: #FFA273;
+    --flld-color-itd-orange-60: #F16600;
+    --flld-color-itd-orange-40: #9F4200;
 
-    --fllt-color-itd-yellow-75: #E7AF47;
-    --fllt-color-itd-yellow-60: #BE8600;
-    --fllt-color-itd-yellow-40: #7D5700;
+    --flld-color-itd-yellow-75: #E7AF47;
+    --flld-color-itd-yellow-60: #BE8600;
+    --flld-color-itd-yellow-40: #7D5700;
 
-    --fllt-color-itd-teal-75: #5DCBB5;
-    --fllt-color-itd-teal-60: #00A38D;
-    --fllt-color-itd-teal-40: #006B5C;
+    --flld-color-itd-teal-75: #5DCBB5;
+    --flld-color-itd-teal-60: #00A38D;
+    --flld-color-itd-teal-40: #006B5C;
 
     /* Spacing Primitives */
-    --fllt-spacing-xs: 4px;
-    --fllt-spacing-sm: 8px;
-    --fllt-spacing-md: 16px;
-    --fllt-spacing-lg: 32px;
-    --fllt-spacing-xl: 64px;
-    
+    --flld-spacing-xs: 4px;
+    --flld-spacing-sm: 8px;
+    --flld-spacing-md: 16px;
+    --flld-spacing-lg: 32px;
+    --flld-spacing-xl: 64px;
+
+    /* Border Radius Primitives */
+    --flld-border-radius-sm: 2px;
+    --flld-border-radius-md: 4px;
+    --flld-border-radius-lg: 8px;
+
+    /* Typography Primitives */
+
+    --flld-font-family-base: 'Inter', sans-serif;
+    --flld-font-family-mono: 'Digital-7 Mono', monospace;
+
     /* --- LEVEL 1 SEMANTICS --- */
     /* Semantic Colors - Brand & Theme */
-
-    --fllt-color-theme-primary: var(--fllt-color-itd-blue-60);
-    --fllt-color-theme-primary-shade: var(--fllt-color-itd-blue-40);
-    --fllt-color-theme-accent: var(--fllt-color-itd-yellow-60);
-    --fllt-color-theme-accent-shade: var(--fllt-color-itd-yellow-40);
+    --flld-color-theme-primary: var(--flld-color-itd-blue-60);
+    --flld-color-theme-primary-shade: var(--flld-color-itd-blue-40);
+    --flld-color-theme-accent: var(--flld-color-itd-yellow-60);
+    --flld-color-theme-accent-shade: var(--flld-color-itd-yellow-40);
 
     /* Semantic Colors - Neutral */
-    --fllt-color-neutral-primary: var(--fllt-color-gray-10);
-    --fllt-color-neutral-secondary: var(--fllt-color-gray-25);
-    --fllt-color-neutral-tertiary: var(--fllt-color-gray-75);
+    --flld-color-neutral-primary: var(--flld-color-gray-10);
+    --flld-color-neutral-secondary: var(--flld-color-gray-25);
+    --flld-color-neutral-tertiary: var(--flld-color-gray-75);
 
     /* Semantic Colors - Surface */
-    --fllt-color-surface-1: var(--fllt-color-white);
-    --fllt-color-surface-2: var(--fllt-color-gray-95);
+    --flld-color-surface-1: var(--flld-color-white);
+    --flld-color-surface-2: var(--flld-color-gray-95);
 
     /* Semantic Colors - Messaging */
-    --fllt-color-messaging-informational: var(--fllt-color-blue-60);
-    --fllt-color-messaging-informational-shade: var(--fllt-color-blue-40);
+    --flld-color-messaging-informational: var(--flld-color-blue-60);
+    --flld-color-messaging-informational-shade: var(--flld-color-blue-40);
 
-    --fllt-color-messaging-success: var(--fllt-color-green-60);
-    --fllt-color-messaging-success-shade: var(--fllt-color-green-40);
+    --flld-color-messaging-success: var(--flld-color-green-60);
+    --flld-color-messaging-success-shade: var(--flld-color-green-40);
     
-    --fllt-color-messaging-critical: var(--fllt-color-red-60);
-    --fllt-color-messaging-critical-shade: var(--fllt-color-red-40);
+    --flld-color-messaging-critical: var(--flld-color-red-60);
+    --flld-color-messaging-critical-shade: var(--flld-color-red-40);
 
     /* --- LEVEL 2 SEMANTICS --- */
-    /* Component-Level Semantic Colors */
-
     /* Static Surface Colors */
-    --fllt-color-static-surface-primary: var(--fllt-color-white);
-    --fllt-color-static-surface-secondary: var(--fllt-color-gray-75);
+    --flld-color-static-surface-primary: var(--flld-color-white);
+    --flld-color-static-surface-secondary: var(--flld-color-gray-75);
 
     /* Interactive Surface Colors */
-    --fllt-color-interactive-surface-theme-default: var(--fllt-color-theme-primary);
-    --fllt-color-interactive-surface-theme-active: var(--fllt-color-theme-primary-shade);
+    --flld-color-interactive-surface-theme-default: var(--flld-color-theme-primary);
+    --flld-color-interactive-surface-theme-active: var(--flld-color-theme-primary-shade);
 
-    --fllt-color-interactive-surface-neutral-default: var(--fllt-color-surface-1);
-    --fllt-color-interactive-surface-neutral-active: var(--fllt-color-surface-2);
+    --flld-color-interactive-surface-neutral-default: var(--flld-color-surface-1);
+    --flld-color-interactive-surface-neutral-active: var(--flld-color-surface-2);
 
     /* Border Colors */
-    --fllt-color-border-theme-default: var(--fllt-color-theme-primary);
-    --fllt-color-border-theme-active: var(--fllt-color-theme-primary-shade);
-    --fllt-color-border-base: var(--fllt-color-neutral-tertiary);
-    --fllt-color-border-interactive: var(--fllt-color-neutral-secondary);
+    --flld-color-border-theme-default: var(--flld-color-theme-primary);
+    --flld-color-border-theme-active: var(--flld-color-theme-primary-shade);
+    --flld-color-border-base: var(--flld-color-neutral-tertiary);
+    --flld-color-border-interactive: var(--flld-color-neutral-secondary);
 
     /* Text Colors */
-    --fllt-color-text-primary: var(--fllt-color-neutral-primary);
-    --fllt-color-text-inverse: var(--fllt-color-white);
-    --fllt-color-text-theme: var(--fllt-color-theme-primary);
-    --fllt-color-text-theme-active: var(--fllt-color-theme-primary-shade);
+    --flld-color-text-primary: var(--flld-color-neutral-primary);
+    --flld-color-text-inverse: var(--flld-color-white);
+    --flld-color-text-theme: var(--flld-color-theme-primary);
+    --flld-color-text-theme-active: var(--flld-color-theme-primary-shade);
 }
 
 /* --- DESIGN SYSTEM UTILITIES --- */

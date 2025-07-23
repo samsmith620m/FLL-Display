@@ -26,7 +26,7 @@ body {
 button {
     height: auto;
     min-height: 44px;
-    font-size: 18px;
+    font-size: var(--flld-font-size-md);
     font-family: var(--flld-font-family-base);
     padding-inline: var(--flld-spacing-md);
     cursor: pointer;
@@ -35,7 +35,7 @@ button {
     justify-content: center;
     gap: var(--flld-spacing-sm);
     border-radius: var(--flld-spacing-sm);
-    font-weight: 600;
+    font-weight: var(--flld-font-weight-semibold);
     transition: all 0.2s ease;
 
     &:disabled {
@@ -68,12 +68,14 @@ button {
     }
 
     &.danger {
-        background-color: var(--flld-color-red-60);
-        color: var(--flld-color-white);
-        border: none;
+        border: 2px solid var(--flld-color-red-60);
+        color: var(--flld-color-red-60);
+        background-color: var(--flld-color-surface-1);
 
         &:hover:not(:disabled) {
-            background-color: var(--flld-color-red-40);
+            border-color: var(--flld-color-messaging-critical-shade);
+            color: var(--flld-color-messaging-critical-shade);
+            background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%)
         }
     }
 }
@@ -86,8 +88,8 @@ button {
 
 .button-sub {
     display: block;
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-regular);
     opacity: 0.8;
     line-height: 1;
     margin-top: 2px;
@@ -121,8 +123,8 @@ button {
 .control-header h1 {
     grid-area: title;
     color: var(--flld-color-gray-10);
-    font-size: 32px;
-    font-weight: 600;
+    font-size: var(--flld-font-size-xl);
+    font-weight: var(--flld-font-weight-bold);
 }
 
 .header-buttons {
@@ -162,17 +164,17 @@ button {
 
 .footer-greeting {
     color: var(--flld-color-white);
-    line-height: 1.6;
+    line-height: var(--flld-line-height-base);
     margin: 0 0 var(--flld-spacing-md) 0;
-    font-size: 24px;
-    font-weight: 700
+    font-size: var(--flld-font-size-lg);
+    font-weight: var(--flld-font-weight-bold)
 }
 
 .footer-message {
     color: var(--flld-color-white);
-    line-height: 1.6;
+    line-height: var(--flld-line-height-base);
     margin: 0 0 var(--flld-spacing-md) 0;
-    font-size: 16px;
+    font-size: var(--flld-font-size-md);
     max-width: 72ch;
 }
 
@@ -187,7 +189,7 @@ button {
 .footer-links a {
     color: var(--flld-color-white);
     text-decoration: none;
-    font-weight: 700;
+    font-weight: var(--flld-font-weight-bold);
     transition: color 0.2s ease;
 }
 
@@ -197,7 +199,7 @@ button {
 
 .footer-links .separator {
     color: var(--flld-color-white);
-    font-weight: 300;
+    font-weight: var(--flld-font-weight-regular);
 }
 
 .display-type-section {
@@ -210,7 +212,7 @@ button {
 .display-type-section h2 {
     color: var(--flld-color-gray-10);
     margin-bottom: var(--flld-spacing-md);
-    font-size: 20px;
+    font-size: var(--flld-font-size-lg);
 }
 
 .display-type-form {
@@ -221,7 +223,7 @@ button {
 
 .display-type-form label {
     display: block;
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);
     margin-bottom: var(--flld-spacing-sm);
 }
@@ -242,8 +244,8 @@ button {
     border-radius: var(--flld-spacing-xs);
     background-color: transparent;
     color: var(--flld-color-gray-50);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-semibold);
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
@@ -257,7 +259,6 @@ button {
 .toggle-btn.active {
     background-color: var(--flld-color-white);
     color: var(--flld-color-gray-10);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .toggle-btn.active:hover {
@@ -273,7 +274,7 @@ button {
 
 .text-display-config label {
     display: block;
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);
     margin-bottom: var(--flld-spacing-sm);
 }
@@ -284,7 +285,7 @@ button {
     padding: var(--flld-spacing-md);
     border: 1px solid var(--flld-color-gray-75);
     border-radius: var(--flld-spacing-xs);
-    font-size: 16px;
+    font-size: var(--flld-font-size-md);
     font-family: var(--flld-font-family-base);
     background-color: var(--flld-color-white);
     color: var(--flld-color-gray-10);
@@ -304,7 +305,7 @@ button {
 
 .match-timer-config label {
     display: block;
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);
     margin-bottom: var(--flld-spacing-sm);
 }
@@ -339,7 +340,7 @@ button {
 
 .config-form label {
     display: block;
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);
 }
 
@@ -349,7 +350,7 @@ button {
     padding: var(--flld-spacing-md);
     border: 1px solid var(--flld-color-gray-75);
     border-radius: var(--flld-spacing-xs);
-    font-size: 16px;
+    font-size: var(--flld-font-size-md);
     font-family: var(--flld-font-family-base);
 }
 
@@ -373,16 +374,23 @@ button {
     margin: 0;
 }
 
+.schedule-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--flld-spacing-md);
+}
+
+.match-count {
+    font-weight: var(--flld-font-weight-semibold);
+    color: var(--flld-color-gray-50);
+    font-size: var(--flld-font-size-sm);
+    font-style: italic;
+}
+
 .schedule-controls {
     display: flex;
     justify-content: center;
     margin-top: var(--flld-spacing-md);
-}
-
-.match-count {
-    color: var(--flld-color-gray-50);
-    font-size: 14px;
-    font-style: italic;
 }
 
 .schedule-container {
@@ -391,78 +399,81 @@ button {
 
 .match-table {
     width: 100%;
-    border-collapse: collapse;
-    background-color: var(--flld-color-gray-100);
-    border-radius: var(--flld-border-radius-md);
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--flld-color-surface-1);
+    border: 1px solid var(--flld-color-border-base);
+    border-radius: var(--flld-border-radius-lg);
     overflow: hidden;
 }
 
 .match-table th,
 .match-table td {
-    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+    padding: var(--flld-spacing-sm);
     text-align: left;
-    border-bottom: 1px solid var(--flld-color-gray-80);
+    border-right: 1px solid var(--flld-color-border-base);
+    border-bottom: 1px solid var(--flld-color-border-base);
+}
+
+.match-table th:last-child,
+.match-table td:last-child {
+    border-right: none;
 }
 
 .match-table th {
-    background-color: var(--flld-color-gray-90);
-    color: var(--flld-color-gray-10);
-    font-weight: 600;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: var(--flld-spacing-xs);
+    background-color: var(--flld-color-surface-2);
+    color: var(--flld-color-text-primary);
+    font-weight: var(--flld-font-weight-semibold);
+    font-size: var(--flld-font-size-sm);
 }
 
 .match-table td {
-    background-color: var(--flld-color-gray-95);
-    color: var(--flld-color-gray-10);
+    background-color: var(--flld-color-surface-1);
+    color: var(--flld-color-text-primary);
+    text-align: right;
 }
 
-.match-table tbody tr:hover {
-    background-color: var(--flld-color-gray-90);
+.match-table tbody tr {
+    transition: background-color 0.2s ease;
 }
 
-.match-table tbody tr:hover td {
-    background-color: var(--flld-color-gray-90);
-}
-
-.current-match-row {
-    background-color: var(--flld-color-green-95) !important;
+.match-table tbody tr:nth-child(even) td {
+    background-color: var(--flld-color-surface-2);
 }
 
 .current-match-row td {
-    background-color: var(--flld-color-green-95) !important;
-    border-color: var(--flld-color-green-80);
+    background-color: color-mix(in oklab, var(--flld-color-messaging-success), white 90%) !important;
+    color: var(--flld-color-text-inverse) !important;
+    font-weight: var(--flld-font-weight-semibold);
 }
 
-.current-match-row:hover td {
-    background-color: var(--flld-color-green-90) !important;
+.current-match-row td:first-child {
+    border-left: 4px solid var(--flld-color-messaging-success);
 }
 
 .match-number {
-    font-weight: 600;
+    font-family: var(--flld-font-family-base);
+    font-size: var(--flld-font-size-lg);
+    font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);
-    font-family: var(--flld-font-family-mono);
-    font-size: 16px;
 }
 
 .team-input {
     width: 100%;
-    max-width: 80px;
-    padding: var(--flld-spacing-xs);
-    border: 1px solid var(--flld-color-gray-70);
+    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+    border: 1px solid var(--flld-color-border-base);
     border-radius: var(--flld-border-radius-sm);
-    background-color: var(--flld-color-gray-90);
-    color: var(--flld-color-gray-10);
-    font-family: var(--flld-font-family-mono);
-    font-size: 14px;
-    text-align: center;
+    background-color: var(--flld-color-surface-1);
+    font-family: var(--flld-font-family-base);
+    font-size: var(--flld-font-size-lg);
+    line-height: var(--flld-line-height-base);
+    color: var(--flld-color-text-primary);
+    text-align: left;
 }
 
 .team-input:focus {
     outline: none;
-    border-color: var(--flld-color-gray-10);
-    background-color: var(--flld-color-gray-85);
+    border-color: var(--flld-color-black);
 }
 
 .match-actions {
@@ -472,23 +483,24 @@ button {
 
 .match-actions .button {
     padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
-    font-size: 12px;
+    font-size: var(--flld-font-size-sm);
     min-width: auto;
+    min-height: 32px;
 }
 
 .no-matches {
     text-align: center;
     padding: var(--flld-spacing-xl);
-    color: var(--flld-color-gray-50);
+    color: var(--flld-color-neutral-secondary);
     font-style: italic;
-    background-color: var(--flld-color-gray-95);
-    border-radius: var(--flld-border-radius-md);
-    border: 2px dashed var(--flld-color-gray-80);
+    background-color: var(--flld-color-surface-2);
+    border-radius: var(--flld-border-radius-lg);
+    border: 1px solid var(--flld-color-border-base);
 }
 
 .field-description {
     color: var(--flld-color-gray-50);
-    font-size: 14px;
+    font-size: var(--flld-font-size-sm);
     margin: 0;
     font-style: italic;
 }
@@ -503,12 +515,12 @@ button {
 .info-section h2 {
     color: var(--flld-color-gray-10);
     margin-bottom: var(--flld-spacing-md);
-    font-size: 20px;
+    font-size: var(--flld-font-size-lg);
 }
 
 .info-section p {
     color: var(--flld-color-gray-25);
-    line-height: 1.5;
+    line-height: var(--flld-line-height-base);
     margin: 0;
 }
 
@@ -562,19 +574,20 @@ button {
 
 .match-label {
     font-family: Arial, sans-serif;
-    font-size: 20px;
+    font-size: var(--flld-font-size-lg);
     color: var(--flld-color-gray-50);
-    font-weight: 600;
+    font-weight: var(--flld-font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--flld-spacing-xs);
     margin-bottom: var(--flld-spacing-xs);
 }
 
-.match-number {
+/* Display Page Specific Styles */
+.display-page .match-number {
     font-family: var(--flld-font-family-mono);
-    font-size: 48px;
+    font-size: var(--flld-font-size-2xl);
     color: var(--flld-color-gray-10);
-    font-weight: bold;
+    font-weight: var(--flld-font-weight-bold);
     letter-spacing: var(--flld-spacing-sm);
     line-height: 1;
 }
@@ -599,9 +612,9 @@ button {
 
 .team-label {
     font-family: Arial, sans-serif;
-    font-size: 16px;
+    font-size: var(--flld-font-size-md);
     color: var(--flld-color-gray-50);
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--flld-spacing-xs);
     margin-bottom: var(--flld-spacing-xs);
@@ -609,9 +622,9 @@ button {
 
 .team-number {
     font-family: var(--flld-font-family-mono);
-    font-size: 32px;
+    font-size: var(--flld-font-size-xl);
     color: var(--flld-color-gray-10);
-    font-weight: bold;
+    font-weight: var(--flld-font-weight-bold);
     letter-spacing: var(--flld-spacing-xs);
 }
 
@@ -634,9 +647,9 @@ button {
 
 .timer-status {
     font-family: Arial, sans-serif;
-    font-size: 48px;
+    font-size: var(--flld-font-size-2xl);
     color: var(--flld-color-gray-50);
-    font-weight: 500;
+    font-weight: var(--flld-font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--flld-spacing-xs);
 }
@@ -719,7 +732,7 @@ button {
     }
     
     .match-table {
-        font-size: 14px;
+        font-size: var(--flld-font-size-sm);
     }
     
     .match-table th,
@@ -729,7 +742,7 @@ button {
     
     .team-input {
         max-width: 60px;
-        font-size: 12px;
+        font-size: var(--flld-font-size-sm);
     }
     
     .display-title {
@@ -768,11 +781,11 @@ button {
     }
     
     .match-label {
-        font-size: 16px;
+        font-size: var(--flld-font-size-md);
     }
     
-    .match-number {
-        font-size: 36px;
+    .display-page .match-number {
+        font-size: var(--flld-font-size-xl);
     }
     
     .control-footer {
@@ -872,11 +885,11 @@ button {
     }
     
     .match-label {
-        font-size: 14px;
+        font-size: var(--flld-font-size-sm);
     }
     
-    .match-number {
-        font-size: 28px;
+    .display-page .match-number {
+        font-size: var(--flld-font-size-lg);
     }
     
     .match-timer-config .match-control-buttons button {

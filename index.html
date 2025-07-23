@@ -33,20 +33,20 @@
             <div class="display-type-section">
                 <h2>Display Type</h2>
                 <div class="display-type-form">
-                    <label>Current Display:</label>
+                    <label>Current Display Type</label>
                     <div class="display-type-toggle" id="displayTypeToggle">
                         <button type="button" class="toggle-btn active" data-value="text">Text Display</button>
                         <button type="button" class="toggle-btn" data-value="match-timer">Match Timer</button>
                     </div>
                     
                     <div id="textDisplayConfig" class="text-display-config">
-                        <label for="displayText">Display Text:</label>
+                        <label for="displayText">Display Text</label>
                         <input type="text" id="displayText" value="Display" placeholder="Enter text to show on display">
                         <p class="field-description">Text that will be shown on the display screen when Text Display mode is selected.</p>
                     </div>
                     
                     <div id="matchTimerConfig" class="match-timer-config" style="display: none;">
-                        <label>Match Controls:</label>
+                        <label>Match Controls</label>
                         <div class="match-control-buttons">
                             <button id="prevMatchBtn" class="secondary" disabled>
                                 <span class="button-main">Previous Match</span>
@@ -69,7 +69,10 @@
             <div class="config-section" id="matchScheduleConfig">
                 <div class="schedule-header">
                     <h2>Match Schedule</h2>
-                    <span class="match-count">0 matches scheduled</span>
+                    <div class="schedule-header-right">
+                        <span class="match-count">0 matches scheduled</span>
+                        <button id="deleteAllMatchesBtn" class="danger" style="display: none;">Delete All</button>
+                    </div>
                 </div>
                 <div class="schedule-container">
                     <table id="matchScheduleTable" class="match-table">
@@ -80,7 +83,7 @@
                                 <th>Team 2</th>
                                 <th>Team 3</th>
                                 <th>Team 4</th>
-                                <th>Actions</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="matchScheduleBody">
@@ -95,8 +98,6 @@
                     <button id="addMatchBtn" class="primary">Add Match</button>
                 </div>
             </div>
-            
-            <p><em>More configuration and control options will be added here as we build the timer features.</em></p>
         </main>
         
         <footer class="control-footer">

@@ -12,6 +12,7 @@ const nextMatchBtn = document.getElementById('nextMatchBtn');
 const textDisplayConfig = document.getElementById('textDisplayConfig');
 const matchTimerConfig = document.getElementById('matchTimerConfig');
 const addMatchBtn = document.getElementById('addMatchBtn');
+const deleteAllMatchesBtn = document.getElementById('deleteAllMatchesBtn');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
 const prevMatchSub = document.getElementById('prevMatchSub');
@@ -379,7 +380,7 @@ function addMatch() {
     console.log('Match added:', newMatch);
 }
 
-function removeMatch(matchNumber) {
+function deleteMatch(matchNumber) {
     const updatedMatches = timerState.matches
         .filter(match => match.matchNumber !== matchNumber)
         .map((match, index) => ({
@@ -402,7 +403,7 @@ function removeMatch(matchNumber) {
         currentMatchNumber: newCurrentMatch
     });
     renderMatchSchedule();
-    console.log('Match removed:', matchNumber);
+    console.log('Match deleted:', matchNumber);
 }
 
 function updateMatchTeam(matchNumber, teamIndex, teamValue) {
@@ -419,6 +420,17 @@ function updateMatchTeam(matchNumber, teamIndex, teamValue) {
     console.log('Team updated:', { matchNumber, teamIndex, teamValue });
 }
 
+function deleteAllMatches() {
+    if (confirm('Are you sure you want to delete all matches? This action cannot be undone.')) {
+        updateState({ 
+            matches: [],
+            currentMatchNumber: 1
+        });
+        renderMatchSchedule();
+        console.log('All matches deleted');
+    }
+}
+
 function renderMatchSchedule() {
     const tbody = matchScheduleBody;
     const noMatches = noMatchesMessage;
@@ -427,6 +439,11 @@ function renderMatchSchedule() {
     // Update match count
     const count = timerState.matches.length;
     matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
+    
+    // Show/hide Delete All button
+    if (deleteAllMatchesBtn) {
+        deleteAllMatchesBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
     
     // Update match control buttons
     updateMatchControlButtons();
@@ -474,15 +491,15 @@ function renderMatchSchedule() {
         
         // Actions column
         const actionsCell = document.createElement('td');
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'danger';
-        removeBtn.textContent = 'Remove';
-        removeBtn.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to remove Match ${match.matchNumber}?`)) {
-                removeMatch(match.matchNumber);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'danger';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => {
+            if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
+                deleteMatch(match.matchNumber);
             }
         });
-        actionsCell.appendChild(removeBtn);
+        actionsCell.appendChild(deleteBtn);
         row.appendChild(actionsCell);
         
         tbody.appendChild(row);
@@ -496,6 +513,7 @@ startMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
 addMatchBtn.addEventListener('click', addMatch);
+deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
 // Track changes on input fields and update automatically
 displayTextInput.addEventListener('input', updateDisplayText);

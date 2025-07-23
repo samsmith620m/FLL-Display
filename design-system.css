@@ -3,12 +3,12 @@
 
 @font-face {
     font-family: 'Digital-7 Mono';
-    src: url('digital-7-mono.ttf') format('truetype');
+    src: url('fonts/digital-7-mono.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Inter';
-    src: url('InterVariable.ttf') format('truetype');
+    src: url('fonts/InterVariable.ttf') format('truetype');
 }
 
 :root {
@@ -64,9 +64,20 @@
     --flld-border-radius-lg: 8px;
 
     /* Typography Primitives */
-
     --flld-font-family-base: 'Inter', sans-serif;
     --flld-font-family-mono: 'Digital-7 Mono', monospace;
+
+    --flld-font-size-sm: 14px;
+    --flld-font-size-md: 16px;
+    --flld-font-size-lg: 24px;
+    --flld-font-size-xl: 32px;
+    --flld-font-size-2xl: 48px;
+
+    --flld-font-weight-regular: 400;
+    --flld-font-weight-semibold: 600;
+    --flld-font-weight-bold: 700;
+
+    --flld-line-height-base: 1.5;
 
     /* --- LEVEL 1 SEMANTICS --- */
     /* Semantic Colors - Brand & Theme */
@@ -98,6 +109,7 @@
     /* Static Surface Colors */
     --flld-color-static-surface-primary: var(--flld-color-white);
     --flld-color-static-surface-secondary: var(--flld-color-gray-75);
+    --flld-color-static-surface-theme: var(--flld-color-theme-primary);
 
     /* Interactive Surface Colors */
     --flld-color-interactive-surface-theme-default: var(--flld-color-theme-primary);

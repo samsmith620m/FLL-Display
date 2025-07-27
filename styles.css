@@ -202,6 +202,28 @@ button {
     font-weight: var(--flld-font-weight-regular);
 }
 
+.footer-avatar {
+    display: flex;
+    align-items: center;
+    gap: var(--flld-spacing-md);
+    margin-bottom: var(--flld-spacing-md);
+}
+
+.avatar-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--flld-color-white);
+}
+
+.avatar-name {
+    font-family: var(--flld-font-family-script);
+    font-size: var(--flld-font-size-xl);
+    color: var(--flld-color-white);
+    margin-bottom: -4px;
+}
+
 .display-type-section {
     background-color: var(--flld-color-gray-95);
     padding: var(--flld-spacing-md) var(--flld-spacing-lg);

@@ -1,0 +1,111 @@
+/* FLL Display - Button Components */
+/* All button styles, variants, and button-related components */
+
+@import url('css/design-system.css');
+
+/* --- BASE BUTTON STYLES --- */
+
+button {
+    height: auto;
+    min-height: 44px;
+    font-size: var(--flld-font-size-md);
+    font-family: var(--flld-font-family-base);
+    padding-inline: var(--flld-spacing-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--flld-spacing-sm);
+    border-radius: var(--flld-spacing-sm);
+    font-weight: var(--flld-font-weight-semibold);
+
+    &:disabled {
+        pointer-events: none;
+        opacity: 40%;
+        background-color: var(--flld-color-gray-75) !important;
+        color: var(--flld-color-gray-50) !important;
+        border-color: var(--flld-color-gray-75) !important;
+    }
+
+    &.primary {
+        background-color: var(--flld-color-gray-10);
+        color: var(--flld-color-white);
+        border: none;
+
+        &:hover:not(:disabled) {
+            background-color: var(--flld-color-gray-25);
+        }
+    }
+
+    &.secondary {
+        background-color: var(--flld-color-white);
+        color: var(--flld-color-gray-10);
+        border: 2px solid var(--flld-color-gray-10);
+
+        &:hover:not(:disabled) {
+            border-color: var(--flld-color-gray-10);
+            background-color: var(--flld-color-gray-95);
+        }
+    }
+
+    &.danger {
+        border: 2px solid var(--flld-color-red-60);
+        color: var(--flld-color-red-60);
+        background-color: var(--flld-color-surface-1);
+
+        &:hover:not(:disabled) {
+            border-color: var(--flld-color-messaging-critical-shade);
+            color: var(--flld-color-messaging-critical-shade);
+            background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%)
+        }
+    }
+}
+
+/* --- BUTTON TEXT STRUCTURE --- */
+
+.button-main {
+    display: block;
+    line-height: 1.2;
+}
+
+.button-sub {
+    display: block;
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-regular);
+    opacity: 0.8;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+/* --- BUTTON GROUPS --- */
+
+.button-group {
+    display: flex;
+    gap: var(--flld-spacing-sm);
+    align-items: center;
+}
+
+/* --- SPECIALIZED BUTTON STYLES --- */
+
+.match-actions {
+    display: flex;
+    gap: var(--flld-spacing-xs);
+}
+
+.match-actions .button {
+    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+    font-size: var(--flld-font-size-sm);
+    min-width: auto;
+    min-height: 32px;
+}
+
+/* --- TOGGLE BUTTON COMPONENT --- */
+
+toggle-button {
+    display: inline-block;
+}
+
+/* Ensure toggle buttons work well in button groups */
+.button-group toggle-button {
+    flex: 0 0 auto;
+}

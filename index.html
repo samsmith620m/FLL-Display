@@ -33,14 +33,14 @@
                 <div class="display-type-form">
                     <label>Current Display Type</label>
                     <div class="display-type-toggle" id="displayTypeToggle">
-                        <button type="button" class="toggle-btn active" data-value="text">Text Display</button>
-                        <button type="button" class="toggle-btn" data-value="match-timer">Match Timer</button>
+                        <button type="button" class="toggle-btn start active" data-value="text">Text Display</button>
+                        <button type="button" class="toggle-btn end" data-value="match-timer">Match Timer</button>
                     </div>
                     
                     <div id="textDisplayConfig" class="text-display-config">
                         <label for="displayText">Display Text</label>
                         <input type="text" id="displayText" value="Display" placeholder="Enter text to show on display">
-                        <p class="field-description">Text that will be shown on the display screen when Text Display mode is selected.</p>
+                        <p class="field-helper-text">Text that will be shown on the display screen when Text Display mode is selected.</p>
                     </div>
                     
                     <div id="matchTimerConfig" class="match-timer-config" style="display: none;">
@@ -59,7 +59,7 @@
                                 <span class="button-sub" id="nextMatchSub">Match --</span>
                             </button>
                         </div>
-                        <p class="field-description">Controls for managing the current match and 2:30 timer display.</p>
+                        <p class="field-helper-text">Controls for managing the current match and 2:30 timer display.</p>
                     </div>
                 </div>
             </div>

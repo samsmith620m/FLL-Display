@@ -1,0 +1,46 @@
+/* FLL Display - Toggle Components */
+/* Toggle switches, button toggles, and similar controls */
+
+@import url('css/design-system.css');
+
+/* --- DISPLAY TYPE TOGGLE --- */
+
+.display-type-toggle {
+    display: flex;
+    background-color: var(--flld-color-gray-90);
+    border-radius: var(--flld-spacing-sm);
+    padding: var(--flld-spacing-xs);
+    width: fit-content;
+}
+
+.toggle-btn {
+    min-height: 44px;
+    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+    font-weight: var(--flld-font-weight-semibold);
+    background-color: var(--flld-color-white);
+    color: var(--flld-color-gray-10);
+    border: 2px solid var(--flld-color-gray-10);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background-color: var(--flld-color-gray-95);
+    }
+}
+
+.toggle-btn.active {
+    background-color: var(--flld-color-gray-10);
+    color: var(--flld-color-white);
+    border: none;
+
+    &:hover:not(:disabled) {
+        background-color: var(--flld-color-gray-25);
+    }
+}
+
+.toggle-btn.start {
+    border-radius: var(--flld-border-radius-lg) 0 0 var(--flld-border-radius-lg);
+}
+
+.toggle-btn.end {
+    border-radius: 0 var(--flld-border-radius-lg) var(--flld-border-radius-lg) 0;
+}

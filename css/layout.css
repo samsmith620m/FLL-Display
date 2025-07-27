@@ -1,0 +1,236 @@
+/* FLL Display - Layout Styles */
+/* Page structure, grids, sections, and layout components */
+
+@import url('css/design-system.css');
+
+body {
+    font-family: var(--flld-font-family-base);
+    background-color: var(--flld-color-white);
+    color: var(--flld-color-gray-10);
+}
+
+/* --- CONTROL PAGE LAYOUT --- */
+
+.control-page {
+    min-height: 100vh;
+    padding: var(--flld-spacing-lg);
+    display: grid;
+    grid-template-areas: 
+        "header"
+        "content"
+        "footer";
+    grid-template-rows: auto 1fr auto;
+    gap: var(--flld-spacing-lg);
+}
+
+.control-header {
+    grid-area: header;
+    display: grid;
+    grid-template-areas: "title buttons";
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding-bottom: var(--flld-spacing-lg);
+    border-bottom: 1px solid var(--flld-color-gray-75);
+}
+
+.control-header h1 {
+    grid-area: title;
+    color: var(--flld-color-gray-10);
+    font-size: var(--flld-font-size-xl);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.header-buttons {
+    grid-area: buttons;
+    display: flex;
+    gap: var(--flld-spacing-xl);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.control-content {
+    grid-area: content;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--flld-spacing-lg);
+}
+
+.control-footer {
+    grid-area: footer;
+    margin: 0 calc(-1 * var(--flld-spacing-lg)) calc(-1 * var(--flld-spacing-lg));
+    background-color: var(--flld-color-gray-25);
+    padding: var(--flld-spacing-lg);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0;
+    text-align: left;
+}
+
+.footer-greeting {
+    color: var(--flld-color-white);
+    line-height: var(--flld-line-height-base);
+    margin: 0 0 var(--flld-spacing-md) 0;
+    font-size: var(--flld-font-size-lg);
+    font-weight: var(--flld-font-weight-bold)
+}
+
+.footer-message {
+    color: var(--flld-color-white);
+    line-height: var(--flld-line-height-base);
+    margin: 0 0 var(--flld-spacing-md) 0;
+    font-size: var(--flld-font-size-md);
+    max-width: 72ch;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--flld-spacing-sm);
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--flld-color-white);
+    text-decoration: none;
+    font-weight: var(--flld-font-weight-bold);
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-links .separator {
+    color: var(--flld-color-white);
+    font-weight: var(--flld-font-weight-regular);
+}
+
+.footer-avatar {
+    display: flex;
+    align-items: center;
+    gap: var(--flld-spacing-md);
+    margin-bottom: var(--flld-spacing-md);
+}
+
+.avatar-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--flld-color-white);
+}
+
+.avatar-name {
+    font-family: var(--flld-font-family-script);
+    font-size: var(--flld-font-size-xl);
+    color: var(--flld-color-white);
+    margin-bottom: -4px;
+}
+
+/* --- SECTION LAYOUTS --- */
+
+.display-type-section {
+    background-color: var(--flld-color-gray-95);
+    padding: var(--flld-spacing-md) var(--flld-spacing-lg);
+    border-radius: var(--flld-spacing-sm);
+    border-left: var(--flld-spacing-xs) solid var(--flld-color-blue-60);
+}
+
+.display-type-section h2 {
+    color: var(--flld-color-gray-10);
+    margin-bottom: var(--flld-spacing-md);
+    font-size: var(--flld-font-size-lg);
+}
+
+.display-type-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flld-spacing-sm);
+}
+
+.text-display-config {
+    margin-top: var(--flld-spacing-md);
+    padding-top: var(--flld-spacing-md);
+    border-top: 1px solid var(--flld-color-gray-85);
+}
+
+.match-timer-config {
+    margin-top: var(--flld-spacing-md);
+    padding-top: var(--flld-spacing-md);
+    border-top: 1px solid var(--flld-color-gray-85);
+}
+
+.match-timer-config .match-control-buttons {
+    display: flex;
+    gap: var(--flld-spacing-sm);
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--flld-spacing-sm);
+}
+
+.match-timer-config .match-control-buttons button {
+    flex-direction: column;
+    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+    min-height: 60px;
+}
+
+.config-section {
+    background-color: var(--flld-color-gray-95);
+    padding: var(--flld-spacing-lg);
+    border-radius: var(--flld-spacing-sm);
+}
+
+.info-section {
+    background-color: var(--flld-color-gray-95);
+    padding: var(--flld-spacing-md) var(--flld-spacing-lg);
+    border-radius: var(--flld-spacing-sm);
+    border-left: var(--flld-spacing-xs) solid var(--flld-color-gray-50);
+}
+
+.info-section h2 {
+    color: var(--flld-color-gray-10);
+    margin-bottom: var(--flld-spacing-md);
+    font-size: var(--flld-font-size-lg);
+}
+
+.info-section p {
+    color: var(--flld-color-gray-25);
+    line-height: var(--flld-line-height-base);
+    margin: 0;
+}
+
+/* --- SCHEDULE LAYOUT --- */
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--flld-spacing-md);
+    flex-wrap: wrap;
+    gap: var(--flld-spacing-sm);
+}
+
+.schedule-header h2 {
+    color: var(--flld-color-gray-10);
+    margin: 0;
+}
+
+.schedule-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--flld-spacing-md);
+}
+
+.schedule-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--flld-spacing-md);
+}
+
+.schedule-container {
+    position: relative;
+}

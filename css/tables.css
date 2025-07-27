@@ -1,0 +1,86 @@
+/* FLL Display - Table Components */
+/* Match schedule tables and related components */
+
+@import url('css/design-system.css');
+
+/* --- BASE TABLE STYLES --- */
+
+.match-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: var(--flld-color-surface-1);
+    border: 1px solid var(--flld-color-border-base);
+    border-radius: var(--flld-border-radius-lg);
+    overflow: hidden;
+}
+
+.match-table th,
+.match-table td {
+    padding: var(--flld-spacing-sm);
+    text-align: left;
+    border-right: 1px solid var(--flld-color-border-base);
+    border-bottom: 1px solid var(--flld-color-border-base);
+}
+
+.match-table th:last-child,
+.match-table td:last-child {
+    border-right: none;
+}
+
+.match-table tr:last-child td {
+    border-bottom: none;
+}
+
+.match-table th {
+    background-color: var(--flld-color-surface-2);
+    color: var(--flld-color-text-primary);
+    font-weight: var(--flld-font-weight-semibold);
+    font-size: var(--flld-font-size-sm);
+}
+
+.match-table td {
+    color: var(--flld-color-text-primary);
+    text-align: right;
+}
+
+.match-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.match-table tbody tr:nth-child(even) {
+    background-color: var(--flld-color-surface-2);
+}
+
+/* --- TABLE ROW STATES --- */
+
+.current-match-row {
+    background-color: color-mix(in oklab, var(--flld-color-messaging-success), white 90%) !important;
+    color: var(--flld-color-text-inverse) !important;
+    font-weight: var(--flld-font-weight-semibold);
+}
+
+.current-match-row td:first-child {
+    border-left: 4px solid var(--flld-color-messaging-success);
+}
+
+/* --- TABLE CONTENT --- */
+
+.match-number {
+    font-family: var(--flld-font-family-base);
+    font-size: var(--flld-font-size-lg);
+    font-weight: var(--flld-font-weight-semibold);
+    color: var(--flld-color-gray-10);
+}
+
+/* --- EMPTY STATE --- */
+
+.no-matches {
+    text-align: center;
+    padding: var(--flld-spacing-xl);
+    color: var(--flld-color-neutral-secondary);
+    font-style: italic;
+    background-color: var(--flld-color-surface-2);
+    border-radius: var(--flld-border-radius-lg);
+    border: 1px solid var(--flld-color-border-base);
+}

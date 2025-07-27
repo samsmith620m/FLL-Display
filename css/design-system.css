@@ -3,29 +3,29 @@
 
 @font-face {
     font-family: 'Digital-7 Mono';
-    src: url('fonts/digital-7-mono.ttf') format('truetype');
+    src: url('../fonts/digital-7-mono.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Inter';
-    src: url('fonts/InterVariable.ttf') format('truetype');
+    src: url('../fonts/InterVariable.ttf') format('truetype');
 }
 
 @font-face {
     font-family: "Kalam";
-    src: url("fonts/Kalam-Regular.ttf") format("truetype");
+    src: url("../fonts/Kalam-Regular.ttf") format("truetype");
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Kalam";
-    src: url("fonts/Kalam-Light.ttf") format("truetype");
+    src: url("../fonts/Kalam-Light.ttf") format("truetype");
     font-weight: lighter;
 }
 
 @font-face {
     font-family: "Kalam";
-    src: url("fonts/Kalam-Bold.ttf") format("truetype");
+    src: url("../fonts/Kalam-Bold.ttf") format("truetype");
     font-weight: bold;
 }
 

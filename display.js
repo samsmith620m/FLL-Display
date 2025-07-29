@@ -65,7 +65,7 @@ function updateDisplay() {
         console.log('Text display updated:', currentState.display);
     } else if (currentState.displayType === 'match-timer') {
         textDisplay.style.display = 'none';
-        timerDisplay.style.display = 'flex';
+        timerDisplay.style.display = 'grid';
         
         updateTimerDisplay();
         
@@ -87,10 +87,10 @@ function updateTimerDisplay() {
     // Update status and styling based on timer state
     switch (currentState.timerState) {
         case 'stopped':
-            timerStatus.textContent = 'Ready';
+            timerStatus.textContent = 'Ready! 👍';
             break;
         case 'running':
-            timerStatus.textContent = 'Running';
+            timerStatus.textContent = 'Running 🏃';
             timerTime.classList.add('running');
             
             // Add warning/critical styling based on remaining time
@@ -101,11 +101,11 @@ function updateTimerDisplay() {
             }
             break;
         case 'finished':
-            timerStatus.textContent = 'Time!';
+            timerStatus.textContent = 'Match Over! 🛑';
             timerTime.classList.add('critical');
             break;
         default:
-            timerStatus.textContent = 'Ready';
+            timerStatus.textContent = 'Ready! 👍';
     }
 }
 

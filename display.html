@@ -8,42 +8,37 @@
 </head>
 <body>
     <div class="display-page">
-        <div class="display-content">
-            <!-- Text Display -->
-            <div id="textDisplay" class="display-mode">
-                <h1 class="display-title">Display</h1>
+        <!-- Text Display -->
+        <div id="textDisplay">
+            <h1 class="display-title">Display</h1>
+        </div>
+        
+        <!-- Match Timer Display -->
+        <div id="timerDisplay" style="display: none;">
+            <div class="team-card">
+                <div class="team-number display-small">1234</div>
+                <div class="table-name heading-large">Table 1A</div>
             </div>
-            
-            <!-- Match Timer Display -->
-            <div id="timerDisplay" class="display-mode" style="display: none;">
-                <div class="match-header">
-                    <div class="match-number-display">
-                        <div class="match-label">Match</div>
-                        <div class="match-number">1</div>
-                    </div>
-                </div>
-                <div class="teams-container">
-                    <div class="team-card">
-                        <div class="team-label">Team</div>
-                        <div class="team-number">1234</div>
-                    </div>
-                    <div class="team-card">
-                        <div class="team-label">Team</div>
-                        <div class="team-number">5678</div>
-                    </div>
-                    <div class="team-card">
-                        <div class="team-label">Team</div>
-                        <div class="team-number">9012</div>
-                    </div>
-                    <div class="team-card">
-                        <div class="team-label">Team</div>
-                        <div class="team-number">3456</div>
-                    </div>
-                </div>
-                <div class="timer-container">
-                    <div class="timer-time">2:30</div>
-                    <div class="timer-status">Ready</div>
-                </div>
+            <div class="team-card">
+                <div class="team-number display-small">5678</div>
+                <div class="table-name heading-large">Table 1B</div>
+            </div>
+            <div class="team-card">
+                <div class="team-number display-small">9012</div>
+                <div class="table-name heading-large">Table 2A</div>
+            </div>
+            <div class="team-card">
+                <div class="team-number display-small">3456</div>
+                <div class="table-name heading-large">Table 2B</div>
+            </div>
+            <div class="timer-container">
+                <div class="timer-time">2:30</div>
+                <div class="timer-status">Ready! 👍</div>
+            </div>
+            <div id="brandBar">
+                <img src="media/fllc_wordmark.png"/>
+                <div class="divider"></div>
+                <img src="media/submerged_wordmark.png"/>
             </div>
         </div>
     </div>

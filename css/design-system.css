@@ -80,9 +80,12 @@
     --flld-border-radius-sm: 2px;
     --flld-border-radius-md: 4px;
     --flld-border-radius-lg: 8px;
+    --flld-border-radius-xl: 16px;
+    --flld-border-radius-2xl: 32px;
 
     /* Typography Primitives */
-    --flld-font-family-base: 'Inter', sans-serif;
+    --flld-font-family-base: var(--flld-font-family-sans-serif);
+    --flld-font-family-sans-serif: 'Inter', sans-serif;
     --flld-font-family-mono: 'Digital-7 Mono', monospace;
     --flld-font-family-script: 'Kalam', cursive;
 
@@ -91,6 +94,7 @@
     --flld-font-size-lg: 24px;
     --flld-font-size-xl: 32px;
     --flld-font-size-2xl: 48px;
+    --flld-font-size-3xl: 64px;
 
     --flld-font-weight-regular: 400;
     --flld-font-weight-semibold: 600;
@@ -157,4 +161,44 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* --- BASE TYPOGRAPHY STYLES --- */
+
+.display-large {
+    font-size: var(--flld-font-size-3xl);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.display-small {
+    font-size: var(--flld-font-size-2xl);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.heading-large {
+    font-size: var(--flld-font-size-xl);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.heading-medium {
+    font-size: var(--flld-font-size-lg);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.heading-small {
+    font-size: var(--flld-font-size-md);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.subtitle {
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-bold);
+}
+
+.body-1 {
+    font-size: var(--flld-font-size-md);
+}
+
+.body-2 {
+    font-size: var(--flld-font-size-sm);
 }

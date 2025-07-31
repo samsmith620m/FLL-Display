@@ -28,6 +28,11 @@
     border-right: none;
 }
 
+.match-table th:first-child,
+.match-table td:first-child {
+    width: 80px;
+}
+
 .match-table tr:last-child td {
     border-bottom: none;
 }

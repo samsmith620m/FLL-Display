@@ -29,6 +29,27 @@
         justify-content: center;
     }
     
+    .preview-program-container {
+        grid-template-columns: 1fr;
+        gap: var(--flld-spacing-md);
+        margin-bottom: var(--flld-spacing-md);
+    }
+    
+    .transition-controls {
+        margin-top: var(--flld-spacing-md);
+    }
+    
+    .preview-teams,
+    .program-teams {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--flld-spacing-xs);
+    }
+    
+    .preview-timer-time,
+    .program-timer-time {
+        font-size: var(--flld-font-size-lg);
+    }
+    
     .config-form input {
         max-width: none;
     }
@@ -141,8 +162,52 @@
     
     .info-section,
     .config-section,
-    .display-type-section {
+    .display-type-section,
+    .preview-program-section {
         padding: var(--flld-spacing-md);
+    }
+    
+    .preview-program-section {
+        padding: var(--flld-spacing-md);
+    }
+    
+    .preview-display,
+    .program-display {
+        padding: var(--flld-spacing-md);
+        min-height: 150px;
+    }
+    
+    .transition-controls {
+        margin-top: var(--flld-spacing-sm);
+    }
+    
+    .preview-text,
+    .program-text {
+        font-size: var(--flld-font-size-lg);
+    }
+    
+    .preview-teams,
+    .program-teams {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--flld-spacing-xs);
+        margin-bottom: var(--flld-spacing-sm);
+    }
+    
+    .preview-team,
+    .program-team {
+        font-size: 12px;
+        padding: var(--flld-spacing-xs);
+    }
+    
+    .preview-timer-time,
+    .program-timer-time {
+        font-size: var(--flld-font-size-md);
+    }
+    
+    .transition-button {
+        min-height: 50px;
+        padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+        font-size: var(--flld-font-size-sm);
     }
     
     .schedule-controls {

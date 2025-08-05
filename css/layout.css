@@ -133,6 +133,162 @@ body {
 
 /* --- SECTION LAYOUTS --- */
 
+.preview-program-section {
+    background-color: var(--flld-color-gray-95);
+    padding: var(--flld-spacing-lg);
+    border-radius: var(--flld-spacing-sm);
+    border-left: var(--flld-spacing-xs) solid var(--flld-color-gray-50);
+}
+
+.preview-program-section h2 {
+    color: var(--flld-color-gray-10);
+    margin-bottom: var(--flld-spacing-lg);
+    font-size: var(--flld-font-size-lg);
+}
+
+.preview-program-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--flld-spacing-lg);
+    align-items: stretch;
+    margin-bottom: var(--flld-spacing-lg);
+}
+
+.preview-section,
+.program-section {
+    background-color: var(--flld-color-white);
+    border-radius: var(--flld-border-radius-lg);
+    border: 2px solid var(--flld-color-border-base);
+    overflow: hidden;
+}
+
+.preview-header,
+.program-header {
+    padding: var(--flld-spacing-md);
+    background-color: var(--flld-color-surface-2);
+    border-bottom: 1px solid var(--flld-color-border-base);
+}
+
+.preview-header h3,
+.program-header h3 {
+    margin: 0 0 var(--flld-spacing-xs) 0;
+    font-size: var(--flld-font-size-md);
+    font-weight: var(--flld-font-weight-bold);
+    color: var(--flld-color-text-primary);
+}
+
+.preview-subtitle,
+.program-subtitle {
+    font-size: var(--flld-font-size-sm);
+    color: var(--flld-color-neutral-secondary);
+    font-style: italic;
+}
+
+.program-header {
+    background-color: color-mix(in oklab, var(--flld-color-messaging-success), white 90%);
+}
+
+.program-header h3 {
+    color: var(--flld-color-messaging-success-shade);
+}
+
+.preview-display,
+.program-display {
+    padding: var(--flld-spacing-lg);
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-text,
+.program-text {
+    font-size: var(--flld-font-size-xl);
+    font-weight: var(--flld-font-weight-bold);
+    color: var(--flld-color-text-primary);
+    text-align: center;
+}
+
+.preview-timer-container,
+.program-timer-container {
+    text-align: center;
+    width: 100%;
+}
+
+.preview-teams,
+.program-teams {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--flld-spacing-sm);
+    margin-bottom: var(--flld-spacing-md);
+}
+
+.preview-team,
+.program-team {
+    background-color: var(--flld-color-surface-2);
+    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+    border-radius: var(--flld-border-radius-sm);
+    font-size: var(--flld-font-size-sm);
+    color: var(--flld-color-text-primary);
+    text-align: center;
+}
+
+.preview-timer,
+.program-timer {
+    background-color: var(--flld-color-gray-10);
+    color: var(--flld-color-white);
+    padding: var(--flld-spacing-md);
+    border-radius: var(--flld-border-radius-lg);
+}
+
+.preview-timer-time,
+.program-timer-time {
+    font-family: var(--flld-font-family-mono);
+    font-size: var(--flld-font-size-xl);
+    font-weight: var(--flld-font-weight-bold);
+    margin-bottom: var(--flld-spacing-xs);
+}
+
+.preview-timer-status,
+.program-timer-status {
+    font-size: var(--flld-font-size-sm);
+    margin-bottom: var(--flld-spacing-xs);
+}
+
+.preview-match-number,
+.program-match-number {
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-semibold);
+}
+
+.transition-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transition-button {
+    min-height: 60px;
+    background: linear-gradient(135deg, var(--flld-color-theme-primary), var(--flld-color-theme-accent));
+    color: var(--flld-color-white);
+    border: none;
+    font-size: var(--flld-font-size-md);
+    font-weight: var(--flld-font-weight-bold);
+    padding: var(--flld-spacing-md) var(--flld-spacing-lg);
+    border-radius: var(--flld-border-radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.transition-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.transition-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
 .display-type-section {
     background-color: var(--flld-color-gray-95);
     padding: var(--flld-spacing-md) var(--flld-spacing-lg);

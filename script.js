@@ -21,45 +21,12 @@ const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.querySelector('.match-count');
 
-// Preview/Program elements
-const transitionBtn = document.getElementById('transitionBtn');
-const previewDisplay = document.getElementById('previewDisplay');
-const previewTextDisplay = document.getElementById('previewTextDisplay');
-const previewTimerDisplay = document.getElementById('previewTimerDisplay');
-const previewText = document.getElementById('previewText');
-const previewTimerTime = document.getElementById('previewTimerTime');
-const previewTimerStatus = document.getElementById('previewTimerStatus');
-const previewMatchNumber = document.getElementById('previewMatchNumber');
-const programDisplay = document.getElementById('programDisplay');
-const programTextDisplay = document.getElementById('programTextDisplay');
-const programTimerDisplay = document.getElementById('programTimerDisplay');
-const programText = document.getElementById('programText');
-const programTimerTime = document.getElementById('programTimerTime');
-const programTimerStatus = document.getElementById('programTimerStatus');
-const programMatchNumber = document.getElementById('programMatchNumber');
-const previewTeams = document.querySelectorAll('.preview-team');
-const programTeams = document.querySelectorAll('.program-team');
-
 // State management
 const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
 
 const defaultState = {
     displayType: 'text',
     display: 'Display',
-    // Preview state (what user is editing)
-    previewDisplayType: 'text',
-    previewDisplay: 'Display',
-    previewCurrentMatchNumber: 1,
-    previewTimerState: 'stopped',
-    previewTimerCurrentTime: TIMER_DURATION,
-    // Program state (what's currently live on display)
-    programDisplayType: 'text',
-    programDisplay: 'Display',
-    programCurrentMatchNumber: 1,
-    programTimerState: 'stopped',
-    programTimerCurrentTime: TIMER_DURATION,
-    programTimerStartTime: null,
-    programTimerEndTime: null,
     // Event configuration
     eventName: '',
     // Match schedule
@@ -84,27 +51,6 @@ function loadState() {
         try {
             const parsedState = JSON.parse(savedState);
             timerState = { ...defaultState, ...parsedState };
-            
-            // Initialize preview state from legacy state if needed
-            if (!timerState.previewDisplayType) {
-                timerState.previewDisplayType = timerState.displayType || 'text';
-                timerState.previewDisplay = timerState.display || 'Display';
-                timerState.previewCurrentMatchNumber = timerState.currentMatchNumber || 1;
-                timerState.previewTimerState = 'stopped';
-                timerState.previewTimerCurrentTime = TIMER_DURATION;
-            }
-            
-            // Initialize program state from legacy state if needed
-            if (!timerState.programDisplayType) {
-                timerState.programDisplayType = timerState.displayType || 'text';
-                timerState.programDisplay = timerState.display || 'Display';
-                timerState.programCurrentMatchNumber = timerState.currentMatchNumber || 1;
-                timerState.programTimerState = timerState.timerState || 'stopped';
-                timerState.programTimerCurrentTime = timerState.timerCurrentTime || TIMER_DURATION;
-                timerState.programTimerStartTime = timerState.timerStartTime || null;
-                timerState.programTimerEndTime = timerState.timerEndTime || null;
-            }
-            
             console.log('Loaded existing configuration');
         } catch (error) {
             console.warn('Error loading saved state, using defaults:', error);
@@ -146,9 +92,9 @@ function resetConfiguration() {
         updateState(timerState);
         
         // Update UI to reflect reset
-        displayTextInput.value = timerState.previewDisplay;
+        displayTextInput.value = timerState.display;
         // Set display type toggle
-        setDisplayTypeToggle(timerState.previewDisplayType);
+        setDisplayTypeToggle(timerState.displayType);
         
         // Update UI based on display type
         updateDisplayTypeUI();
@@ -156,40 +102,9 @@ function resetConfiguration() {
         // Reset match schedule display
         renderMatchSchedule();
         
-        // Update preview/program displays
-        updatePreviewDisplay();
-        updateProgramDisplay();
-        
         console.log('Configuration reset to defaults');
         alert('Configuration has been reset.');
     }
-}
-
-// Transition preview to program (make preview go live)
-function transitionToProgram() {
-    // Copy preview state to program state
-    const updates = {
-        programDisplayType: timerState.previewDisplayType,
-        programDisplay: timerState.previewDisplay,
-        programCurrentMatchNumber: timerState.previewCurrentMatchNumber,
-        programTimerState: timerState.previewTimerState,
-        programTimerCurrentTime: timerState.previewTimerCurrentTime,
-        programTimerStartTime: null,
-        programTimerEndTime: null,
-        // Update the legacy state for display.html compatibility
-        displayType: timerState.previewDisplayType,
-        display: timerState.previewDisplay,
-        currentMatchNumber: timerState.previewCurrentMatchNumber,
-        timerState: timerState.previewTimerState,
-        timerCurrentTime: timerState.previewTimerCurrentTime,
-        timerStartTime: null,
-        timerEndTime: null
-    };
-    
-    updateState(updates);
-    updateProgramDisplay();
-    
-    console.log('Transitioned preview to program');
 }
 
 // Update state and notify display
@@ -206,9 +121,9 @@ function updateState(newState) {
 
 // Initialize UI with loaded state
 function initializeUI() {
-    displayTextInput.value = timerState.previewDisplay;
+    displayTextInput.value = timerState.display;
     // Set display type toggle
-    setDisplayTypeToggle(timerState.previewDisplayType);
+    setDisplayTypeToggle(timerState.displayType);
     
     // Update UI based on display type
     updateDisplayTypeUI();
@@ -219,94 +134,7 @@ function initializeUI() {
     // Initialize display button state
     updateOpenDisplayButton();
     
-    // Initialize preview/program displays
-    updatePreviewDisplay();
-    updateProgramDisplay();
-    
     console.log('UI initialized with saved configuration');
-}
-
-// Update preview display
-function updatePreviewDisplay() {
-    if (timerState.previewDisplayType === 'text') {
-        previewTextDisplay.style.display = 'block';
-        previewTimerDisplay.style.display = 'none';
-        previewText.textContent = timerState.previewDisplay || 'Display';
-    } else if (timerState.previewDisplayType === 'match-timer') {
-        previewTextDisplay.style.display = 'none';
-        previewTimerDisplay.style.display = 'block';
-        
-        // Update timer display
-        previewTimerTime.textContent = formatTime(timerState.previewTimerCurrentTime || TIMER_DURATION);
-        previewMatchNumber.textContent = timerState.previewCurrentMatchNumber || 1;
-        
-        // Update teams
-        const currentMatch = timerState.matches.find(match => match.matchNumber === timerState.previewCurrentMatchNumber);
-        previewTeams.forEach((teamElement, index) => {
-            const teamNumber = currentMatch && currentMatch.teams ? currentMatch.teams[index] : '';
-            teamElement.textContent = teamNumber || `Team ${index + 1}`;
-        });
-        
-        // Update status
-        switch (timerState.previewTimerState) {
-            case 'stopped':
-                previewTimerStatus.textContent = 'Ready! 👍';
-                break;
-            case 'running':
-                previewTimerStatus.textContent = 'Running 🏃';
-                break;
-            case 'finished':
-                previewTimerStatus.textContent = 'Match Over! 🛑';
-                break;
-            default:
-                previewTimerStatus.textContent = 'Ready! 👍';
-        }
-    }
-}
-
-// Update program display
-function updateProgramDisplay() {
-    if (timerState.programDisplayType === 'text') {
-        programTextDisplay.style.display = 'block';
-        programTimerDisplay.style.display = 'none';
-        programText.textContent = timerState.programDisplay || 'Display';
-    } else if (timerState.programDisplayType === 'match-timer') {
-        programTextDisplay.style.display = 'none';
-        programTimerDisplay.style.display = 'block';
-        
-        // Update timer display
-        programTimerTime.textContent = formatTime(timerState.programTimerCurrentTime || TIMER_DURATION);
-        programMatchNumber.textContent = timerState.programCurrentMatchNumber || 1;
-        
-        // Update teams
-        const currentMatch = timerState.matches.find(match => match.matchNumber === timerState.programCurrentMatchNumber);
-        programTeams.forEach((teamElement, index) => {
-            const teamNumber = currentMatch && currentMatch.teams ? currentMatch.teams[index] : '';
-            teamElement.textContent = teamNumber || `Team ${index + 1}`;
-        });
-        
-        // Update status
-        switch (timerState.programTimerState) {
-            case 'stopped':
-                programTimerStatus.textContent = 'Ready! 👍';
-                break;
-            case 'running':
-                programTimerStatus.textContent = 'Running 🏃';
-                break;
-            case 'finished':
-                programTimerStatus.textContent = 'Match Over! 🛑';
-                break;
-            default:
-                programTimerStatus.textContent = 'Ready! 👍';
-        }
-    }
-}
-
-// Format time in MM:SS format
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
 // Update UI based on selected display type
@@ -320,10 +148,6 @@ function updateDisplayTypeUI() {
         textDisplayConfig.style.display = 'none';
         matchTimerConfig.style.display = 'block';
     }
-    
-    // Update preview display type
-    updateState({ previewDisplayType: displayType });
-    updatePreviewDisplay();
     
     // Update match control buttons
     updateMatchControlButtons();
@@ -388,10 +212,10 @@ function updateOpenDisplayButton() {
 // Update match control buttons based on state
 function updateMatchControlButtons() {
     const hasMatches = timerState.matches.length > 0;
-    const isMatchTimer = timerState.previewDisplayType === 'match-timer';
-    const currentMatch = timerState.previewCurrentMatchNumber;
-    const isRunning = timerState.programTimerState === 'running'; // Program timer state for live control
-    const isFinished = timerState.programTimerState === 'finished';
+    const isMatchTimer = timerState.displayType === 'match-timer';
+    const currentMatch = timerState.currentMatchNumber;
+    const isRunning = timerState.timerState === 'running';
+    const isFinished = timerState.timerState === 'finished';
     
     // Update match numbers in subtext
     if (hasMatches) {
@@ -412,7 +236,7 @@ function updateMatchControlButtons() {
     prevMatchBtn.disabled = !hasMatches || currentMatch <= 1 || isRunning;
     nextMatchBtn.disabled = !hasMatches || currentMatch >= timerState.matches.length || isRunning;
     
-    // Start/Abort button logic - controls the program timer
+    // Start/Abort button logic
     if (!isMatchTimer || !hasMatches) {
         startMatchBtn.disabled = true;
         startMatchBtn.querySelector('.button-main').textContent = 'Start Match';
@@ -434,37 +258,34 @@ function updateMatchControlButtons() {
 
 // Navigate to previous match
 function previousMatch() {
-    if (timerState.previewCurrentMatchNumber > 1) {
-        updateState({ previewCurrentMatchNumber: timerState.previewCurrentMatchNumber - 1 });
+    if (timerState.currentMatchNumber > 1) {
+        updateState({ currentMatchNumber: timerState.currentMatchNumber - 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
-        updatePreviewDisplay();
-        console.log('Moved to previous match:', timerState.previewCurrentMatchNumber);
+        console.log('Moved to previous match:', timerState.currentMatchNumber);
     }
 }
 
 // Navigate to next match
 function nextMatch() {
-    if (timerState.previewCurrentMatchNumber < timerState.matches.length) {
-        updateState({ previewCurrentMatchNumber: timerState.previewCurrentMatchNumber + 1 });
+    if (timerState.currentMatchNumber < timerState.matches.length) {
+        updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
-        updatePreviewDisplay();
-        console.log('Moved to next match:', timerState.previewCurrentMatchNumber);
+        console.log('Moved to next match:', timerState.currentMatchNumber);
     }
 }
 
 // Update display text automatically when input changes
 function updateDisplayText() {
     const newText = displayTextInput.value.trim() || 'Display';
-    updateState({ previewDisplay: newText });
-    updatePreviewDisplay();
-    console.log('Preview display text updated to:', newText);
+    updateState({ display: newText });
+    console.log('Display text updated to:', newText);
 }
 
-// Timer Functions - Updated for program timer control
+// Timer Functions - Updated for new button behavior
 function startMatch() {
-    if (timerState.programTimerState === 'running') {
+    if (timerState.timerState === 'running') {
         // Abort match
         if (timerInterval) {
             clearInterval(timerInterval);
@@ -472,11 +293,6 @@ function startMatch() {
         }
         
         const updates = {
-            programTimerState: 'stopped',
-            programTimerCurrentTime: TIMER_DURATION,
-            programTimerStartTime: null,
-            programTimerEndTime: null,
-            // Update legacy state for display compatibility
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
             timerStartTime: null,
@@ -485,16 +301,10 @@ function startMatch() {
         
         updateState(updates);
         updateMatchControlButtons();
-        updateProgramDisplay();
         console.log('Match aborted');
-    } else if (timerState.programTimerState === 'finished') {
+    } else if (timerState.timerState === 'finished') {
         // Reset timer
         const updates = {
-            programTimerState: 'stopped',
-            programTimerCurrentTime: TIMER_DURATION,
-            programTimerStartTime: null,
-            programTimerEndTime: null,
-            // Update legacy state for display compatibility
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
             timerStartTime: null,
@@ -503,27 +313,19 @@ function startMatch() {
         
         updateState(updates);
         updateMatchControlButtons();
-        updateProgramDisplay();
         console.log('Timer reset');
     } else {
-        // Start match - transition preview to program first, then start timer
-        transitionToProgram();
-        
+        // Start match
         const now = Date.now();
         const updates = {
-            programTimerState: 'running',
-            programTimerStartTime: now,
-            programTimerEndTime: now + (timerState.programTimerCurrentTime * 1000),
-            // Update legacy state for display compatibility
             timerState: 'running',
             timerStartTime: now,
-            timerEndTime: now + (timerState.programTimerCurrentTime * 1000)
+            timerEndTime: now + (timerState.timerCurrentTime * 1000)
         };
         
         updateState(updates);
         startTimerCountdown();
         updateMatchControlButtons();
-        updateProgramDisplay();
         console.log('Match started');
     }
 }
@@ -535,26 +337,16 @@ function startTimerCountdown() {
     
     timerInterval = setInterval(() => {
         const now = Date.now();
-        const remaining = Math.max(0, Math.ceil((timerState.programTimerEndTime - now) / 1000));
+        const remaining = Math.max(0, Math.ceil((timerState.timerEndTime - now) / 1000));
         
-        if (remaining !== timerState.programTimerCurrentTime) {
-            updateState({ 
-                programTimerCurrentTime: remaining,
-                // Update legacy state for display compatibility
-                timerCurrentTime: remaining
-            });
-            updateProgramDisplay();
+        if (remaining !== timerState.timerCurrentTime) {
+            updateState({ timerCurrentTime: remaining });
         }
         
         if (remaining <= 0) {
             stopTimerCountdown();
-            updateState({ 
-                programTimerState: 'finished',
-                // Update legacy state for display compatibility
-                timerState: 'finished'
-            });
+            updateState({ timerState: 'finished' });
             updateMatchControlButtons();
-            updateProgramDisplay();
             console.log('Match finished');
         }
     }, 100); // Update every 100ms for smooth countdown
@@ -578,16 +370,13 @@ function addMatch() {
     const updatedMatches = [...timerState.matches, newMatch];
     const updates = { matches: updatedMatches };
     
-    // If this is the first match, set it as current for preview
+    // If this is the first match, set it as current
     if (timerState.matches.length === 0) {
-        updates.previewCurrentMatchNumber = 1;
-        updates.currentMatchNumber = 1; // Legacy compatibility
+        updates.currentMatchNumber = 1;
     }
     
     updateState(updates);
     renderMatchSchedule();
-    updatePreviewDisplay();
-    updateProgramDisplay();
     console.log('Match added:', newMatch);
 }
 
@@ -600,17 +389,7 @@ function deleteMatch(matchNumber) {
         }));
     
     // Handle current match selection when removing matches
-    let newPreviewMatch = timerState.previewCurrentMatchNumber;
-    let newCurrentMatch = timerState.currentMatchNumber || 1;
-    
-    if (matchNumber === timerState.previewCurrentMatchNumber) {
-        // If removing preview match, select the first available match or 1
-        newPreviewMatch = updatedMatches.length > 0 ? 1 : 1;
-    } else if (matchNumber < timerState.previewCurrentMatchNumber) {
-        // If removing a match before preview, adjust preview match number
-        newPreviewMatch = timerState.previewCurrentMatchNumber - 1;
-    }
-    
+    let newCurrentMatch = timerState.currentMatchNumber;
     if (matchNumber === timerState.currentMatchNumber) {
         // If removing current match, select the first available match or 1
         newCurrentMatch = updatedMatches.length > 0 ? 1 : 1;
@@ -621,12 +400,9 @@ function deleteMatch(matchNumber) {
     
     updateState({ 
         matches: updatedMatches,
-        previewCurrentMatchNumber: newPreviewMatch,
-        currentMatchNumber: newCurrentMatch // Legacy compatibility
+        currentMatchNumber: newCurrentMatch
     });
     renderMatchSchedule();
-    updatePreviewDisplay();
-    updateProgramDisplay();
     console.log('Match deleted:', matchNumber);
 }
 
@@ -641,8 +417,6 @@ function updateMatchTeam(matchNumber, teamIndex, teamValue) {
     });
     
     updateState({ matches: updatedMatches });
-    updatePreviewDisplay();
-    updateProgramDisplay();
     console.log('Team updated:', { matchNumber, teamIndex, teamValue });
 }
 
@@ -650,12 +424,9 @@ function deleteAllMatches() {
     if (confirm('Are you sure you want to delete all matches? This action cannot be undone.')) {
         updateState({ 
             matches: [],
-            previewCurrentMatchNumber: 1,
-            currentMatchNumber: 1 // Legacy compatibility
+            currentMatchNumber: 1
         });
         renderMatchSchedule();
-        updatePreviewDisplay();
-        updateProgramDisplay();
         console.log('All matches deleted');
     }
 }
@@ -693,8 +464,8 @@ function renderMatchSchedule() {
     timerState.matches.forEach(match => {
         const row = document.createElement('tr');
         
-        // Add highlighting for current match (preview match)
-        if (match.matchNumber === timerState.previewCurrentMatchNumber) {
+        // Add highlighting for current match
+        if (match.matchNumber === timerState.currentMatchNumber) {
             row.classList.add('current-match-row');
         }
         
@@ -738,13 +509,11 @@ function renderMatchSchedule() {
 // Event listeners
 openDisplayBtn.addEventListener('click', openDisplay);
 resetConfigBtn.addEventListener('click', resetConfiguration);
-transitionBtn.addEventListener('click', transitionToProgram);
 startMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
-transitionBtn.addEventListener('click', transitionToProgram);
 
 // Track changes on input fields and update automatically
 displayTextInput.addEventListener('input', updateDisplayText);
@@ -758,11 +527,11 @@ displayTypeToggle.addEventListener('click', (e) => {
         setDisplayTypeToggle(currentDisplayType);
         
         updateState({ 
-            previewDisplayType: currentDisplayType,
-            // Reset preview timer when switching to timer display
+            displayType: currentDisplayType,
+            // Reset timer when switching to timer display
             ...(currentDisplayType === 'match-timer' && {
-                previewTimerCurrentTime: TIMER_DURATION,
-                previewTimerState: 'stopped'
+                timerCurrentTime: TIMER_DURATION,
+                timerState: 'stopped'
             })
         });
         updateDisplayTypeUI();

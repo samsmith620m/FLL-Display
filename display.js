@@ -44,11 +44,11 @@ function loadState() {
     updateDisplay();
 }
 
-// Format time in MM:SS format
+// Format time in MM:SS format with styled colon
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `<span class="colon">${minutes}:</span>${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
 // Update display based on current state
@@ -76,7 +76,7 @@ function updateDisplay() {
 // Update timer display specifically
 function updateTimerDisplay() {
     const time = currentState.timerCurrentTime || TIMER_DURATION;
-    timerTime.textContent = formatTime(time);
+    timerTime.innerHTML = formatTime(time);
     
     // Remove all state classes
     timerTime.classList.remove('running', 'warning', 'critical');

@@ -10,7 +10,7 @@
     height: 100vh;
     background-image: 
         linear-gradient(rgb(255 255 255 / 0.75)), 
-        url("../media/reef-2.jpg");
+        url("../media/excavation.jpg");
     background-size: cover;
     background-position: center;
 }
@@ -44,26 +44,26 @@
     grid-area: auto;
 
     &:nth-child(1){
-        --team-color: var(--flld-color-itd-blue-40);
+        --team-color: var(--flld-color-unearthed-red-40);
         .team-number { background: var(--team-color); }
         .table-name { color: var(--team-color); }
     }
 
     &:nth-child(2){
-        --team-color: var(--flld-color-itd-orange-40);
+        --team-color: var(--flld-color-unearthed-green-40);
         .team-number { background: var(--team-color); }
         .table-name { color: var(--team-color); }
     }
-
+    
     &:nth-child(3){
         margin-left: var(--flld-spacing-lg);
-        --team-color: var(--flld-color-itd-yellow-40);
+        --team-color: var(--flld-color-unearthed-yellow-40);
         .team-number { background: var(--team-color); }
         .table-name { color: var(--team-color); }
     }
 
     &:nth-child(4){
-        --team-color: var(--flld-color-itd-teal-40);
+        --team-color: var(--flld-color-unearthed-teal-40);
         .team-number { background: var(--team-color); }
         .table-name { color: var(--team-color); }
     }
@@ -92,6 +92,8 @@
     justify-content: center;
     gap: var(--flld-spacing-lg);
     grid-area: timer;
+    width: max-content;
+    justify-self: center;
 
     background-color: var(--flld-color-gray-10);
     border-radius: var(--flld-border-radius-xl);
@@ -99,7 +101,8 @@
 
 .timer-time {
     font-family: var(--flld-font-family-mono);
-    font-size: 30vw;
+    font-size: 50vh;
+    line-height: 1;
     color: var(--flld-color-text-inverse);
     padding: 0 var(--flld-spacing-xl);
 }
@@ -110,6 +113,10 @@
     font-weight: var(--flld-font-weight-semibold);
 }
 
+.colon {
+    letter-spacing: -64px;
+}
+
 /* --- TIMER STATES --- */
 
 .timer-time.running {
@@ -117,7 +124,7 @@
 }
 
 .timer-time.warning {
-    color: var(--flld-color-itd-yellow-60);
+    color: var(--flld-color-yellow-60);
 }
 
 .timer-time.critical {
@@ -143,7 +150,7 @@
     display: flex;
     justify-content: center;
     gap: var(--flld-spacing-xl);
-    border-radius: var(--flld-border-radius-xl)
+    border-radius: var(--flld-border-radius-xl) var(--flld-border-radius-xl) 0 0;
 }
 
 .divider {

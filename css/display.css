@@ -8,14 +8,19 @@
 .display-page {
     width: 100vw;
     height: 100vh;
-    background-image: 
-        linear-gradient(rgb(255 255 255 / 0.75)), 
-        url("../media/excavation.jpg");
+    background-image: url("../media/first-age-assets/FIRST-AGE-IG-blankpost.png");
     background-size: cover;
     background-position: center;
 }
 
 /* --- TEXT DISPLAY --- */
+
+#textDisplay {
+    align-content: center;
+    justify-content: center;
+    height: 100vh;
+    flex-wrap: wrap;
+}
 
 .display-title {
     color: var(--flld-color-gray-10);
@@ -158,4 +163,8 @@
     width: 4px;
     background-color: var(--flld-color-gray-10);
     border-radius: 999px;
+}
+
+img {
+    max-height: 128px;
 }

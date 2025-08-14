@@ -7,8 +7,14 @@
 }
 
 @font-face {
-    font-family: 'Inter';
-    src: url('../fonts/InterVariable.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-VariableFont_wdth\,wght.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Italic-VariableFont_wdth\,wght.ttf') format('truetype');
+    font-style: italic;
 }
 
 @font-face {
@@ -52,6 +58,16 @@
     --flld-color-red-tint: #FF9F97;
     --flld-color-red-base: #FF534E;
     --flld-color-red-shade: #B02C2C;
+
+
+    --flld-color-fll-challenge-red: #ED1C24;
+    --flld-color-fll-discover-purple: #662D91;
+    --flld-color-fll-explore-green: #00A651;
+
+    /* FIRST AGE Colors */
+
+    --flld-color-first-age-gold: #F7CA5F;
+    --flld-color-first-age-copper: #C38C26;
 
     /* UNEARTHED Colors */
 
@@ -119,7 +135,7 @@
 
     /* Typography Primitives */
     --flld-font-family-base: var(--flld-font-family-sans-serif);
-    --flld-font-family-sans-serif: 'Inter', sans-serif;
+    --flld-font-family-sans-serif: 'Roboto', sans-serif;
     --flld-font-family-mono: 'Digital-7 Mono', monospace;
     --flld-font-family-script: 'Kalam', cursive;
 
@@ -198,6 +214,10 @@
 }
 
 /* --- BASE TYPOGRAPHY STYLES --- */
+
+p {
+    max-width: 72ch;
+}
 
 .display-large {
     font-size: var(--flld-font-size-3xl);

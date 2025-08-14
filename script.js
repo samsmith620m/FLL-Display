@@ -26,7 +26,7 @@ const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
 
 const defaultState = {
     displayType: 'text',
-    display: 'Display',
+    display: 'Your event name here!',
     // Event configuration
     eventName: '',
     // Match schedule
@@ -278,7 +278,7 @@ function nextMatch() {
 
 // Update display text automatically when input changes
 function updateDisplayText() {
-    const newText = displayTextInput.value.trim() || 'Display';
+    const newText = displayTextInput.value.trim() || 'Your event name here!';
     updateState({ display: newText });
     console.log('Display text updated to:', newText);
 }

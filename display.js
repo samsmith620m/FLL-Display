@@ -15,7 +15,7 @@ const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
 
 const defaultDisplayState = {
     displayType: 'text',
-    display: 'Display',
+    display: 'Your event name here!',
     timerState: 'stopped',
     timerCurrentTime: TIMER_DURATION,
     matches: [],

@@ -6,8 +6,9 @@ const displayTitle = document.querySelector('.display-title');
 const textDisplay = document.getElementById('textDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 const timerTime = document.querySelector('.timer-time');
-const timerStatus = document.querySelector('.timer-status');
-const matchNumberElement = document.querySelector('.match-number');
+// Removed: const timerStatus = document.querySelector('.timer-status');
+const matchNumberElement = document.getElementById('displayMatchNumber');
+const matchTotalElement = document.getElementById('displayMatchTotal');
 const teamNumbers = document.querySelectorAll('.team-number');
 
 // Default state
@@ -75,47 +76,29 @@ function updateDisplay() {
 
 // Update timer display specifically
 function updateTimerDisplay() {
-    const time = currentState.timerCurrentTime || TIMER_DURATION;
+    const time = currentState.timerCurrentTime ?? TIMER_DURATION;
     timerTime.innerHTML = formatTime(time);
     
-    // Remove all state classes
+    // Remove all state classes (if any remain on the timer time)
     timerTime.classList.remove('running', 'warning', 'critical');
     
     // Update match and team information
     updateMatchDisplay();
-    
-    // Update status and styling based on timer state
-    switch (currentState.timerState) {
-        case 'stopped':
-            timerStatus.textContent = 'Ready! 👍';
-            break;
-        case 'running':
-            timerStatus.textContent = 'Running 🏃';
-            timerTime.classList.add('running');
-            
-            // Add warning/critical styling based on remaining time
-            if (time <= 10) {
-                timerTime.classList.add('critical');
-            } else if (time <= 30) {
-                timerTime.classList.add('warning');
-            }
-            break;
-        case 'finished':
-            timerStatus.textContent = 'Match Over! 🛑';
-            timerTime.classList.add('critical');
-            break;
-        default:
-            timerStatus.textContent = 'Ready! 👍';
-    }
 }
 
 // Update match display with current match data
 function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
+    const totalMatches = matches.length || 0;
     
-    // Update match number
-    matchNumberElement.textContent = currentMatchNumber;
+    // Update match number and total (only if elements exist)
+    if (matchNumberElement) {
+        matchNumberElement.textContent = totalMatches > 0 ? currentMatchNumber : '--';
+    }
+    if (matchTotalElement) {
+        matchTotalElement.textContent = totalMatches > 0 ? totalMatches : '--';
+    }
     
     // Find the current match
     const currentMatch = matches.find(match => match.matchNumber === currentMatchNumber);

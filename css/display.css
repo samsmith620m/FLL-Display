@@ -3,6 +3,11 @@
 
 @import url('css/design-system.css');
 
+:root{
+    --white-bg-base: var(--flld-color-surface-2); /* fallback */
+    --white-bg-fancy: rgb(from var(--flld-color-surface-2) r g b / 80%); /* 80% alpha in modern browsers */
+}
+
 /* --- DISPLAY PAGE LAYOUT --- */
 
 .display-page {
@@ -44,7 +49,8 @@
 /* --- TEAMS DISPLAY --- */
 
 .team-card {
-    background-color: #FFFFFFBB;
+    background-color: var(--white-bg-base);
+    background-color: var(--white-bg-fancy);
     border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
     grid-area: auto;
 
@@ -81,8 +87,6 @@
 }
 
 .table-name {
-    border: 2px solid var(--flld-color-gray-70);
-
     padding: var(--flld-spacing-xs) 0;
     text-align: center;
 }
@@ -151,7 +155,8 @@
 #brandBar {
     grid-area: brand-bar;
     padding: var(--flld-spacing-lg) 0;
-    background-color: var(--flld-color-surface-2);
+    background-color: var(--white-bg-base);
+    background-color: var(--white-bg-fancy);
     display: flex;
     justify-content: center;
     gap: var(--flld-spacing-xl);

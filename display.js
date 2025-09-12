@@ -1,6 +1,19 @@
 // FLL Timer Display Page
 console.log('FLL Timer Display loaded');
 
+// Read duration override from URL (?duration=NN or ?quick)
+function getDurationOverride(base) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('quick')) return 15;
+    if (params.has('duration')) {
+        const v = parseInt(params.get('duration'), 10);
+        if (!isNaN(v) && v > 0 && v <= 3600) return v;
+    }
+    return base;
+}
+const BASE_TIMER_DURATION = 150; // 2:30 official
+const URL_TIMER_DURATION = getDurationOverride(BASE_TIMER_DURATION);
+
 // DOM elements
 const displayTitle = document.querySelector('.display-title');
 const textDisplay = document.getElementById('textDisplay');
@@ -12,15 +25,14 @@ const matchTotalElement = document.getElementById('displayMatchTotal');
 const teamNumbers = document.querySelectorAll('.team-number');
 
 // Default state
-const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
-
 const defaultDisplayState = {
     displayType: 'text',
     display: 'Your event name here!',
     timerState: 'stopped',
-    timerCurrentTime: TIMER_DURATION,
+    timerCurrentTime: URL_TIMER_DURATION,
     matches: [],
-    currentMatchNumber: 1
+    currentMatchNumber: 1,
+    timerDuration: URL_TIMER_DURATION
 };
 
 // Current state
@@ -33,7 +45,9 @@ function loadState() {
         if (savedState) {
             const parsedState = JSON.parse(savedState);
             currentState = { ...defaultDisplayState, ...parsedState };
-            console.log('Display state loaded from localStorage');
+            if (currentState.timerCurrentTime > TIMER_DURATION) {
+                currentState.timerCurrentTime = TIMER_DURATION;
+            }
         } else {
             console.log('No saved state found, using defaults');
         }
@@ -76,8 +90,13 @@ function updateDisplay() {
 
 // Update timer display specifically
 function updateTimerDisplay() {
-    const time = currentState.timerCurrentTime ?? TIMER_DURATION;
-    timerTime.innerHTML = formatTime(time);
+    const duration = currentState.timerDuration || URL_TIMER_DURATION;
+    const time = currentState.timerCurrentTime ?? duration;
+    // If current time is larger than current override (e.g., user added ?quick mid-session), clamp
+    if (time > duration) {
+        currentState.timerCurrentTime = duration;
+    }
+    timerTime.innerHTML = formatTime(currentState.timerCurrentTime);
     
     // Remove all state classes (if any remain on the timer time)
     timerTime.classList.remove('running', 'warning', 'critical');
@@ -123,6 +142,12 @@ window.addEventListener('storage', (event) => {
         if (event.newValue) {
             try {
                 currentState = JSON.parse(event.newValue);
+                if (!currentState.timerDuration) {
+                    currentState.timerDuration = URL_TIMER_DURATION;
+                }
+                if (currentState.timerCurrentTime > currentState.timerDuration) {
+                    currentState.timerCurrentTime = currentState.timerDuration;
+                }
                 updateDisplay();
                 console.log('State updated from control page');
             } catch (error) {

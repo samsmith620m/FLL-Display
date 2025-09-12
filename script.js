@@ -20,49 +20,63 @@ const startMatchSub = document.getElementById('startMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.querySelector('.match-count');
+const quickModeToggle = document.getElementById('quickModeToggle');
+const deleteMatchModal = document.getElementById('deleteMatchModal');
+const deleteMatchPreviewBody = document.getElementById('deleteMatchPreviewBody');
+const deleteMatchCloseBtn = document.getElementById('deleteMatchCloseBtn');
+const keepMatchBtn = document.getElementById('keepMatchBtn');
+const confirmDeleteMatchBtn = document.getElementById('confirmDeleteMatchBtn');
+const deleteAllMatchesModal = document.getElementById('deleteAllMatchesModal');
+const deleteAllMatchesPreviewBody = document.getElementById('deleteAllMatchesPreviewBody');
+const deleteAllCloseBtn = document.getElementById('deleteAllCloseBtn');
+const keepAllMatchesBtn = document.getElementById('keepAllMatchesBtn');
+const confirmDeleteAllMatchesBtn = document.getElementById('confirmDeleteAllMatchesBtn');
 
 // State management
-const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
+const BASE_TIMER_DURATION = 150; // 2:30 official
+function getDurationOverride(base) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('quick')) return 15;
+    if (params.has('duration')) {
+        const v = parseInt(params.get('duration'), 10);
+        if (!isNaN(v) && v > 0 && v <= 3600) return v;
+    }
+    return base;
+}
+const TIMER_DURATION = getDurationOverride(BASE_TIMER_DURATION);
 
 const defaultState = {
-    displayType: 'text',
+    displayType: 'match-timer',
     display: 'Your event name here!',
-    // Event configuration
-    eventName: '',
-    // Match schedule
-    matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
-    currentMatchNumber: 1, // Currently displayed/active match
-    // Timer settings
-    timerState: 'stopped', // stopped, running, paused
-    timerStartTime: null,
-    timerEndTime: null,
+    timerState: 'stopped',
     timerCurrentTime: TIMER_DURATION,
-    // More state properties will be added as we build features
+    timerDuration: TIMER_DURATION, // persisted dynamic duration
+    matches: [],
+    currentMatchNumber: 1,
+    selectedTeams: []
 };
 
 let timerState = { ...defaultState };
 let timerInterval = null; // For the countdown timer
 let displayWindow = null; // Track the display window
+let pendingDeleteMatchNumber = null;
+let lastFocusedElementBeforeModal = null;
 
 // Load existing state from localStorage or initialize with defaults
 function loadState() {
-    const savedState = localStorage.getItem('fll-timer-state');
-    if (savedState) {
-        try {
-            const parsedState = JSON.parse(savedState);
-            timerState = { ...defaultState, ...parsedState };
-            console.log('Loaded existing configuration');
-        } catch (error) {
-            console.warn('Error loading saved state, using defaults:', error);
-            timerState = { ...defaultState };
+    try {
+        const saved = localStorage.getItem('fll-timer-state');
+        if (saved) {
+            Object.assign(timerState, JSON.parse(saved));
+            if (timerState.timerCurrentTime > (timerState.timerDuration || TIMER_DURATION)) {
+                timerState.timerCurrentTime = timerState.timerDuration || TIMER_DURATION;
+            }
+            if (!timerState.timerDuration) {
+                timerState.timerDuration = TIMER_DURATION;
+            }
         }
-    } else {
-        console.log('No existing configuration found, using defaults');
-        timerState = { ...defaultState };
-    }
-    
-    // Save the state to ensure it's properly stored
-    saveState();
+    } catch (e) {}
+    updateMatchControlButtons();
 }
 
 // Save state to localStorage
@@ -254,6 +268,10 @@ function updateMatchControlButtons() {
         startMatchBtn.querySelector('.button-main').textContent = 'Start Match';
         startMatchBtn.className = 'primary';
     }
+    
+    if (quickModeToggle) {
+        quickModeToggle.checked = timerState.timerDuration <= 15;
+    }
 }
 
 // Navigate to previous match
@@ -285,45 +303,21 @@ function updateDisplayText() {
 
 // Timer Functions - Updated for new button behavior
 function startMatch() {
+    const activeDuration = timerState.timerDuration || TIMER_DURATION;
     if (timerState.timerState === 'running') {
         // Abort match
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        const updates = {
-            timerState: 'stopped',
-            timerCurrentTime: TIMER_DURATION,
-            timerStartTime: null,
-            timerEndTime: null
-        };
-        
-        updateState(updates);
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        updateState({ timerState: 'stopped', timerCurrentTime: activeDuration, timerStartTime: null, timerEndTime: null });
         updateMatchControlButtons();
         console.log('Match aborted');
     } else if (timerState.timerState === 'finished') {
-        // Reset timer
-        const updates = {
-            timerState: 'stopped',
-            timerCurrentTime: TIMER_DURATION,
-            timerStartTime: null,
-            timerEndTime: null
-        };
-        
-        updateState(updates);
+        updateState({ timerState: 'stopped', timerCurrentTime: activeDuration, timerStartTime: null, timerEndTime: null });
         updateMatchControlButtons();
         console.log('Timer reset');
     } else {
-        // Start match
         const now = Date.now();
-        const updates = {
-            timerState: 'running',
-            timerStartTime: now,
-            timerEndTime: now + (timerState.timerCurrentTime * 1000)
-        };
-        
-        updateState(updates);
+        const currentTime = timerState.timerCurrentTime > 0 && timerState.timerCurrentTime <= activeDuration ? timerState.timerCurrentTime : activeDuration;
+        updateState({ timerState: 'running', timerStartTime: now, timerEndTime: now + (currentTime * 1000), timerCurrentTime: currentTime });
         startTimerCountdown();
         updateMatchControlButtons();
         console.log('Match started');
@@ -331,25 +325,13 @@ function startMatch() {
 }
 
 function startTimerCountdown() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-    
+    if (timerInterval) { clearInterval(timerInterval); }
     timerInterval = setInterval(() => {
         const now = Date.now();
         const remaining = Math.max(0, Math.ceil((timerState.timerEndTime - now) / 1000));
-        
-        if (remaining !== timerState.timerCurrentTime) {
-            updateState({ timerCurrentTime: remaining });
-        }
-        
-        if (remaining <= 0) {
-            stopTimerCountdown();
-            updateState({ timerState: 'finished' });
-            updateMatchControlButtons();
-            console.log('Match finished');
-        }
-    }, 100); // Update every 100ms for smooth countdown
+        if (remaining !== timerState.timerCurrentTime) { updateState({ timerCurrentTime: remaining }); }
+        if (remaining <= 0) { stopTimerCountdown(); updateState({ timerState: 'finished' }); updateMatchControlButtons(); console.log('Match finished'); }
+    }, 100);
 }
 
 function stopTimerCountdown() {
@@ -380,28 +362,71 @@ function addMatch() {
     console.log('Match added:', newMatch);
 }
 
-function deleteMatch(matchNumber) {
+function deleteMatch(match) {
+    openDeleteMatchModal(match.matchNumber);
+}
+
+function openDeleteMatchModal(matchNumber) {
+    const match = timerState.matches.find(m => m.matchNumber === matchNumber);
+    if (!match) return;
+    pendingDeleteMatchNumber = match.matchNumber;
+    deleteMatchPreviewBody.innerHTML = '';
+    const row = document.createElement('tr');
+    const cellMatch = document.createElement('td');
+    cellMatch.textContent = match.matchNumber;
+    row.appendChild(cellMatch);
+    match.teams.forEach(t => {
+        const td = document.createElement('td');
+        td.textContent = (t && t.trim()) ? t : '—';
+        row.appendChild(td);
+    });
+    deleteMatchPreviewBody.appendChild(row);
+    lastFocusedElementBeforeModal = document.activeElement;
+    document.body.classList.add('modal-open');
+    deleteMatchModal.style.display = 'flex';
+    deleteMatchCloseBtn.focus();
+    document.addEventListener('keydown', handleModalKeydown);
+}
+
+function closeDeleteMatchModal() {
+    deleteMatchModal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    pendingDeleteMatchNumber = null;
+    document.removeEventListener('keydown', handleModalKeydown);
+    if (lastFocusedElementBeforeModal) { lastFocusedElementBeforeModal.focus(); }
+}
+
+function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+        closeDeleteMatchModal();
+    } else if (e.key === 'Tab') {
+        // Basic focus trap
+        const focusable = deleteMatchModal.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        const list = Array.from(focusable).filter(el => !el.disabled && el.offsetParent !== null);
+        if (list.length === 0) return;
+        const first = list[0];
+        const last = list[list.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+}
+
+function performDeleteMatch(matchNumber) {
     const updatedMatches = timerState.matches
         .filter(match => match.matchNumber !== matchNumber)
-        .map((match, index) => ({
-            ...match,
-            matchNumber: index + 1 // Renumber matches
-        }));
-    
-    // Handle current match selection when removing matches
+        .map((match, index) => ({ ...match, matchNumber: index + 1 }));
     let newCurrentMatch = timerState.currentMatchNumber;
     if (matchNumber === timerState.currentMatchNumber) {
-        // If removing current match, select the first available match or 1
         newCurrentMatch = updatedMatches.length > 0 ? 1 : 1;
     } else if (matchNumber < timerState.currentMatchNumber) {
-        // If removing a match before current, adjust current match number
         newCurrentMatch = timerState.currentMatchNumber - 1;
     }
-    
-    updateState({ 
-        matches: updatedMatches,
-        currentMatchNumber: newCurrentMatch
-    });
+    updateState({ matches: updatedMatches, currentMatchNumber: newCurrentMatch });
     renderMatchSchedule();
     console.log('Match deleted:', matchNumber);
 }
@@ -421,13 +446,49 @@ function updateMatchTeam(matchNumber, teamIndex, teamValue) {
 }
 
 function deleteAllMatches() {
-    if (confirm('Are you sure you want to delete all matches? This action cannot be undone.')) {
-        updateState({ 
-            matches: [],
-            currentMatchNumber: 1
+    openDeleteAllMatchesModal();
+}
+
+function openDeleteAllMatchesModal() {
+    if (!timerState.matches.length) return;
+    deleteAllMatchesPreviewBody.innerHTML = '';
+    timerState.matches.forEach(match => {
+        const row = document.createElement('tr');
+        const cellMatch = document.createElement('td');
+        cellMatch.textContent = match.matchNumber;
+        row.appendChild(cellMatch);
+        match.teams.forEach(t => {
+            const td = document.createElement('td');
+            td.textContent = (t && t.trim()) ? t : '—';
+            row.appendChild(td);
         });
-        renderMatchSchedule();
-        console.log('All matches deleted');
+        deleteAllMatchesPreviewBody.appendChild(row);
+    });
+    lastFocusedElementBeforeModal = document.activeElement;
+    document.body.classList.add('modal-open');
+    deleteAllMatchesModal.style.display = 'flex';
+    deleteAllCloseBtn.focus();
+    document.addEventListener('keydown', handleModalKeydownAll);
+}
+
+function closeDeleteAllMatchesModal() {
+    deleteAllMatchesModal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    document.removeEventListener('keydown', handleModalKeydownAll);
+    if (lastFocusedElementBeforeModal) lastFocusedElementBeforeModal.focus();
+}
+
+function handleModalKeydownAll(e) {
+    if (e.key === 'Escape') {
+        closeDeleteAllMatchesModal();
+    } else if (e.key === 'Tab') {
+        const focusable = deleteAllMatchesModal.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        const list = Array.from(focusable).filter(el => !el.disabled && el.offsetParent !== null);
+        if (!list.length) return;
+        const first = list[0];
+        const last = list[list.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
 }
 
@@ -495,9 +556,7 @@ function renderMatchSchedule() {
         deleteBtn.className = 'danger';
         deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
-                deleteMatch(match.matchNumber);
-            }
+            openDeleteMatchModal(match.matchNumber);
         });
         actionsCell.appendChild(deleteBtn);
         row.appendChild(actionsCell);
@@ -536,6 +595,51 @@ displayTypeToggle.addEventListener('click', (e) => {
         });
         updateDisplayTypeUI();
     }
+});
+
+if (quickModeToggle) {
+    quickModeToggle.addEventListener('change', () => {
+        const newDuration = quickModeToggle.checked ? 15 : BASE_TIMER_DURATION;
+        const wasRunning = timerState.timerState === 'running';
+        if (wasRunning) {
+            // Abort current running timer when changing mode
+            stopTimerCountdown();
+        }
+        const updates = { timerDuration: newDuration };
+        if (!wasRunning) {
+            updates.timerCurrentTime = newDuration;
+            updates.timerState = 'stopped';
+        } else {
+            // If it was running, restart from full new duration
+            const now = Date.now();
+            updates.timerCurrentTime = newDuration;
+            updates.timerState = 'running';
+            updates.timerStartTime = now;
+            updates.timerEndTime = now + (newDuration * 1000);
+        }
+        updateState(updates);
+        if (wasRunning) { startTimerCountdown(); }
+        updateMatchControlButtons();
+        console.log('Quick mode toggled. Duration set to', newDuration);
+    });
+}
+
+// Modal button listeners
+if (deleteMatchCloseBtn) deleteMatchCloseBtn.addEventListener('click', closeDeleteMatchModal);
+if (keepMatchBtn) keepMatchBtn.addEventListener('click', closeDeleteMatchModal);
+if (confirmDeleteMatchBtn) confirmDeleteMatchBtn.addEventListener('click', () => {
+    if (pendingDeleteMatchNumber != null) {
+        performDeleteMatch(pendingDeleteMatchNumber);
+    }
+    closeDeleteMatchModal();
+});
+if (deleteAllCloseBtn) deleteAllCloseBtn.addEventListener('click', closeDeleteAllMatchesModal);
+if (keepAllMatchesBtn) keepAllMatchesBtn.addEventListener('click', closeDeleteAllMatchesModal);
+if (confirmDeleteAllMatchesBtn) confirmDeleteAllMatchesBtn.addEventListener('click', () => {
+    updateState({ matches: [], currentMatchNumber: 1 });
+    renderMatchSchedule();
+    closeDeleteAllMatchesModal();
+    console.log('All matches deleted');
 });
 
 // Initialize when page loads

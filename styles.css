@@ -5,6 +5,7 @@
  */
 
 @import url('css/design-system.css');
+@import url('css/component-classes.css');
 @import url('css/buttons.css');
 @import url('css/forms.css');
 @import url('css/tables.css');

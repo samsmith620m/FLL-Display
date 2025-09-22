@@ -59,7 +59,6 @@
     --flld-color-red-base: #FF534E;
     --flld-color-red-shade: #B02C2C;
 
-
     --flld-color-fll-challenge-red: #ED1C24;
     --flld-color-fll-discover-purple: #662D91;
     --flld-color-fll-explore-green: #00A651;
@@ -169,14 +168,14 @@
     --flld-color-surface-2: var(--flld-color-gray-95);
 
     /* Semantic Colors - Messaging */
-    --flld-color-messaging-informational: var(--flld-color-blue-60);
-    --flld-color-messaging-informational-shade: var(--flld-color-blue-40);
+    --flld-color-messaging-informational: var(--flld-color-blue-base);
+    --flld-color-messaging-informational-shade: var(--flld-color-blue-shade);
 
-    --flld-color-messaging-success: var(--flld-color-green-60);
-    --flld-color-messaging-success-shade: var(--flld-color-green-40);
+    --flld-color-messaging-success: var(--flld-color-green-base);
+    --flld-color-messaging-success-shade: var(--flld-color-green-shade);
     
-    --flld-color-messaging-critical: var(--flld-color-red-60);
-    --flld-color-messaging-critical-shade: var(--flld-color-red-40);
+    --flld-color-messaging-critical: var(--flld-color-red-base);
+    --flld-color-messaging-critical-shade: var(--flld-color-red-shade);
 
     /* --- LEVEL 2 SEMANTICS --- */
     /* Static Surface Colors */

@@ -35,7 +35,7 @@
 /* --- FORM LABELS --- */
 
 .text-display-config label,
-.match-timer-config label {
+.match-timer-config p {
     display: block;
     font-weight: var(--flld-font-weight-semibold);
     color: var(--flld-color-gray-10);

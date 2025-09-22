@@ -1,38 +1,25 @@
 // FLL Timer Display Page
 console.log('FLL Timer Display loaded');
 
-// Read duration override from URL (?duration=NN or ?quick)
-function getDurationOverride(base) {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('quick')) return 15;
-    if (params.has('duration')) {
-        const v = parseInt(params.get('duration'), 10);
-        if (!isNaN(v) && v > 0 && v <= 3600) return v;
-    }
-    return base;
-}
-const BASE_TIMER_DURATION = 150; // 2:30 official
-const URL_TIMER_DURATION = getDurationOverride(BASE_TIMER_DURATION);
-
 // DOM elements
 const displayTitle = document.querySelector('.display-title');
 const textDisplay = document.getElementById('textDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 const timerTime = document.querySelector('.timer-time');
-// Removed: const timerStatus = document.querySelector('.timer-status');
-const matchNumberElement = document.getElementById('displayMatchNumber');
-const matchTotalElement = document.getElementById('displayMatchTotal');
+const timerStatus = document.querySelector('.timer-status');
+const matchNumberElement = document.querySelector('.match-number');
 const teamNumbers = document.querySelectorAll('.team-number');
 
 // Default state
+const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
+
 const defaultDisplayState = {
     displayType: 'text',
     display: 'Your event name here!',
     timerState: 'stopped',
-    timerCurrentTime: URL_TIMER_DURATION,
+    timerCurrentTime: TIMER_DURATION,
     matches: [],
-    currentMatchNumber: 1,
-    timerDuration: URL_TIMER_DURATION
+    currentMatchNumber: 1
 };
 
 // Current state
@@ -45,9 +32,7 @@ function loadState() {
         if (savedState) {
             const parsedState = JSON.parse(savedState);
             currentState = { ...defaultDisplayState, ...parsedState };
-            if (currentState.timerCurrentTime > TIMER_DURATION) {
-                currentState.timerCurrentTime = TIMER_DURATION;
-            }
+            console.log('Display state loaded from localStorage');
         } else {
             console.log('No saved state found, using defaults');
         }
@@ -90,34 +75,47 @@ function updateDisplay() {
 
 // Update timer display specifically
 function updateTimerDisplay() {
-    const duration = currentState.timerDuration || URL_TIMER_DURATION;
-    const time = currentState.timerCurrentTime ?? duration;
-    // If current time is larger than current override (e.g., user added ?quick mid-session), clamp
-    if (time > duration) {
-        currentState.timerCurrentTime = duration;
-    }
-    timerTime.innerHTML = formatTime(currentState.timerCurrentTime);
+    const time = currentState.timerCurrentTime || TIMER_DURATION;
+    timerTime.innerHTML = formatTime(time);
     
-    // Remove all state classes (if any remain on the timer time)
+    // Remove all state classes
     timerTime.classList.remove('running', 'warning', 'critical');
     
     // Update match and team information
     updateMatchDisplay();
+    
+    // Update status and styling based on timer state
+    switch (currentState.timerState) {
+        case 'stopped':
+            timerStatus.textContent = 'Ready! 👍';
+            break;
+        case 'running':
+            timerStatus.textContent = 'Running 🏃';
+            timerTime.classList.add('running');
+            
+            // Add warning/critical styling based on remaining time
+            if (time <= 10) {
+                timerTime.classList.add('critical');
+            } else if (time <= 30) {
+                timerTime.classList.add('warning');
+            }
+            break;
+        case 'finished':
+            timerStatus.textContent = 'Match Over! 🛑';
+            timerTime.classList.add('critical');
+            break;
+        default:
+            timerStatus.textContent = 'Ready! 👍';
+    }
 }
 
 // Update match display with current match data
 function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
-    const totalMatches = matches.length || 0;
     
-    // Update match number and total (only if elements exist)
-    if (matchNumberElement) {
-        matchNumberElement.textContent = totalMatches > 0 ? currentMatchNumber : '--';
-    }
-    if (matchTotalElement) {
-        matchTotalElement.textContent = totalMatches > 0 ? totalMatches : '--';
-    }
+    // Update match number
+    matchNumberElement.textContent = currentMatchNumber;
     
     // Find the current match
     const currentMatch = matches.find(match => match.matchNumber === currentMatchNumber);
@@ -142,12 +140,6 @@ window.addEventListener('storage', (event) => {
         if (event.newValue) {
             try {
                 currentState = JSON.parse(event.newValue);
-                if (!currentState.timerDuration) {
-                    currentState.timerDuration = URL_TIMER_DURATION;
-                }
-                if (currentState.timerCurrentTime > currentState.timerDuration) {
-                    currentState.timerCurrentTime = currentState.timerDuration;
-                }
                 updateDisplay();
                 console.log('State updated from control page');
             } catch (error) {

@@ -5,7 +5,7 @@
 
 /* --- DISPLAY TYPE TOGGLE --- */
 
-.display-type-toggle {
+.toggle-group {
     display: flex;
     background-color: var(--flld-color-gray-90);
     border-radius: var(--flld-spacing-sm);
@@ -13,7 +13,7 @@
     width: fit-content;
 }
 
-.toggle-btn {
+.toggle {
     min-height: 44px;
     padding: var(--flld-spacing-sm) var(--flld-spacing-md);
     font-weight: var(--flld-font-weight-semibold);
@@ -27,7 +27,7 @@
     }
 }
 
-.toggle-btn.active {
+.toggle.active {
     background-color: var(--flld-color-gray-10);
     color: var(--flld-color-white);
     border: none;
@@ -37,10 +37,10 @@
     }
 }
 
-.toggle-btn.start {
+.toggle.start {
     border-radius: var(--flld-border-radius-lg) 0 0 var(--flld-border-radius-lg);
 }
 
-.toggle-btn.end {
+.toggle.end {
     border-radius: 0 var(--flld-border-radius-lg) var(--flld-border-radius-lg) 0;
 }

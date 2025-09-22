@@ -230,7 +230,7 @@ function updateMatchControlButtons() {
         const nextMatch = currentMatch + 1;
         
         prevMatchSub.textContent = prevMatch >= 1 ? `Match ${prevMatch}` : '--';
-    startMatchSub.textContent = `Match ${currentMatch} ${formatTimer(timerState.timerCurrentTime)}`;
+    startMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
         nextMatchSub.textContent = nextMatch <= timerState.matches.length ? `Match ${nextMatch}` : '--';
     } else {
         prevMatchSub.textContent = 'Match --';

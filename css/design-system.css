@@ -214,8 +214,9 @@
 
 /* --- BASE TYPOGRAPHY STYLES --- */
 
-p {
+p, label, h1, h2, h3, h4, h5, h6 {
     max-width: 72ch;
+    line-height: var(--flld-line-height-base);
 }
 
 .display-large {
@@ -246,6 +247,11 @@ p {
 .subtitle {
     font-size: var(--flld-font-size-sm);
     font-weight: var(--flld-font-weight-bold);
+}
+
+label, p.label {
+    display: block;
+    font-weight: var(--flld-font-weight-semibold);
 }
 
 .body-1 {

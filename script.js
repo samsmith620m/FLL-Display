@@ -149,11 +149,13 @@ function updateDisplayTypeUI() {
     const displayType = getSelectedDisplayType();
     
     if (displayType === 'text') {
-        textDisplayConfig.style.display = 'block';
+        textDisplayConfig.style.display = 'inherit';
+        textDisplayConfig.style.flexDirection = 'column';
         matchTimerConfig.style.display = 'none';
     } else if (displayType === 'match-timer') {
         textDisplayConfig.style.display = 'none';
-        matchTimerConfig.style.display = 'block';
+        matchTimerConfig.style.display = 'inherit';
+        matchTimerConfig.style.flexDirection = 'column';
     }
     
     // Update match control buttons
@@ -246,19 +248,19 @@ function updateMatchControlButtons() {
     // Start/Abort button logic
     if (!isMatchTimer || !hasMatches) {
         startMatchBtn.disabled = true;
-        startMatchBtn.querySelector('.button-main').textContent = 'Start Match';
+        startMatchBtn.querySelector('.button-main-text').textContent = 'Start Match';
         startMatchBtn.className = 'primary';
     } else if (isRunning) {
         startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main').textContent = 'Abort Match';
+        startMatchBtn.querySelector('.button-main-text').textContent = 'Abort Match';
         startMatchBtn.className = 'destructive';
     } else if (isFinished) {
         startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main').textContent = 'Reset Timer';
+        startMatchBtn.querySelector('.button-main-text').textContent = 'Reset Timer';
         startMatchBtn.className = 'secondary';
     } else {
         startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main').textContent = 'Start Match';
+        startMatchBtn.querySelector('.button-main-text').textContent = 'Start Match';
         startMatchBtn.className = 'primary';
     }
 }

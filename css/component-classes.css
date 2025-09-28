@@ -21,18 +21,22 @@
 }
 
 button {
-    height: auto;
     min-height: 44px;
+    min-width: max-content;
     font-size: var(--flld-font-size-md);
     font-family: var(--flld-font-family-base);
-    padding-inline: var(--flld-spacing-md);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: var(--flld-font-weight-semibold);
+    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
     gap: var(--flld-spacing-sm);
     border-radius: var(--flld-spacing-sm);
-    font-weight: var(--flld-font-weight-semibold);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid var(--flld-color-black);
+        outline-offset: 2px;
+    }
 
     &:disabled {
         pointer-events: none;
@@ -72,6 +76,10 @@ button {
             background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%)
         }
     }
+
+    .button-sub-text {
+        font-weight: var(--flld-font-weight-regular);
+    }
 }
 
 .button-group {
@@ -80,10 +88,17 @@ button {
     align-items: center;
 }
 
+.toggle-button-group {
+    display: flex;
+}
+
 .card {
+    display: flex;
+    flex-direction: column;
     padding: var(--flld-spacing-md);
     border-radius: var(--flld-border-radius-lg);
     border: 1px solid var(--flld-color-gray-50);
+    gap: var(--flld-spacing-md);
 
     h2 {
         color: var(--flld-color-gray-10);
@@ -93,7 +108,33 @@ button {
 
     p {
         color: var(--flld-color-gray-25);
-        line-height: var(--flld-line-height-base);
         margin: 0;
+    }
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--flld-spacing-md);
+    border: 1px solid var(--flld-color-gray-75);
+    border-radius: var(--flld-spacing-xs);
+    font-size: var(--flld-font-size-md);
+    font-family: var(--flld-font-family-base);
+    background-color: var(--flld-color-white);
+    color: var(--flld-color-gray-10);
+
+    &:focus {
+        outline: 2px solid var(--flld-color-black);
+        outline-offset: 2px;
+    }
+}
+
+.input-group {
+    flex-direction: column;
+    gap: var(--flld-spacing-xs);
+
+    .helper-text {
+        font-size: var(--flld-font-size-sm);
+        color: var(--flld-color-gray-50);
     }
 }

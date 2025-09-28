@@ -12,13 +12,13 @@
 <body class="control-page">
     <div class="alert banner" role="status" aria-live="polite">
         <span class="material-symbols-outlined" aria-hidden="true">info</span>
-        <div class="alert-text">Hi there! This site is in active, rapid development as visuals and functionality are being iterated on. Please share your feedback! 😊</div>
+        Hi there! This site is in active, rapid development as visuals and functionality are being iterated on. Please share your feedback! 😊
     </div>
     <header class="control-header">
         <h1>FLL Challenge Event Display</h1>
         <div class="button-group">
-            <p>Current Display Type</p>
-            <div class="toggle-group" id="displayTypeToggle">
+            <p class="label">Current Display Type</p>
+            <div class="toggle-button-group" id="displayTypeToggle">
                 <button type="button" class="toggle start active" data-value="text">Text Display</button>
                 <button type="button" class="toggle end" data-value="match-timer">Match Timer</button>
             </div>
@@ -42,28 +42,27 @@
         <div class="card">
             <h2>Display Type</h2>
             <div class="display-type-form">
-                <div id="textDisplayConfig" class="text-display-config">
+                <div id="textDisplayConfig" class="input-group">
                     <label for="displayText">Display Text</label>
                     <input type="text" id="displayText" value="Display" placeholder="Enter text to show on display">
-                    <p class="field-helper-text">Text that will be shown on the display screen when Text Display mode is selected.</p>
+                    <p class="helper-text">This text will be shown on the display when "Text Display" type is selected.</p>
                 </div>
-                <div id="matchTimerConfig" class="match-timer-config" style="display: none;">
-                    <p>Match Controls</p>
+                <div id="matchTimerConfig" class="input-group" style="display: none;">
+                    <p class="label">Match Controls</p>
                     <div class="match-control-buttons">
                         <button id="prevMatchBtn" class="secondary" disabled>
-                            <span class="button-main">Previous Match</span>
-                            <span class="button-sub" id="prevMatchSub">Match --</span>
+                            <span class="button-main-text">Previous Match</span>
+                            <span class="button-sub-text" id="prevMatchSub">Match --</span>
                         </button>
                         <button id="startMatchBtn" class="primary" disabled>
-                            <span class="button-main">Start Match</span>
-                            <span class="button-sub" id="startMatchSub">Match --</span>
+                            <span class="button-main-text">Start Match</span>
+                            <span class="button-sub-text" id="startMatchSub">Match --</span>
                         </button>
                         <button id="nextMatchBtn" class="secondary" disabled>
-                            <span class="button-main">Next Match</span>
-                            <span class="button-sub" id="nextMatchSub">Match --</span>
+                            <span class="button-main-text">Next Match</span>
+                            <span class="button-sub-text" id="nextMatchSub">Match --</span>
                         </button>
                     </div>
-                    <p class="field-helper-text">Controls for managing the current match and 2:30 timer display.</p>
                 </div>
             </div>
         </div>

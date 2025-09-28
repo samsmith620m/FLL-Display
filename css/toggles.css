@@ -5,14 +5,6 @@
 
 /* --- DISPLAY TYPE TOGGLE --- */
 
-.toggle-group {
-    display: flex;
-    background-color: var(--flld-color-gray-90);
-    border-radius: var(--flld-spacing-sm);
-    padding: var(--flld-spacing-xs);
-    width: fit-content;
-}
-
 .toggle {
     min-height: 44px;
     padding: var(--flld-spacing-sm) var(--flld-spacing-md);

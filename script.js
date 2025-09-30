@@ -17,11 +17,13 @@ const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
 const uploadScheduleInput = document.getElementById('uploadScheduleInput');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
+const matchScheduleHead = document.getElementById('matchScheduleHead');
 const prevMatchSub = document.getElementById('prevMatchSub');
 const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.querySelector('.match-count');
+const tableCountToggle = document.getElementById('tableCountToggle');
 
 // State management
 const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
@@ -34,6 +36,7 @@ const defaultState = {
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
+    tableCount: 4,
     // Timer settings
     timerState: 'stopped', // stopped, running, paused
     timerStartTime: null,
@@ -139,6 +142,8 @@ function initializeUI() {
     
     // Initialize match schedule display
     renderMatchSchedule();
+    // Initialize table count toggle
+    if (tableCountToggle) setTableCountToggle(timerState.tableCount);
     
     // Initialize display button state
     updateOpenDisplayButton();
@@ -162,6 +167,18 @@ function updateDisplayTypeUI() {
     
     // Update match control buttons
     updateMatchControlButtons();
+}
+
+// Table count toggle helpers
+function getSelectedTableCount() {
+    const active = tableCountToggle?.querySelector('.toggle.active');
+    return active ? parseInt(active.dataset.value, 10) : 4;
+}
+function setTableCountToggle(count) {
+    if (!tableCountToggle) return;
+    tableCountToggle.querySelectorAll('.toggle').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.value, 10) === count);
+    });
 }
 
 // Helper functions for display type toggle
@@ -461,6 +478,22 @@ function renderMatchSchedule() {
     // Update match control buttons
     updateMatchControlButtons();
     
+    // Build header based on table count
+    const tableCount = timerState.tableCount || 4;
+    const headerRow = document.createElement('tr');
+    const headers = ['Match #'];
+    if (tableCount === 2) {
+        headers.push('Table 1A', 'Table 1B');
+    } else { // 4 tables
+        headers.push('Table 1A', 'Table 1B', 'Table 2A', 'Table 2B');
+    }
+    headers.push('');
+    headerRow.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+    if (matchScheduleHead) {
+        matchScheduleHead.innerHTML = '';
+        matchScheduleHead.appendChild(headerRow);
+    }
+
     // Clear existing rows
     tbody.innerHTML = '';
     
@@ -487,8 +520,9 @@ function renderMatchSchedule() {
         matchNumberCell.innerHTML = `<span class="match-number">${match.matchNumber}</span>`;
         row.appendChild(matchNumberCell);
         
-        // Team columns
-        match.teams.forEach((team, teamIndex) => {
+        // Team columns (limit by tableCount)
+        const visibleTeams = tableCount === 2 ? match.teams.slice(0,2) : match.teams;
+        visibleTeams.forEach((team, teamIndex) => {
             const teamCell = document.createElement('td');
             const teamInput = document.createElement('input');
             teamInput.type = 'text';
@@ -572,9 +606,10 @@ function buildMatchesFromRows(rows) {
     // Sort start times
     const orderedStarts = [...groups.keys()].sort((a,b) => timeToMinutes(a) - timeToMinutes(b));
     const matches = [];
-    orderedStarts.forEach((start, idx) => {
+    const tableCount = timerState.tableCount || 4;
+    orderedStarts.forEach((start) => {
         const group = groups.get(start);
-        // Map tables to fixed order columns
+        // Map tables to fixed order columns, but maintain 4-slot internal model
         const slots = ['', '', '', ''];
         group.forEach(entry => {
             const table = entry.table.toLowerCase();
@@ -585,6 +620,7 @@ function buildMatchesFromRows(rows) {
             else if (table.includes('2b')) slotIndex = 3;
             if (slotIndex >= 0) slots[slotIndex] = entry.team;
         });
+        // If only 2 tables configured, we ignore 2A/2B for display but keep data
         matches.push({ matchNumber: matches.length + 1, teams: slots });
     });
     return matches;
@@ -622,6 +658,18 @@ if (uploadScheduleBtn && uploadScheduleInput) {
         e.target.value = '';
     });
 }
+
+// Handle table count change
+tableCountToggle?.addEventListener('click', (e) => {
+    if (e.target.classList.contains('toggle')) {
+        const newCount = parseInt(e.target.dataset.value, 10);
+        if (newCount !== timerState.tableCount) {
+            setTableCountToggle(newCount);
+            updateState({ tableCount: newCount });
+            renderMatchSchedule();
+        }
+    }
+});
 
 // Event listeners
 openDisplayBtn.addEventListener('click', openDisplay);

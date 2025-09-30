@@ -89,7 +89,8 @@ button {
 }
 
 .toggle-button-group {
-    display: flex;
+    display: inline-flex; /* shrink-wrap container */
+    width: fit-content; /* ensure it hugs children in modern browsers */
     outline: 2px solid var(--flld-color-gray-10);
     outline-offset: -2px;
     border: none;
@@ -125,9 +126,12 @@ button {
         background-color: var(--flld-color-gray-10);
         color: var(--flld-color-white);
         border: none;
+        outline: 4px solid white;
+        outline-offset: -4px;
 
         &:hover:not(:disabled) {
-            background-color: var(--flld-color-gray-25);
+            background-color: var(--flld-color-gray-10);
+            cursor: default;
         }
     }
 }
@@ -171,6 +175,7 @@ input[type="text"] {
 }
 
 .input-group {
+    display: flex;
     flex-direction: column;
     gap: var(--flld-spacing-xs);
 

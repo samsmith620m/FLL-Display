@@ -6,9 +6,10 @@ const displayTitle = document.querySelector('.display-title');
 const textDisplay = document.getElementById('textDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 const timerTime = document.querySelector('.timer-time');
-const timerStatus = document.querySelector('.timer-status');
-const matchNumberElement = document.querySelector('.match-number');
-const teamNumbers = document.querySelectorAll('.team-number');
+const displayMatchNumber = document.getElementById('displayMatchNumber');
+const displayMatchTotal = document.getElementById('displayMatchTotal');
+// We'll rebuild team cards dynamically to support 2 or 4 tables
+let teamCardsContainer = null; // reference to timerDisplay for querying
 
 // Default state
 const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
@@ -85,53 +86,72 @@ function updateTimerDisplay() {
     updateMatchDisplay();
     
     // Update status and styling based on timer state
-    switch (currentState.timerState) {
-        case 'stopped':
-            timerStatus.textContent = 'Ready! 👍';
-            break;
-        case 'running':
-            timerStatus.textContent = 'Running 🏃';
-            timerTime.classList.add('running');
-            
-            // Add warning/critical styling based on remaining time
-            if (time <= 10) {
-                timerTime.classList.add('critical');
-            } else if (time <= 30) {
-                timerTime.classList.add('warning');
-            }
-            break;
-        case 'finished':
-            timerStatus.textContent = 'Match Over! 🛑';
+    // Visual emphasis only handled by timerTime classes; status text removed.
+    if (currentState.timerState === 'running') {
+        timerTime.classList.add('running');
+        if (time <= 10) {
             timerTime.classList.add('critical');
-            break;
-        default:
-            timerStatus.textContent = 'Ready! 👍';
+        } else if (time <= 30) {
+            timerTime.classList.add('warning');
+        }
+    } else if (currentState.timerState === 'finished') {
+        timerTime.classList.add('critical');
     }
 }
 
 // Update match display with current match data
+function ensureTeamCards() {
+    if (!timerDisplay) return;
+    const tableCount = currentState.tableCount || 4;
+    // Remove existing team-card elements
+    const existing = timerDisplay.querySelectorAll('.team-card');
+    existing.forEach(el => el.remove());
+
+    // Insert before timer-container
+    const timerContainer = timerDisplay.querySelector('.timer-container');
+    if (!timerContainer) return;
+
+    const tables = tableCount === 2
+        ? [ ['Table 1A', 'team-color-a'], ['Table 1B', 'team-color-b'] ]
+        : [ ['Table 1A','team-color-a'], ['Table 1B','team-color-b'], ['Table 2A','team-color-c'], ['Table 2B','team-color-d'] ];
+    tables.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'team-card';
+        card.dataset.slot = i; // 0..3
+        card.innerHTML = `\n            <div class="team-number display-small">Team ${i+1}</div>\n            <div class="table-name heading-large">${t[0]}</div>`;
+        timerDisplay.insertBefore(card, timerContainer);
+    });
+
+    // Adjust grid template
+    if (tableCount === 2) {
+        timerDisplay.style.gridTemplate = `"team1 team2" auto "timer timer" 1fr "brand-bar brand-bar" auto`;
+    } else {
+        timerDisplay.style.gridTemplate = `"team1 team2 team3 team4" auto "timer timer timer timer" 1fr "brand-bar brand-bar brand-bar brand-bar" auto`;
+    }
+}
+
 function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
-    
-    // Update match number
-    matchNumberElement.textContent = currentMatchNumber;
-    
-    // Find the current match
-    const currentMatch = matches.find(match => match.matchNumber === currentMatchNumber);
-    
-    if (currentMatch && currentMatch.teams) {
-        // Update team numbers from match data
-        teamNumbers.forEach((teamElement, index) => {
-            const teamNumber = currentMatch.teams[index];
-            teamElement.textContent = teamNumber || `Team ${index + 1}`;
-        });
-    } else {
-        // No match data, show default team placeholders
-        teamNumbers.forEach((teamElement, index) => {
-            teamElement.textContent = `Team ${index + 1}`;
-        });
-    }
+    if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
+    if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
+
+    ensureTeamCards();
+    const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
+    const tableCount = currentState.tableCount || 4;
+    const cards = timerDisplay.querySelectorAll('.team-card');
+    cards.forEach(card => {
+        const slot = parseInt(card.dataset.slot, 10);
+        if (tableCount === 2 && slot > 1) { card.style.display = 'none'; return; }
+        card.style.display = '';
+        const numEl = card.querySelector('.team-number');
+        if (currentMatch && currentMatch.teams) {
+            const val = currentMatch.teams[slot];
+            numEl.textContent = val || `Team ${slot + 1}`;
+        } else {
+            numEl.textContent = `Team ${slot + 1}`;
+        }
+    });
 }
 
 // Listen for state changes from control page (cross-tab communication)

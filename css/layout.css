@@ -157,4 +157,5 @@ body {
 .schedule-controls {
     display: flex;
     justify-content: center;
+    gap: var(--flld-spacing-sm);
 }

@@ -67,12 +67,10 @@
     }
     
     &:nth-child(3){
-        margin-left: var(--flld-spacing-lg);
         --team-color: var(--flld-color-unearthed-yellow-40);
         .team-number { background: var(--team-color); }
         .table-name { color: var(--team-color); }
     }
-
     &:nth-child(4){
         --team-color: var(--flld-color-unearthed-teal-40);
         .team-number { background: var(--team-color); }

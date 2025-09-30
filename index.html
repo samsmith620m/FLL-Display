@@ -37,6 +37,13 @@
                 </button>
             </div>
             <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
+            <div class="input-group">
+                <label class="label">Number of Tables</label>
+                <div class="toggle-button-group" id="tableCountToggle">
+                    <button type="button" class="toggle" data-value="2">2</button>
+                    <button type="button" class="toggle active" data-value="4">4</button>
+                </div>
+            </div>
         </div>
 
         <div class="card">
@@ -77,27 +84,18 @@
             </div>
             <div>
                 <table id="matchScheduleTable" class="match-table">
-                    <thead>
-                        <tr>
-                            <th>Match #</th>
-                            <th>Table 1A</th>
-                            <th>Table 1B</th>
-                            <th>Table 2A</th>
-                            <th>Table 2B</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+                    <thead id="matchScheduleHead"></thead>
                     <tbody id="matchScheduleBody">
                         <!-- Match rows will be added here dynamically -->
                     </tbody>
                 </table>
                 <div id="noMatchesMessage" class="no-matches">
-                    No matches scheduled. Click "Add Match" to create your first match.
+                    No matches scheduled. Click "Add Match" to create your first match, or use "Upload Schedule (CSV)" to import matches.
                 </div>
             </div>
             <div class="schedule-controls">
                 <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
-                <button id="uploadScheduleBtn" class="secondary">Upload CSV</button>
+                <button id="uploadScheduleBtn" class="secondary">Upload Schedule (CSV)</button>
                 <button id="addMatchBtn" class="primary">Add Match</button>
             </div>
         </div>

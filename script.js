@@ -13,6 +13,8 @@ const textDisplayConfig = document.getElementById('textDisplayConfig');
 const matchTimerConfig = document.getElementById('matchTimerConfig');
 const addMatchBtn = document.getElementById('addMatchBtn');
 const deleteAllMatchesBtn = document.getElementById('deleteAllMatchesBtn');
+const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
+const uploadScheduleInput = document.getElementById('uploadScheduleInput');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
 const prevMatchSub = document.getElementById('prevMatchSub');
@@ -514,6 +516,110 @@ function renderMatchSchedule() {
         row.appendChild(actionsCell);
         
         tbody.appendChild(row);
+    });
+}
+
+// --- CSV Upload & Parsing ---
+// Expect columns: Event Name,Type,Date (mm/dd/yyyy),Start Time,End Time,Room / Table Location,Team Number,Team Name
+// We only import rows where Type starts with 'Offical Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
+function parseCSV(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+    if (lines.length < 2) return [];
+    const header = lines[0].split(',');
+    // Basic index mapping (defensive in case order changes)
+    const idx = {
+        type: header.findIndex(h => h.toLowerCase().includes('type')),
+        start: header.findIndex(h => h.toLowerCase().includes('start time')),
+        table: header.findIndex(h => h.toLowerCase().includes('room') || h.toLowerCase().includes('table')),
+        team: header.findIndex(h => h.toLowerCase().includes('team number'))
+    };
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        const raw = lines[i];
+        // Skip empty or ceremony rows quickly
+        if (!raw.trim()) continue;
+        const cols = raw.split(',');
+        const typeVal = cols[idx.type]?.trim();
+        if (!typeVal || !/^offical match/i.test(typeVal)) continue; // only official matches
+        const start = cols[idx.start]?.trim();
+        const table = cols[idx.table]?.trim();
+        const team = cols[idx.team]?.trim();
+        if (!start || !table || !team) continue;
+        rows.push({ start, table, team });
+    }
+    return rows;
+}
+
+// Convert 12h time like '9:07 AM' to minutes since midnight for sorting
+function timeToMinutes(t) {
+    const match = t.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
+    if (!match) return Number.MAX_SAFE_INTEGER;
+    let [ , hh, mm, ap ] = match;
+    let h = parseInt(hh, 10);
+    const m = parseInt(mm, 10);
+    if (ap.toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (ap.toUpperCase() === 'AM' && h === 12) h = 0;
+    return h * 60 + m;
+}
+
+function buildMatchesFromRows(rows) {
+    // Group by start time
+    const groups = new Map();
+    rows.forEach(r => {
+        if (!groups.has(r.start)) groups.set(r.start, []);
+        groups.get(r.start).push(r);
+    });
+    // Sort start times
+    const orderedStarts = [...groups.keys()].sort((a,b) => timeToMinutes(a) - timeToMinutes(b));
+    const matches = [];
+    orderedStarts.forEach((start, idx) => {
+        const group = groups.get(start);
+        // Map tables to fixed order columns
+        const slots = ['', '', '', ''];
+        group.forEach(entry => {
+            const table = entry.table.toLowerCase();
+            let slotIndex = -1;
+            if (table.includes('1a')) slotIndex = 0;
+            else if (table.includes('1b')) slotIndex = 1;
+            else if (table.includes('2a')) slotIndex = 2;
+            else if (table.includes('2b')) slotIndex = 3;
+            if (slotIndex >= 0) slots[slotIndex] = entry.team;
+        });
+        matches.push({ matchNumber: matches.length + 1, teams: slots });
+    });
+    return matches;
+}
+
+function handleScheduleFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const text = e.target.result;
+            const rows = parseCSV(text);
+            if (!rows.length) {
+                alert('No official matches found in CSV.');
+                return;
+            }
+            const matches = buildMatchesFromRows(rows);
+            updateState({ matches, currentMatchNumber: matches.length ? 1 : 1 });
+            renderMatchSchedule();
+            alert(`Imported ${matches.length} matches.`);
+        } catch (err) {
+            console.error('Error importing schedule', err);
+            alert('Failed to import schedule.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+if (uploadScheduleBtn && uploadScheduleInput) {
+    uploadScheduleBtn.addEventListener('click', () => uploadScheduleInput.click());
+    uploadScheduleInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        handleScheduleFile(file);
+        // reset input so same file can be chosen again if needed
+        e.target.value = '';
     });
 }
 

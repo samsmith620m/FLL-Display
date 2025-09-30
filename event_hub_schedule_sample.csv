@@ -1,0 +1,67 @@
+Event Name,Type,Date (mm/dd/yyyy),Start Time,End Time,Room / Table Location,Team Number,Team Name
+Iowa Test Event,Judging Session,,11:52 AM,12:15PM,RD2,1,A
+Iowa Test Event,Offical Match 1,,9:15 AM,9:22 AM,Table 1B,1,A
+Iowa Test Event,Offical Match 2,,10:52 AM,11:00 AM,Table 1A,1,A
+Iowa Test Event,Offical Match 3,,11:22 AM,11:30 AM,Table 1B,1,A
+Iowa Test Event,Judging Session,,9:45 AM,10:07 AM,RD1,2,B
+Iowa Test Event,Offical Match 1,,9:00 AM,9:07 AM,Table 1A,2,B
+Iowa Test Event,Offical Match 2,,10:22 AM,10:30 AM,Table 1B,2,B
+Iowa Test Event,Offical Match 3,,12:15 PM,12:22 PM,Table 1A,2,B
+Iowa Test Event,Judging Session,,11:07 AM,11:30 AM,RD2,3,C
+Iowa Test Event,Offical Match 1,,10:07 AM,10:15 AM,Table 1A,3,C
+Iowa Test Event,Offical Match 2,,10:37 AM,10:45 AM,Table 1B,3,C
+Iowa Test Event,Offical Match 3,,12:07 AM,12:15 AM,Table 1A,3,C
+Iowa Test Event,Judging Session,,10:37 AM,11:00 AM,RD1,4,D 
+Iowa Test Event,Offical Match 1,,9:45 AM,9:52 AM,Table 1B,4,D 
+Iowa Test Event,Offical Match 2,,10:15 AM,10:22 AM,Table 1A,4,D 
+Iowa Test Event,Offical Match 3,,11:45 AM,11:52 AM,Table 1B,4,D 
+Iowa Test Event,Judging Session,,11:07 AM,11:30 AM,RD1,5,E 
+Iowa Test Event,Offical Match 1,,10:00 AM,10:07 AM,Table 1B,5,E 
+Iowa Test Event,Offical Match 2,,10:45 AM,10:52 AM,Table 1A,5,E 
+Iowa Test Event,Offical Match 3,,11:52 AM,12:00 PM,Table 1B,5,E 
+Iowa Test Event,Judging Session,,10:37 AM,11:00 AM,RD2,6,F 
+Iowa Test Event,Offical Match 1,,9:45 AM,9:52 AM,Table 1A,6,F 
+Iowa Test Event,Offical Match 2,,10:22 AM,10:30 AM,Table 1A,6,F 
+Iowa Test Event,Offical Match 3,,11:37 AM,11:45 AM,Table 1B,6,F 
+Iowa Test Event,Judging Session,,11:30 AM,11:52 AM,RD1,7,G 
+Iowa Test Event,Offical Match 1,,9:22 AM,9:30 AM,Table 1A,7,G 
+Iowa Test Event,Offical Match 2,,10:45 AM,10:52 AM,Table 1B,7,G 
+Iowa Test Event,Offical Match 3,,12:22 PM,12:30 PM,Table 1A,7,G 
+Iowa Test Event,Judging Session,,9:22 AM,9:45 AM,RD2,8,H 
+Iowa Test Event,Offical Match 1,,9:00 AM,9:07 AM,Table 1B,8,H 
+Iowa Test Event,Offical Match 2,,10:52 AM,11:00 AM,Table 1B,8,H 
+Iowa Test Event,Offical Match 3,,12:00 PM,12:07 PM,Table 1A,8,H 
+Iowa Test Event,Judging Session,,9:00 AM,9:22 AM,RD1,9,I
+Iowa Test Event,Offical Match 1,,9:37 AM,9:45 AM,Table 1A,9,I
+Iowa Test Event,Offical Match 2,,10:15 AM,10:22 AM,Table 1B,9,I
+Iowa Test Event,Offical Match 3,,11:22 AM,11:30 AM,Table 1A,9,I
+Iowa Test Event,Judging Session,,11:30 AM,11:52 AM,RD2,10,J 
+Iowa Test Event,Offical Match 1,,9:22 AM,9:30 AM,Table 1B,10,J 
+Iowa Test Event,Offical Match 2,,10:37 AM,10:45 AM,Table 1A,10,J 
+Iowa Test Event,Offical Match 3,,12:00 PM,12:07 PM,Table 1B,10,J 
+Iowa Test Event,Judging Session,,9:00 AM,9:22 AM,RD2,11,K 
+Iowa Test Event,Offical Match 1,,9:37 AM,9:45 AM,Table 1B,11,K 
+Iowa Test Event,Offical Match 2,,10:07 AM,10:15 AM,Table 1B,11,K 
+Iowa Test Event,Offical Match 3,,11:45 AM,11:52 AM,Table 1A,11,K 
+Iowa Test Event,Judging Session,,10:15 AM,10:37 AM,RD1,12,L 
+Iowa Test Event,Offical Match 1,,9:15 AM,9:22 AM,Table 1A,12,L 
+Iowa Test Event,Offical Match 2,,11:00 AM,11:07 AM,Table 1A,12,L 
+Iowa Test Event,Offical Match 3,,11:30 AM,11:37 AM,Table 1B,12,L 
+Iowa Test Event,Judging Session,,9:45 AM,10:07 AM,RD2,13,M
+Iowa Test Event,Offical Match 1,,9:07 AM,9:15 AM,Table 1B,13,M
+Iowa Test Event,Offical Match 2,,10:30 AM,10:37 AM,Table 1A,13,M
+Iowa Test Event,Offical Match 3,,11:37 AM,11:45 AM,Table 1A,13,M
+Iowa Test Event,Judging Session,,11:52 AM,12:15 AM,RD1,14,N
+Iowa Test Event,Offical Match 1,,9:07 AM,9:15 AM,Table 1A,14,N
+Iowa Test Event,Offical Match 2,,11:00 AM,11:07 AM,Table 1B,14,N
+Iowa Test Event,Offical Match 3,,11:30 AM,11:37 AM,Table 1A,14,N
+Iowa Test Event,Judging Session,,9:22 AM,9:45 AM,RD1,15,O
+Iowa Test Event,Offical Match 1,,10:00 AM,10:07 AM,Table 1A,15,O
+Iowa Test Event,Offical Match 2,,10:30 AM,10:37 AM,Table 1B,15,O
+Iowa Test Event,Offical Match 3,,11:52 AM,12:00 PM,Table 1A,15,O
+Iowa Test Event,Judging Session,,10:15 AM,10:37 AM,RD2,16,P
+Iowa Test Event,Offical Match 1,,12:07 PM,12:15 PM,Table 1B,16,P
+Iowa Test Event,Offical Match 2,,12:15 PM,12:22 PM,Table 1B,16,P
+Iowa Test Event,Offical Match 3,,12:22 PM,12:30 PM,Table 1B,16,P
+Iowa Test Event,Closing Ceremony,,,,,,
+Iowa Test Event,Opening Ceremony,,,,,,

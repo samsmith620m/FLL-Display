@@ -27,7 +27,7 @@ button {
     font-family: var(--flld-font-family-base);
     font-weight: var(--flld-font-weight-semibold);
     padding: var(--flld-spacing-sm) var(--flld-spacing-md);
-    gap: var(--flld-spacing-sm);
+    gap: var(--flld-spacing-xs);
     border-radius: var(--flld-spacing-sm);
     display: flex;
     align-items: center;
@@ -90,6 +90,46 @@ button {
 
 .toggle-button-group {
     display: flex;
+    outline: 2px solid var(--flld-color-gray-10);
+    outline-offset: -2px;
+    border: none;
+    border-radius: var(--flld-border-radius-lg);
+
+    button {
+        border-radius: 0;
+        border: none;
+
+        &:first-child {
+            border-radius: var(--flld-border-radius-lg) 0 0 var(--flld-border-radius-lg);
+        }
+
+        &:last-child {
+            border-radius: 0 var(--flld-border-radius-lg) var(--flld-border-radius-lg) 0;
+        }
+    }
+}
+
+.toggle {
+    min-height: 44px;
+    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+    font-weight: var(--flld-font-weight-semibold);
+    background-color: var(--flld-color-white);
+    color: var(--flld-color-gray-10);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background-color: var(--flld-color-gray-95);
+    }
+
+    &.active {
+        background-color: var(--flld-color-gray-10);
+        color: var(--flld-color-white);
+        border: none;
+
+        &:hover:not(:disabled) {
+            background-color: var(--flld-color-gray-25);
+        }
+    }
 }
 
 .card {
@@ -106,22 +146,23 @@ button {
         font-size: var(--flld-font-size-lg);
     }
 
-    p {
-        color: var(--flld-color-gray-25);
-        margin: 0;
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 }
 
 input[type="text"] {
     width: 100%;
-    max-width: 400px;
-    padding: var(--flld-spacing-md);
+    height: 44px;
+    padding: 0 var(--flld-spacing-sm);
+
+    background-color: var(--flld-color-white);
     border: 1px solid var(--flld-color-gray-75);
     border-radius: var(--flld-spacing-xs);
+
     font-size: var(--flld-font-size-md);
-    font-family: var(--flld-font-family-base);
-    background-color: var(--flld-color-white);
-    color: var(--flld-color-gray-10);
 
     &:focus {
         outline: 2px solid var(--flld-color-black);

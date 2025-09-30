@@ -61,8 +61,6 @@
 
 .current-match-row {
     background-color: color-mix(in oklab, var(--flld-color-messaging-success), white 90%) !important;
-    color: var(--flld-color-text-inverse) !important;
-    font-weight: var(--flld-font-weight-semibold);
 }
 
 .current-match-row td:first-child {
@@ -72,20 +70,18 @@
 /* --- TABLE CONTENT --- */
 
 .match-number {
-    font-family: var(--flld-font-family-base);
     font-size: var(--flld-font-size-lg);
     font-weight: var(--flld-font-weight-semibold);
-    color: var(--flld-color-gray-10);
 }
 
 /* --- EMPTY STATE --- */
 
 .no-matches {
     text-align: center;
-    padding: var(--flld-spacing-xl);
+    padding: 32px 0px;
     color: var(--flld-color-neutral-secondary);
     font-style: italic;
     background-color: var(--flld-color-surface-2);
     border-radius: var(--flld-border-radius-lg);
-    border: 1px solid var(--flld-color-border-base);
+    border: 1px dashed var(--flld-color-border-base);
 }

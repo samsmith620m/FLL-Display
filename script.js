@@ -6,7 +6,7 @@ const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
-const startMatchBtn = document.getElementById('startMatchBtn');
+const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
 const nextMatchBtn = document.getElementById('nextMatchBtn');
 const textDisplayConfig = document.getElementById('textDisplayConfig');
@@ -16,7 +16,7 @@ const deleteAllMatchesBtn = document.getElementById('deleteAllMatchesBtn');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
 const prevMatchSub = document.getElementById('prevMatchSub');
-const startMatchSub = document.getElementById('startMatchSub');
+const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.querySelector('.match-count');
@@ -232,11 +232,11 @@ function updateMatchControlButtons() {
         const nextMatch = currentMatch + 1;
         
         prevMatchSub.textContent = prevMatch >= 1 ? `Match ${prevMatch}` : '--';
-    startMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
+    currentMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
         nextMatchSub.textContent = nextMatch <= timerState.matches.length ? `Match ${nextMatch}` : '--';
     } else {
         prevMatchSub.textContent = 'Match --';
-    startMatchSub.textContent = 'Match --';
+    currentMatchSub.textContent = 'Match --';
         nextMatchSub.textContent = 'Match --';
     }
     
@@ -247,21 +247,21 @@ function updateMatchControlButtons() {
     
     // Start/Abort button logic
     if (!isMatchTimer || !hasMatches) {
-        startMatchBtn.disabled = true;
-        startMatchBtn.querySelector('.button-main-text').textContent = 'Start Match';
-        startMatchBtn.className = 'primary';
+        currentMatchBtn.disabled = true;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
+        currentMatchBtn.className = 'primary';
     } else if (isRunning) {
-        startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main-text').textContent = 'Abort Match';
-        startMatchBtn.className = 'destructive';
+        currentMatchBtn.disabled = false;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Abort';
+        currentMatchBtn.className = 'destructive';
     } else if (isFinished) {
-        startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main-text').textContent = 'Reset Timer';
-        startMatchBtn.className = 'secondary';
+        currentMatchBtn.disabled = false;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Reset';
+        currentMatchBtn.className = 'secondary';
     } else {
-        startMatchBtn.disabled = false;
-        startMatchBtn.querySelector('.button-main-text').textContent = 'Start Match';
-        startMatchBtn.className = 'primary';
+        currentMatchBtn.disabled = false;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
+        currentMatchBtn.className = 'primary';
     }
 }
 
@@ -520,7 +520,7 @@ function renderMatchSchedule() {
 // Event listeners
 openDisplayBtn.addEventListener('click', openDisplay);
 resetConfigBtn.addEventListener('click', resetConfiguration);
-startMatchBtn.addEventListener('click', startMatch);
+currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
 addMatchBtn.addEventListener('click', addMatch);

@@ -11,15 +11,3 @@
     font-size: var(--flld-font-size-sm);
     font-style: italic;
 }
-
-/* --- LAYOUT UTILITIES --- */
-
-.no-matches {
-    text-align: center;
-    padding: var(--flld-spacing-xl);
-    color: var(--flld-color-neutral-secondary);
-    font-style: italic;
-    background-color: var(--flld-color-surface-2);
-    border-radius: var(--flld-border-radius-lg);
-    border: 1px solid var(--flld-color-border-base);
-}

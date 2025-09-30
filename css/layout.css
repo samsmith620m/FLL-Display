@@ -146,28 +146,7 @@ body {
     min-height: 60px;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--flld-spacing-md);
-}
-
 /* --- SCHEDULE LAYOUT --- */
-
-.schedule-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: var(--flld-spacing-md);
-    flex-wrap: wrap;
-    gap: var(--flld-spacing-sm);
-}
-
-.schedule-header h2 {
-    color: var(--flld-color-gray-10);
-    margin: 0;
-}
 
 .schedule-header-right {
     display: flex;
@@ -178,9 +157,4 @@ body {
 .schedule-controls {
     display: flex;
     justify-content: center;
-    margin-top: var(--flld-spacing-md);
-}
-
-.schedule-container {
-    position: relative;
 }

@@ -12,7 +12,7 @@
 <body class="control-page">
     <div class="alert banner" role="status" aria-live="polite">
         <span class="material-symbols-outlined" aria-hidden="true">info</span>
-        Hi there! This site is in active, rapid development as visuals and functionality are being iterated on. Please share your feedback! 😊
+        Hi there! This site is in rapid development as visuals and functionality are iterated on. Please share feedback! 😊
     </div>
     <header class="control-header">
         <h1>FLL Challenge Event Display</h1>
@@ -30,7 +30,7 @@
     
     <main class="control-content">
         <div class="card">
-            <div class="section-header">
+            <div class="card-header">
                 <h2>Event Configuration</h2>
                 <button id="resetConfigBtn" class="secondary">
                     Reset Configuration
@@ -51,15 +51,15 @@
                     <p class="label">Match Controls</p>
                     <div class="match-control-buttons">
                         <button id="prevMatchBtn" class="secondary" disabled>
-                            <span class="button-main-text">Previous Match</span>
+                            <span class="button-main-text">Previous</span>
                             <span class="button-sub-text" id="prevMatchSub">Match --</span>
                         </button>
-                        <button id="startMatchBtn" class="primary" disabled>
-                            <span class="button-main-text">Start Match</span>
-                            <span class="button-sub-text" id="startMatchSub">Match --</span>
+                        <button id="currentMatchBtn" class="primary" disabled>
+                            <span class="button-main-text">Start</span>
+                            <span class="button-sub-text" id="currentMatchSub">Match --</span>
                         </button>
                         <button id="nextMatchBtn" class="secondary" disabled>
-                            <span class="button-main-text">Next Match</span>
+                            <span class="button-main-text">Next</span>
                             <span class="button-sub-text" id="nextMatchSub">Match --</span>
                         </button>
                     </div>
@@ -68,14 +68,14 @@
         </div>
 
         <div class="card" id="matchScheduleConfig">
-            <div class="schedule-header">
+            <div class="card-header">
                 <h2>Match Schedule</h2>
                 <div class="schedule-header-right">
                     <span class="match-count">0 matches scheduled</span>
                     <button id="deleteAllMatchesBtn" class="destructive" style="display: none;">Delete All</button>
                 </div>
             </div>
-            <div class="schedule-container">
+            <div>
                 <table id="matchScheduleTable" class="match-table">
                     <thead>
                         <tr>

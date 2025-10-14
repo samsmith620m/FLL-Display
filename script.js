@@ -282,6 +282,15 @@ function updateMatchControlButtons() {
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
     }
+
+    // Prevent accidental display type change or closing display while a match is running
+    const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
+    if (textToggleBtn) {
+        textToggleBtn.disabled = isRunning; // disable only during active running state
+    }
+    if (openDisplayBtn) {
+        openDisplayBtn.disabled = isRunning; // disable open/close control while running
+    }
 }
 
 // Navigate to previous match

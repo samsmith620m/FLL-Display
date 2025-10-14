@@ -26,11 +26,15 @@
 .match-table th:last-child,
 .match-table td:last-child {
     border-right: none;
+    /* Option B: collapse actions column to its min-content width */
+    width: 0; /* lets table algorithm size to min-content (button width) */
+    white-space: nowrap; /* prevent wrapping that would increase width */
 }
 
 .match-table th:first-child,
 .match-table td:first-child {
-    width: 80px;
+    width: 0;
+    white-space: nowrap;
 }
 
 .match-table tr:last-child td {

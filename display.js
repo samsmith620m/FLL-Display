@@ -76,7 +76,8 @@ function updateDisplay() {
 
 // Update timer display specifically
 function updateTimerDisplay() {
-    const time = currentState.timerCurrentTime || TIMER_DURATION;
+    // Preserve 0 when match has finished; only fall back when value is null/undefined
+    const time = (currentState.timerCurrentTime ?? TIMER_DURATION);
     timerTime.innerHTML = formatTime(time);
     
     // Remove all state classes

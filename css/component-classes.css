@@ -41,9 +41,6 @@ button {
     &:disabled {
         pointer-events: none;
         opacity: 40%;
-        background-color: var(--flld-color-gray-75) !important;
-        color: var(--flld-color-gray-50) !important;
-        border-color: var(--flld-color-gray-75) !important;
     }
 
     &.primary {
@@ -110,7 +107,7 @@ button {
     }
 }
 
-.toggle {
+button.toggle {
     min-height: 44px;
     padding: var(--flld-spacing-sm) var(--flld-spacing-md);
     font-weight: var(--flld-font-weight-semibold);

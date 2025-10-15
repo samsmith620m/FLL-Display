@@ -1,0 +1,17 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g clip-path="url(#clip0_3309_7110)">
+<rect x="-76.075" y="-0.568909" width="495.067" height="469.776" transform="rotate(-7.5 -76.075 -0.568909)" fill="url(#pattern0_3309_7110)" fill-opacity="0.15"/>
+</g>
+<defs>
+<clipPath id="clip0_3309_7110">
+<rect width="400" height="400" fill="white"/>
+</clipPath>
+<pattern id="pattern0_3309_7110" patternUnits="userSpaceOnUse" patternTransform="matrix(96 0 0 168 147.459 210.319)" preserveAspectRatio="none" viewBox="0 0 48 84" width="1" height="1">
+<use xlink:href="#pattern0_3309_7110_inner" transform="translate(-48 0)"/>
+<g id="pattern0_3309_7110_inner">
+<path d="M2.21704 11.9345C2.21704 11.9345 4.05164 11.9345 5.22717 11.9345M21.7829 11.9345C21.7829 11.9345 19.9483 11.9345 18.7728 11.9345M18.7728 11.9345C18.7728 8.19401 15.7405 5.16173 12 5.16173C8.25946 5.16173 5.22717 8.19401 5.22717 11.9345M18.7728 11.9345C13.4829 11.9345 10.5171 11.9345 5.22717 11.9345M18.7728 11.9345C18.7728 15.675 15.7405 18.7073 12 18.7073C8.25946 18.7073 5.22717 15.675 5.22717 11.9345" stroke="#1B1B1B" stroke-width="1.245"/>
+</g>
+<use xlink:href="#pattern0_3309_7110_inner" transform="translate(-24 42)"/>
+<use xlink:href="#pattern0_3309_7110_inner" transform="translate(24 42)"/>
+</pattern></defs>
+</svg>

@@ -4,6 +4,7 @@ console.log('FLL Timer Display loaded');
 // DOM elements
 const displayTitle = document.querySelector('.display-title');
 const textDisplay = document.getElementById('textDisplay');
+const previewDisplay = document.getElementById('previewDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 const timerTime = document.querySelector('.timer-time');
 const displayMatchNumber = document.getElementById('displayMatchNumber');
@@ -15,7 +16,7 @@ let teamCardsContainer = null; // reference to timerDisplay for querying
 const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
 
 const defaultDisplayState = {
-    displayType: 'text',
+    displayType: 'text', // 'text' | 'match-timer' | 'preview'
     display: 'Your event name here!',
     timerState: 'stopped',
     timerCurrentTime: TIMER_DURATION,
@@ -55,23 +56,72 @@ function formatTime(seconds) {
 // Update display based on current state
 function updateDisplay() {
     // Show/hide display modes based on type
-    if (currentState.displayType === 'text') {
-        textDisplay.style.display = 'flex';
-        timerDisplay.style.display = 'none';
-        
-        if (currentState.display) {
-            displayTitle.textContent = currentState.display;
-        }
-        
-        console.log('Text display updated:', currentState.display);
-    } else if (currentState.displayType === 'match-timer') {
-        textDisplay.style.display = 'none';
-        timerDisplay.style.display = 'grid';
-        
-        updateTimerDisplay();
-        
-        console.log('Timer display updated');
+    const type = currentState.displayType;
+    // Hide all first
+    textDisplay.style.display = 'none';
+    timerDisplay.style.display = 'none';
+    if (previewDisplay) previewDisplay.style.display = 'none';
+
+    switch (type) {
+        case 'text':
+            textDisplay.style.display = 'flex';
+            if (currentState.display) {
+                displayTitle.textContent = currentState.display;
+            }
+            console.log('Text display updated:', currentState.display);
+            break;
+        case 'match-timer':
+            timerDisplay.style.display = 'grid';
+            updateTimerDisplay();
+            console.log('Timer display updated');
+            break;
+        case 'preview':
+            if (previewDisplay) {
+                previewDisplay.style.display = 'grid';
+                updatePreviewDisplay();
+                console.log('Preview display shown');
+            }
+            break;
+        default:
+            textDisplay.style.display = 'flex';
+            break;
     }
+}
+
+// Build / update the Preview display (static layout without timer)
+function updatePreviewDisplay() {
+    if (!previewDisplay) return;
+    const tableCount = currentState.tableCount || 4;
+    const currentMatchNumber = currentState.currentMatchNumber || 1;
+    const matches = currentState.matches || [];
+    const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
+
+    // Keep brandBar in place; rebuild only team-card elements
+    const previewBar = previewDisplay.querySelector('.preview-bar');
+    const brandBar = previewDisplay.querySelector('#brandBar');
+    // Remove existing team cards
+    previewDisplay.querySelectorAll('.team-card').forEach(card => card.remove());
+
+    const tables = tableCount === 2
+        ? [ 'Table 1A', 'Table 1B' ]
+        : [ 'Table 1A', 'Table 1B', 'Table 2A', 'Table 2B' ];
+
+    tables.forEach((tableName, index) => {
+        const card = document.createElement('div');
+        card.className = 'team-card';
+        const teamVal = currentMatch?.teams?.[index] || (index < (currentMatch?.teams?.length || 0) ? '' : '');
+        const displayNumber = teamVal ? `Team ${teamVal}` : `Team ${index + 1}`;
+        card.innerHTML = `\n            <div class="team display-small">${displayNumber}</div>\n            <div class="table heading-large">${tableName}</div>`;
+        // Insert before brand bar if it exists, else append
+        // Insert before preview bar if present so preview bar stays after the team cards
+        if (previewBar) {
+            previewDisplay.insertBefore(card, previewBar);
+        } else if (brandBar) {
+            previewDisplay.insertBefore(card, brandBar);
+        } else {
+            previewDisplay.appendChild(card); // fallback
+        }
+    });
 }
 
 // Update timer display specifically
@@ -119,15 +169,15 @@ function ensureTeamCards() {
         const card = document.createElement('div');
         card.className = 'team-card';
         card.dataset.slot = i; // 0..3
-        card.innerHTML = `\n            <div class="team-number display-small">Team ${i+1}</div>\n            <div class="table-name heading-large">${t[0]}</div>`;
+        card.innerHTML = `\n            <div class="team display-small">Team ${i+1}</div>\n            <div class="table heading-large">${t[0]}</div>`;
         timerDisplay.insertBefore(card, timerContainer);
     });
 
     // Adjust grid template
     if (tableCount === 2) {
-        timerDisplay.style.gridTemplate = `"team1 team2" auto "timer timer" 1fr "brand-bar brand-bar" auto`;
+        timerDisplay.style.gridTemplate = `"team1 team2" auto "timer timer" 1fr "brand-bar brand-bar" auto / 1fr 1fr`;
     } else {
-        timerDisplay.style.gridTemplate = `"team1 team2 team3 team4" auto "timer timer timer timer" 1fr "brand-bar brand-bar brand-bar brand-bar" auto`;
+        timerDisplay.style.gridTemplate = `"team1 team2 team3 team4" auto "timer timer timer timer" 1fr "brand-bar brand-bar brand-bar brand-bar" auto / 1fr 1fr 1fr 1fr`;
     }
 }
 
@@ -145,7 +195,7 @@ function updateMatchDisplay() {
         const slot = parseInt(card.dataset.slot, 10);
         if (tableCount === 2 && slot > 1) { card.style.display = 'none'; return; }
         card.style.display = '';
-        const numEl = card.querySelector('.team-number');
+        const numEl = card.querySelector('.team');
         if (currentMatch && currentMatch.teams) {
             const val = currentMatch.teams[slot];
             numEl.textContent = val || `Team ${slot + 1}`;
@@ -162,6 +212,7 @@ window.addEventListener('storage', (event) => {
             try {
                 currentState = JSON.parse(event.newValue);
                 updateDisplay();
+                if (currentState.displayType === 'preview') updatePreviewDisplay();
                 console.log('State updated from control page');
             } catch (error) {
                 console.error('Error parsing updated state:', error);
@@ -170,6 +221,7 @@ window.addEventListener('storage', (event) => {
             // State was cleared/reset
             currentState = { ...defaultDisplayState };
             updateDisplay();
+            if (currentState.displayType === 'preview') updatePreviewDisplay();
             console.log('State was reset');
         }
     }

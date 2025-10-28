@@ -29,7 +29,7 @@ const tableCountToggle = document.getElementById('tableCountToggle');
 const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
 
 const defaultState = {
-    displayType: 'text',
+    displayType: 'text', // user selectable: 'text' | 'match-timer'; internal transitional: 'preview'
     display: 'Your event name here!',
     // Event configuration
     eventName: '',
@@ -42,6 +42,8 @@ const defaultState = {
     timerStartTime: null,
     timerEndTime: null,
     timerCurrentTime: TIMER_DURATION,
+    // Match flow flags
+    previewShown: false, // Has preview been shown for the current (stopped) match cycle
     // More state properties will be added as we build features
 };
 
@@ -154,17 +156,20 @@ function initializeUI() {
 // Update UI based on selected display type
 function updateDisplayTypeUI() {
     const displayType = getSelectedDisplayType();
-    
+    // Text configuration only visible for text display
     if (displayType === 'text') {
         textDisplayConfig.style.display = 'inherit';
-        textDisplayConfig.style.flexDirection = 'column';
-        matchTimerConfig.style.display = 'none';
-    } else if (displayType === 'match-timer') {
+    } else {
         textDisplayConfig.style.display = 'none';
-        matchTimerConfig.style.display = 'inherit';
-        matchTimerConfig.style.flexDirection = 'column';
     }
-    
+    // Match timer controls only visible for match timer
+    if (displayType === 'match-timer' || displayType === 'preview') { // treat preview as part of match flow
+        matchTimerConfig.style.display = 'inherit';
+    } else {
+        matchTimerConfig.style.display = 'none';
+    }
+    // Preview currently has no extra config section
+
     // Update match control buttons
     updateMatchControlButtons();
 }
@@ -240,10 +245,12 @@ function updateOpenDisplayButton() {
 // Update match control buttons based on state
 function updateMatchControlButtons() {
     const hasMatches = timerState.matches.length > 0;
-    const isMatchTimer = timerState.displayType === 'match-timer';
+    const isMatchTimerDisplay = timerState.displayType === 'match-timer';
+    const isPreviewDisplay = timerState.displayType === 'preview';
     const currentMatch = timerState.currentMatchNumber;
     const isRunning = timerState.timerState === 'running';
     const isFinished = timerState.timerState === 'finished';
+    const previewShown = timerState.previewShown;
     
     // Update match numbers in subtext
     if (hasMatches) {
@@ -265,9 +272,9 @@ function updateMatchControlButtons() {
     nextMatchBtn.disabled = !hasMatches || currentMatch >= timerState.matches.length || isRunning;
     
     // Start/Abort button logic
-    if (!isMatchTimer || !hasMatches) {
+    if (!(isMatchTimerDisplay || isPreviewDisplay) || !hasMatches) {
         currentMatchBtn.disabled = true;
-        currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Show Preview';
         currentMatchBtn.className = 'primary';
     } else if (isRunning) {
         currentMatchBtn.disabled = false;
@@ -277,17 +284,30 @@ function updateMatchControlButtons() {
         currentMatchBtn.disabled = false;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Reset';
         currentMatchBtn.className = 'secondary';
-    } else {
+    } else if (isPreviewDisplay && !previewShown) {
+        // In preview showing upcoming teams: next is Show Timer
+        currentMatchBtn.disabled = false;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Show Timer';
+        currentMatchBtn.className = 'primary';
+    } else if (isMatchTimerDisplay && previewShown && !isRunning && !isFinished) {
+        // Timer layout is visible but not started yet
         currentMatchBtn.disabled = false;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
+        currentMatchBtn.className = 'primary';
+    } else { // stopped state before any preview flow began
+        currentMatchBtn.disabled = false;
+        currentMatchBtn.querySelector('.button-main-text').textContent = 'Show Preview';
         currentMatchBtn.className = 'primary';
     }
 
     // Prevent accidental display type change or closing display while a match is running
     const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
-    if (textToggleBtn) {
-        textToggleBtn.disabled = isRunning; // disable only during active running state
-    }
+    const matchTimerToggleBtn = displayTypeToggle?.querySelector('[data-value="match-timer"]');
+    const previewToggleBtn = displayTypeToggle?.querySelector('[data-value="preview"]');
+    // Only disable changing to unrelated display modes while running; keep preview/match timer frozen
+    if (textToggleBtn) textToggleBtn.disabled = isRunning; // can't switch to text mid-match
+    if (previewToggleBtn) previewToggleBtn.disabled = isRunning; // cannot re-enter preview while running
+    if (matchTimerToggleBtn) matchTimerToggleBtn.disabled = false; // active stage
     if (openDisplayBtn) {
         openDisplayBtn.disabled = isRunning; // disable open/close control while running
     }
@@ -322,48 +342,78 @@ function updateDisplayText() {
 
 // Timer Functions - Updated for new button behavior
 function startMatch() {
+    const isPreviewDisplay = timerState.displayType === 'preview';
+    const isMatchTimerDisplay = timerState.displayType === 'match-timer';
+    const previewShown = timerState.previewShown;
+    // From initial match-timer (stopped, no preview yet) -> Show Preview
+    if (isMatchTimerDisplay && !isPreviewDisplay && !previewShown && timerState.timerState === 'stopped') {
+        updateState({ displayType: 'preview', previewShown: false });
+        updateDisplayTypeUI();
+        updateMatchControlButtons();
+        console.log('Preview shown');
+        return;
+    }
+    // Abort
     if (timerState.timerState === 'running') {
-        // Abort match
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
-        
-        const updates = {
-            timerState: 'stopped',
-            timerCurrentTime: TIMER_DURATION,
-            timerStartTime: null,
-            timerEndTime: null
-        };
-        
-        updateState(updates);
+            updateState({
+                timerState: 'stopped',
+                timerCurrentTime: TIMER_DURATION,
+                timerStartTime: null,
+                timerEndTime: null,
+                displayType: 'match-timer',
+                previewShown: false
+            });
         updateMatchControlButtons();
         console.log('Match aborted');
-    } else if (timerState.timerState === 'finished') {
-        // Reset timer
-        const updates = {
+        return;
+    }
+    // Reset (finished -> ready cycle)
+    if (timerState.timerState === 'finished') {
+        updateState({
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
             timerStartTime: null,
-            timerEndTime: null
-        };
-        
-        updateState(updates);
+            timerEndTime: null,
+            displayType: 'match-timer',
+            previewShown: false
+        });
         updateMatchControlButtons();
         console.log('Timer reset');
-    } else {
-        // Start match
+        return;
+    }
+    // Sequence transitions
+    if (!isPreviewDisplay && !isMatchTimerDisplay) {
+        // Entering flow from some other display type: jump to preview first
+        updateState({ displayType: 'preview', previewShown: false });
+        updateMatchControlButtons();
+        console.log('Preview shown');
+        return;
+    }
+    if (isPreviewDisplay && !previewShown) {
+        // Show Timer stage: switch to match-timer layout but keep timer stopped
+        updateState({ displayType: 'match-timer', previewShown: true, timerState: 'stopped' });
+        updateMatchControlButtons();
+        console.log('Timer layout shown (pre-start)');
+        return;
+    }
+    if (isMatchTimerDisplay && previewShown && timerState.timerState === 'stopped') {
+        // Start match from pre-start timer layout
         const now = Date.now();
-        const updates = {
+        updateState({
+            displayType: 'match-timer',
             timerState: 'running',
             timerStartTime: now,
-            timerEndTime: now + (timerState.timerCurrentTime * 1000)
-        };
-        
-        updateState(updates);
+            timerEndTime: now + (timerState.timerCurrentTime * 1000),
+            previewShown: true
+        });
         startTimerCountdown();
         updateMatchControlButtons();
         console.log('Match started');
+        return;
     }
 }
 
@@ -700,15 +750,18 @@ displayTypeToggle.addEventListener('click', (e) => {
         // Update button states
         setDisplayTypeToggle(currentDisplayType);
         
-        updateState({ 
-            displayType: currentDisplayType,
-            // Reset timer when switching to timer display
-            ...(currentDisplayType === 'match-timer' && {
-                timerCurrentTime: TIMER_DURATION,
-                timerState: 'stopped'
-            })
-        });
+        // Block switching while running
+        if (timerState.timerState === 'running') return;
+        const updates = { displayType: currentDisplayType };
+        if (currentDisplayType === 'match-timer' && timerState.displayType !== 'preview') {
+            // Entering match timer fresh ensures reset & clears preview state
+            updates.timerCurrentTime = timerState.timerCurrentTime ?? TIMER_DURATION;
+            updates.timerState = 'stopped';
+            updates.previewShown = false;
+        }
+        updateState(updates);
         updateDisplayTypeUI();
+        updateMatchControlButtons();
     }
 });
 

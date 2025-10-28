@@ -5,7 +5,7 @@
 
 :root{
     --white-bg-base: var(--flld-color-surface-2); /* fallback */
-    --white-bg-fancy: rgb(from var(--flld-color-surface-2) r g b / 80%); /* 80% alpha in modern browsers */
+    --white-bg-fancy: rgb(from var(--flld-color-surface-2) r g b / 60%); /* 80% alpha in modern browsers */
 }
 
 /* --- DISPLAY PAGE LAYOUT --- */
@@ -18,37 +18,6 @@
     background-position: center;
 }
 
-/* --- TEXT DISPLAY --- */
-
-#textDisplay {
-    align-content: center;
-    justify-content: center;
-    height: 100vh;
-    flex-wrap: wrap;
-}
-
-.display-title {
-    color: var(--flld-color-gray-10);
-}
-
-/* --- MATCH TIMER DISPLAY --- */
-
-#timerDisplay {
-    height: 100vh;
-    display: grid;
-    grid-template:
-        "team1 team2 team3 team4" auto
-        "timer timer timer timer" 1fr
-        "brand-bar brand-bar brand-bar brand-bar" auto / 1fr;
-    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
-    padding: 0px 64px;
-
-    color: var(--flld-color-text-inverse);
-
-    /* Viewport Height Update */
-    gap: 4vh;
-}
-
 /* --- TEAMS DISPLAY --- */
 
 .team-card {
@@ -56,61 +25,65 @@
     background-color: var(--white-bg-fancy);
     border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
     grid-area: auto;
+    display: grid;
+    grid-template: 
+        "team" 1fr
+        "table" auto / 1fr;
     color: var(--flld-color-text-primary);
 
     &:nth-child(1){
         --team-color: var(--flld-color-unearthed-red-70);
-        .team-number {
-            background: var(--team-color);
-            background-image: url('../media/unearthed-assets/background_flag.svg');
-            background-size: cover;
+        .team {
+            background-color: var(--team-color);
+            background-image: url('../media/unearthed-assets/background_flag_new.svg');
         }
-        .table-name { color: var(--flld-color-unearthed-red-40); }
+        .table { color: var(--flld-color-unearthed-red-40); }
     }
 
     &:nth-child(2){
         --team-color: var(--flld-color-unearthed-green-base);
-        .team-number {
-            background: var(--team-color);
-            background-image: url('../media/unearthed-assets/background_cross.svg');
-            background-size: cover;
+        .team {
+            background-color: var(--team-color);
+            background-image: url('../media/unearthed-assets/background_cross_new.svg');
         }
-        .table-name { color: var(--flld-color-unearthed-green-40); }
+        .table { color: var(--flld-color-unearthed-green-40); }
     }
     
     &:nth-child(3){
         --team-color: var(--flld-color-unearthed-yellow-base);
-        .team-number {
-            background: var(--team-color);
-            background-image: url('../media/unearthed-assets/background_binoculars.svg');
-            background-size: cover;
+        .team {
+            background-color: var(--team-color);
+            background-image: url('../media/unearthed-assets/background_binoculars_new.svg');
         }
-        .table-name { color: var(--flld-color-unearthed-yellow-40); }
+        .table { color: var(--flld-color-unearthed-yellow-40); }
     }
     &:nth-child(4){
         --team-color: var(--flld-color-unearthed-teal-70);
-        .team-number {
-            background: var(--team-color);
-            background-image: url('../media/unearthed-assets/background_eclipse.svg');
-            background-size: cover;
+        .team {
+            background-color: var(--team-color);
+            background-image: url('../media/unearthed-assets/background_eclipse_new.svg');
         }
-        .table-name { color: var(--flld-color-unearthed-teal-40); }
+        .table { color: var(--flld-color-unearthed-teal-40); }
     }
 }
 
-.team-number {
+.team {
     border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
     padding: var(--flld-spacing-md) 0;
     text-align: center;
+
+    background-size: cover;
+    background-position: right bottom;
 
     /* Viewport Height Update */
     font-size: 6vh;
     padding: 2vh;
 }
 
-.table-name {
+.table {
     padding: var(--flld-spacing-xs) 0;
     text-align: center;
+    height: auto;
 
     /* Viewport Height Update */
     font-size: 3vh;
@@ -203,3 +176,72 @@
     border-radius: 999px;
     margin: 0 4vh;
 } */
+
+/* --- TEXT DISPLAY --- */
+
+#textDisplay {
+    align-content: center;
+    justify-content: center;
+    height: 100vh;
+    flex-wrap: wrap;
+}
+
+.display-title {
+    color: var(--flld-color-gray-10);
+}
+
+/* --- MATCH PREVIEW DISPLAY --- */
+
+#previewDisplay {
+    height: 100vh;
+    display: grid;
+    grid-template:
+        "team1 team2 team3 team4" 1fr
+        "preview-bar preview-bar preview-bar preview-bar" auto
+        "brand-bar brand-bar brand-bar brand-bar" auto / 
+        1fr 1fr 1fr 1fr;
+    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
+    padding: 0px 64px;
+
+    color: var(--flld-color-text-inverse);
+
+    /* Viewport Height Update */
+    gap: 2vh;
+
+    .team-card .team {
+        align-content: center;
+        font-size: 7vh;
+    }
+
+    .team-card .table {
+        font-size: 5vh;
+        padding: 2vh 0;
+    }
+}
+
+.preview-bar {
+    text-align: center;
+    grid-area: preview-bar;
+    padding: 2vh 8vh 2vh;
+    background-color: var(--flld-color-gray-10);
+    border-radius: var(--flld-border-radius-xl);
+}
+
+/* --- MATCH TIMER DISPLAY --- */
+
+#timerDisplay {
+    height: 100vh;
+    display: grid;
+    grid-template:
+        "team1 team2 team3 team4" auto
+        "timer timer timer timer" 1fr
+        "brand-bar brand-bar brand-bar brand-bar" auto / 
+        1fr 1fr 1fr 1fr;
+    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
+    padding: 0px 64px;
+
+    color: var(--flld-color-text-inverse);
+
+    /* Viewport Height Update */
+    gap: 4vh;
+}

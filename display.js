@@ -11,8 +11,11 @@ const displayMatchTotal = document.getElementById('displayMatchTotal');
 // We'll rebuild team cards dynamically to support 2 or 4 tables
 let teamCardsContainer = null; // reference to timerDisplay for querying
 
-// Default state
-const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
+// ============================================================
+// TIMER CONFIGURATION - Change these values for testing
+// ============================================================
+const TIMER_DURATION = 10; // Timer duration in seconds (150 = 2:30 for official matches, set to 10 for quick testing)
+// ============================================================
 
 const defaultDisplayState = {
     displayType: 'text',

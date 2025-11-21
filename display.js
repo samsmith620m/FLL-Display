@@ -174,9 +174,16 @@ function updateMatchDisplay() {
         const numEl = card.querySelector('.team-number');
         if (currentMatch && currentMatch.teams) {
             const val = currentMatch.teams[slot];
-            numEl.textContent = val || `Team ${slot + 1}`;
+            if (val) {
+                numEl.innerHTML = val;
+                numEl.style.fontStyle = 'normal';
+            } else {
+                numEl.innerHTML = '<em> — </em>';
+                numEl.style.fontStyle = 'italic';
+            }
         } else {
-            numEl.textContent = `Team ${slot + 1}`;
+            numEl.innerHTML = '<em> — </em>';
+            numEl.style.fontStyle = 'italic';
         }
     });
 }

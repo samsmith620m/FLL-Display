@@ -2,21 +2,27 @@
 console.log('FLL Timer Display loaded');
 
 // DOM elements
-const displayTitle = document.querySelector('.display-title');
+const eventName = document.getElementById('eventName');
+const customText = document.getElementById('customText');
 const textDisplay = document.getElementById('textDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 const timerTime = document.querySelector('.timer-time');
+const displayEventName = document.getElementById('displayEventName');
 const displayMatchNumber = document.getElementById('displayMatchNumber');
 const displayMatchTotal = document.getElementById('displayMatchTotal');
 // We'll rebuild team cards dynamically to support 2 or 4 tables
 let teamCardsContainer = null; // reference to timerDisplay for querying
 
-// Default state
-const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
+// ============================================================
+// TIMER CONFIGURATION - Change these values for testing
+// ============================================================
+const TIMER_DURATION = 10; // Timer duration in seconds (150 = 2:30 for official matches, set to 10 for quick testing)
+// ============================================================
 
 const defaultDisplayState = {
     displayType: 'text',
-    display: 'Your event name here!',
+    eventName: '',
+    customText: '',
     timerState: 'stopped',
     timerCurrentTime: TIMER_DURATION,
     matches: [],
@@ -56,14 +62,25 @@ function formatTime(seconds) {
 function updateDisplay() {
     // Show/hide display modes based on type
     if (currentState.displayType === 'text') {
-        textDisplay.style.display = 'flex';
+        textDisplay.style.display = 'grid';
         timerDisplay.style.display = 'none';
         
-        if (currentState.display) {
-            displayTitle.textContent = currentState.display;
+        // Update event name
+        if (eventName) {
+            eventName.textContent = currentState.eventName || 'Your event name here!';
         }
         
-        console.log('Text display updated:', currentState.display);
+        // Update custom text (hide if empty)
+        if (customText) {
+            if (currentState.customText) {
+                customText.innerHTML = currentState.customText.replace(/\n/g, '<br>');
+                customText.style.display = 'block';
+            } else {
+                customText.style.display = 'none';
+            }
+        }
+        
+        console.log('Text display updated - Event:', currentState.eventName, 'Custom:', currentState.customText);
     } else if (currentState.displayType === 'match-timer') {
         textDisplay.style.display = 'none';
         timerDisplay.style.display = 'grid';
@@ -134,6 +151,15 @@ function ensureTeamCards() {
 function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
+    const divider = document.querySelector('.match-divider');
+    
+    if (displayEventName) {
+        displayEventName.textContent = currentState.eventName || '';
+        // Show/hide divider based on whether event name exists
+        if (divider) {
+            divider.style.display = currentState.eventName ? 'block' : 'none';
+        }
+    }
     if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
     if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
 

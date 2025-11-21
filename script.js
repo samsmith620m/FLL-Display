@@ -4,6 +4,7 @@ console.log('FLL Timer Control loaded');
 // DOM elements
 const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
+const eventNameInput = document.getElementById('eventName');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
@@ -26,13 +27,17 @@ const matchCount = document.querySelector('.match-count');
 const tableCountToggle = document.getElementById('tableCountToggle');
 
 // State management
-const TIMER_DURATION = 150; // Fixed 2:30 duration in seconds
+// ============================================================
+// TIMER CONFIGURATION - Change these values for testing
+// ============================================================
+const TIMER_DURATION = 10; // Timer duration in seconds (150 = 2:30 for official matches, set to 10 for quick testing)
+// ============================================================
 
 const defaultState = {
     displayType: 'text',
-    display: 'Your event name here!',
-    // Event configuration
     eventName: '',
+    customText: '',
+    // Event configuration
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
@@ -47,6 +52,7 @@ const defaultState = {
 
 let timerState = { ...defaultState };
 let timerInterval = null; // For the countdown timer
+let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
 
 // Format seconds into M:SS (no styling changes)
@@ -104,7 +110,8 @@ function resetConfiguration() {
         updateState(timerState);
         
         // Update UI to reflect reset
-        displayTextInput.value = timerState.display;
+        eventNameInput.value = '';
+        displayTextInput.value = '';
         // Set display type toggle
         setDisplayTypeToggle(timerState.displayType);
         
@@ -133,7 +140,8 @@ function updateState(newState) {
 
 // Initialize UI with loaded state
 function initializeUI() {
-    displayTextInput.value = timerState.display;
+    eventNameInput.value = timerState.eventName || '';
+    displayTextInput.value = timerState.customText || '';
     // Set display type toggle
     setDisplayTypeToggle(timerState.displayType);
     
@@ -270,6 +278,10 @@ function updateMatchControlButtons() {
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
     } else if (isRunning) {
+        // Check if within 3-second abort delay
+        const elapsed = matchStartTimestamp ? Date.now() - matchStartTimestamp : Infinity;
+        const inAbortDelay = elapsed < 3000;
+        currentMatchBtn.style.pointerEvents = inAbortDelay ? 'none' : 'auto';
         currentMatchBtn.disabled = false;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Abort';
         currentMatchBtn.className = 'destructive';
@@ -285,11 +297,15 @@ function updateMatchControlButtons() {
 
     // Prevent accidental display type change or closing display while a match is running
     const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
+    const matchTimerToggleBtn = displayTypeToggle?.querySelector('[data-value="match-timer"]');
     if (textToggleBtn) {
-        textToggleBtn.disabled = isRunning; // disable only during active running state
+        textToggleBtn.disabled = isRunning;
+    }
+    if (matchTimerToggleBtn) {
+        matchTimerToggleBtn.disabled = isRunning;
     }
     if (openDisplayBtn) {
-        openDisplayBtn.disabled = isRunning; // disable open/close control while running
+        openDisplayBtn.disabled = isRunning;
     }
 }
 
@@ -313,22 +329,36 @@ function nextMatch() {
     }
 }
 
-// Update display text automatically when input changes
-function updateDisplayText() {
-    const newText = displayTextInput.value.trim() || 'Your event name here!';
-    updateState({ display: newText });
-    console.log('Display text updated to:', newText);
+// Update event name when input changes
+function updateEventName() {
+    const newName = eventNameInput.value.trim();
+    updateState({ eventName: newName });
+    console.log('Event name updated to:', newName);
+}
+
+// Update custom text when input changes
+function updateCustomText() {
+    const newText = displayTextInput.value.trim();
+    updateState({ customText: newText });
+    console.log('Custom text updated to:', newText);
 }
 
 // Timer Functions - Updated for new button behavior
 function startMatch() {
     if (timerState.timerState === 'running') {
-        // Abort match
+        // Abort match (only if 3 seconds have passed)
+        const elapsed = Date.now() - matchStartTimestamp;
+        if (elapsed < 3000) {
+            console.log('Cannot abort match in first 3 seconds');
+            return; // Prevent abort in first 3 seconds
+        }
+        
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
         
+        matchStartTimestamp = null;
         const updates = {
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
@@ -354,6 +384,7 @@ function startMatch() {
     } else {
         // Start match
         const now = Date.now();
+        matchStartTimestamp = now; // Track start time for abort delay
         const updates = {
             timerState: 'running',
             timerStartTime: now,
@@ -564,7 +595,7 @@ function renderMatchSchedule() {
 
 // --- CSV Upload & Parsing ---
 // Expect columns: Event Name,Type,Date (mm/dd/yyyy),Start Time,End Time,Room / Table Location,Team Number,Team Name
-// We only import rows where Type starts with 'Offical Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
+// We only import rows where Type starts with 'Official Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
 function parseCSV(text) {
     const lines = text.split(/\r?\n/).filter(l => l.trim().length);
     if (lines.length < 2) return [];
@@ -583,7 +614,7 @@ function parseCSV(text) {
         if (!raw.trim()) continue;
         const cols = raw.split(',');
         const typeVal = cols[idx.type]?.trim();
-        if (!typeVal || !/^offical match/i.test(typeVal)) continue; // only official matches
+        if (!typeVal || !/^official match/i.test(typeVal)) continue; // only official matches
         const start = cols[idx.start]?.trim();
         const table = cols[idx.table]?.trim();
         const team = cols[idx.team]?.trim();
@@ -690,7 +721,8 @@ addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
 // Track changes on input fields and update automatically
-displayTextInput.addEventListener('input', updateDisplayText);
+eventNameInput.addEventListener('input', updateEventName);
+displayTextInput.addEventListener('input', updateCustomText);
 
 // Handle display type toggle buttons
 displayTypeToggle.addEventListener('click', (e) => {

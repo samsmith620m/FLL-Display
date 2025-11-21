@@ -564,7 +564,7 @@ function renderMatchSchedule() {
 
 // --- CSV Upload & Parsing ---
 // Expect columns: Event Name,Type,Date (mm/dd/yyyy),Start Time,End Time,Room / Table Location,Team Number,Team Name
-// We only import rows where Type starts with 'Offical Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
+// We only import rows where Type starts with 'Official Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
 function parseCSV(text) {
     const lines = text.split(/\r?\n/).filter(l => l.trim().length);
     if (lines.length < 2) return [];
@@ -583,7 +583,7 @@ function parseCSV(text) {
         if (!raw.trim()) continue;
         const cols = raw.split(',');
         const typeVal = cols[idx.type]?.trim();
-        if (!typeVal || !/^offical match/i.test(typeVal)) continue; // only official matches
+        if (!typeVal || !/^official match/i.test(typeVal)) continue; // only official matches
         const start = cols[idx.start]?.trim();
         const table = cols[idx.table]?.trim();
         const team = cols[idx.team]?.trim();

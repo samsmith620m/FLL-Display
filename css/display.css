@@ -36,8 +36,8 @@ html.display {
         "branding" auto
         "text" 1fr
         "brand-bar" auto / 1fr;
-    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
-    padding: 0px 64px;
+    gap: 4vh;
+    padding: 0 6vh;
     justify-items: center;
     align-items: center;
     text-align: center;
@@ -122,8 +122,7 @@ html.display {
         "team1 team2 team3 team4" auto
         "timer timer timer timer" 1fr
         "brand-bar brand-bar brand-bar brand-bar" auto / 1fr;
-    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
-    padding: 0px 64px;
+    padding: 0 6vh;
 
     color: var(--flld-color-text-inverse);
 

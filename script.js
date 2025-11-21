@@ -47,6 +47,7 @@ const defaultState = {
 
 let timerState = { ...defaultState };
 let timerInterval = null; // For the countdown timer
+let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
 
 // Format seconds into M:SS (no styling changes)
@@ -270,6 +271,10 @@ function updateMatchControlButtons() {
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
     } else if (isRunning) {
+        // Check if within 3-second abort delay
+        const elapsed = matchStartTimestamp ? Date.now() - matchStartTimestamp : Infinity;
+        const inAbortDelay = elapsed < 3000;
+        currentMatchBtn.style.pointerEvents = inAbortDelay ? 'none' : 'auto';
         currentMatchBtn.disabled = false;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Abort';
         currentMatchBtn.className = 'destructive';
@@ -327,12 +332,19 @@ function updateDisplayText() {
 // Timer Functions - Updated for new button behavior
 function startMatch() {
     if (timerState.timerState === 'running') {
-        // Abort match
+        // Abort match (only if 3 seconds have passed)
+        const elapsed = Date.now() - matchStartTimestamp;
+        if (elapsed < 3000) {
+            console.log('Cannot abort match in first 3 seconds');
+            return; // Prevent abort in first 3 seconds
+        }
+        
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
         
+        matchStartTimestamp = null;
         const updates = {
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
@@ -358,6 +370,7 @@ function startMatch() {
     } else {
         // Start match
         const now = Date.now();
+        matchStartTimestamp = now; // Track start time for abort delay
         const updates = {
             timerState: 'running',
             timerStartTime: now,

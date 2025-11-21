@@ -16,7 +16,7 @@ let teamCardsContainer = null; // reference to timerDisplay for querying
 // ============================================================
 // TIMER CONFIGURATION - Change these values for testing
 // ============================================================
-const TIMER_DURATION = 10; // Timer duration in seconds (150 = 2:30 for official matches, set to 10 for quick testing)
+const TIMER_DURATION = 150; // Timer duration in seconds (150 = 2:30 for official matches, set to 10 for quick testing)
 // ============================================================
 
 const defaultDisplayState = {

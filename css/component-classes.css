@@ -17,7 +17,16 @@
       border-top: none;
       border-left: none;
       border-right: none;
+      padding: 32px;
     }
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--flld-color-white);
 }
 
 button {
@@ -82,7 +91,6 @@ button {
 .button-group {
     display: flex;
     gap: var(--flld-spacing-sm);
-    align-items: center;
 }
 
 .toggle-button-group {
@@ -171,10 +179,9 @@ input[type="text"] {
     }
 }
 
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--flld-spacing-xs);
+.form-control {
+    display: grid;
+    gap: var(--flld-spacing-sm);
 
     .helper-text {
         font-size: var(--flld-font-size-sm);

@@ -4,8 +4,17 @@
 @import url('css/design-system.css');
 
 :root{
-    --white-bg-base: var(--flld-color-surface-2); /* fallback */
-    --white-bg-fancy: rgb(from var(--flld-color-surface-2) r g b / 80%); /* 80% alpha in modern browsers */
+    --white-bg-base: var(--flld-color-surface-1); /* fallback */
+    --white-bg-fancy: rgb(from var(--flld-color-surface-1) r g b / 65%); /* 80% alpha in modern browsers */
+}
+
+html.display {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    ::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
 }
 
 /* --- DISPLAY PAGE LAYOUT --- */
@@ -146,7 +155,7 @@
 
         /* Viewport Height Update */
         font-size: 62vh;
-        margin: -3vh 0 -9vh;
+        line-height: 44vh;
     }
 
     .colon {

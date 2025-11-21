@@ -285,11 +285,15 @@ function updateMatchControlButtons() {
 
     // Prevent accidental display type change or closing display while a match is running
     const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
+    const matchTimerToggleBtn = displayTypeToggle?.querySelector('[data-value="match-timer"]');
     if (textToggleBtn) {
-        textToggleBtn.disabled = isRunning; // disable only during active running state
+        textToggleBtn.disabled = isRunning;
+    }
+    if (matchTimerToggleBtn) {
+        matchTimerToggleBtn.disabled = isRunning;
     }
     if (openDisplayBtn) {
-        openDisplayBtn.disabled = isRunning; // disable open/close control while running
+        openDisplayBtn.disabled = isRunning;
     }
 }
 

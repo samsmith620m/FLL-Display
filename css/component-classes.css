@@ -162,10 +162,12 @@ button.toggle {
     }
 }
 
-input[type="text"] {
+input[type="text"], textarea {
     width: 100%;
     height: 44px;
     padding: 0 var(--flld-spacing-sm);
+
+    font-family: var(--flld-font-family-base);
 
     background-color: var(--flld-color-white);
     border: 1px solid var(--flld-color-gray-75);
@@ -177,6 +179,12 @@ input[type="text"] {
         outline: 2px solid var(--flld-color-black);
         outline-offset: 2px;
     }
+}
+
+textarea {
+    resize: none;
+    height: auto;
+    padding: var(--flld-spacing-sm);
 }
 
 .form-control {

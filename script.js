@@ -4,6 +4,7 @@ console.log('FLL Timer Control loaded');
 // DOM elements
 const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
+const eventNameInput = document.getElementById('eventName');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
@@ -34,9 +35,9 @@ const TIMER_DURATION = 10; // Timer duration in seconds (150 = 2:30 for official
 
 const defaultState = {
     displayType: 'text',
-    display: 'Your event name here!',
-    // Event configuration
     eventName: '',
+    customText: '',
+    // Event configuration
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
@@ -109,7 +110,8 @@ function resetConfiguration() {
         updateState(timerState);
         
         // Update UI to reflect reset
-        displayTextInput.value = timerState.display;
+        eventNameInput.value = '';
+        displayTextInput.value = '';
         // Set display type toggle
         setDisplayTypeToggle(timerState.displayType);
         
@@ -138,7 +140,8 @@ function updateState(newState) {
 
 // Initialize UI with loaded state
 function initializeUI() {
-    displayTextInput.value = timerState.display;
+    eventNameInput.value = timerState.eventName || '';
+    displayTextInput.value = timerState.customText || '';
     // Set display type toggle
     setDisplayTypeToggle(timerState.displayType);
     
@@ -326,11 +329,18 @@ function nextMatch() {
     }
 }
 
-// Update display text automatically when input changes
-function updateDisplayText() {
-    const newText = displayTextInput.value.trim() || 'Your event name here!';
-    updateState({ display: newText });
-    console.log('Display text updated to:', newText);
+// Update event name when input changes
+function updateEventName() {
+    const newName = eventNameInput.value.trim();
+    updateState({ eventName: newName });
+    console.log('Event name updated to:', newName);
+}
+
+// Update custom text when input changes
+function updateCustomText() {
+    const newText = displayTextInput.value.trim();
+    updateState({ customText: newText });
+    console.log('Custom text updated to:', newText);
 }
 
 // Timer Functions - Updated for new button behavior
@@ -711,7 +721,8 @@ addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
 // Track changes on input fields and update automatically
-displayTextInput.addEventListener('input', updateDisplayText);
+eventNameInput.addEventListener('input', updateEventName);
+displayTextInput.addEventListener('input', updateCustomText);
 
 // Handle display type toggle buttons
 displayTypeToggle.addEventListener('click', (e) => {

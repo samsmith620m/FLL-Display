@@ -30,14 +30,87 @@ html.display {
 /* --- TEXT DISPLAY --- */
 
 #textDisplay {
-    align-content: center;
-    justify-content: center;
     height: 100vh;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template:
+        "branding" auto
+        "text" 1fr
+        "brand-bar" auto / 1fr;
+    gap: var(--flld-spacing-lg) var(--flld-spacing-lg);
+    padding: 0px 64px;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
 }
 
-.display-title {
-    color: var(--flld-color-gray-10);
+#branding {
+    grid-area: branding;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    gap: 2vh;
+    padding: 4vh 2vh 2vh;
+    background-color: var(--white-bg-base);
+    background-color: var(--white-bg-fancy);
+    border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
+    width: 100%;
+
+    #logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12vh;
+    }
+
+    #eventName {
+        font-size: 6vh;
+        justify-self: center;
+        font-weight: 1000;
+    }
+
+    #logoFLL {
+        height: 14vh;
+    }
+
+    #fllLogoAndWordmark {
+        display: flex;
+        align-items: center;
+
+        #logoUnearthed {
+            height: 14vh;
+        }
+
+        #wordmarkUnearthed {
+            height: 16vh;
+            margin: 0 -6px;
+        }
+    }
+}
+
+#customText {
+    grid-area: text;
+    font-size: 8vh;
+    background-color: var(--white-bg-base);
+    background-color: var(--white-bg-fancy);
+    border-radius: var(--flld-border-radius-xl);
+    padding: 2vh 4vh;
+    animation: color-pulse 15s ease-in-out infinite;
+    font-style: italic;
+}
+
+@keyframes color-pulse {
+    0%, 100% {
+        background-color: rgb(from var(--flld-color-unearthed-red-70) r g b / 50%);
+    }
+    25% {
+        background-color: rgb(from var(--flld-color-unearthed-green-base) r g b / 50%);
+    }
+    50% {
+        background-color: rgb(from var(--flld-color-unearthed-yellow-base) r g b / 50%);
+    }
+    75% {
+        background-color: rgb(from var(--flld-color-unearthed-teal-70) r g b / 50%);
+    }
 }
 
 /* --- MATCH TIMER DISPLAY --- */
@@ -72,7 +145,8 @@ html.display {
         .team-number {
             background: var(--team-color);
             background-image: url('../media/unearthed-assets/background_flag.svg');
-            background-size: cover;
+            background-size: 110%;
+            animation: pan-background 16s ease-in-out infinite;
         }
         .table-name { color: var(--flld-color-unearthed-red-40); }
     }
@@ -82,7 +156,8 @@ html.display {
         .team-number {
             background: var(--team-color);
             background-image: url('../media/unearthed-assets/background_cross.svg');
-            background-size: cover;
+            background-size: 110%;
+            animation: pan-background 18s ease-in-out infinite;
         }
         .table-name { color: var(--flld-color-unearthed-green-40); }
     }
@@ -92,7 +167,8 @@ html.display {
         .team-number {
             background: var(--team-color);
             background-image: url('../media/unearthed-assets/background_binoculars.svg');
-            background-size: cover;
+            background-size: 110%;
+            animation: pan-background 12s ease-in-out infinite;
         }
         .table-name { color: var(--flld-color-unearthed-yellow-40); }
     }
@@ -101,7 +177,8 @@ html.display {
         .team-number {
             background: var(--team-color);
             background-image: url('../media/unearthed-assets/background_eclipse.svg');
-            background-size: cover;
+            background-size: 110%;
+            animation: pan-background 14s ease-in-out infinite;
         }
         .table-name { color: var(--flld-color-unearthed-teal-40); }
     }
@@ -115,6 +192,40 @@ html.display {
     /* Viewport Height Update */
     font-size: 6vh;
     padding: 2vh;
+    background-position: center;
+}
+
+@keyframes pan-background {
+    0%, 100% {
+        background-position: 50% 50%;
+    }
+    10% {
+        background-position: 57% 47%;
+    }
+    20% {
+        background-position: 62% 43%;
+    }
+    30% {
+        background-position: 65% 38%;
+    }
+    40% {
+        background-position: 62% 33%;
+    }
+    50% {
+        background-position: 50% 30%;
+    }
+    60% {
+        background-position: 38% 33%;
+    }
+    70% {
+        background-position: 35% 38%;
+    }
+    80% {
+        background-position: 38% 43%;
+    }
+    90% {
+        background-position: 43% 47%;
+    }
 }
 
 .table-name {
@@ -146,6 +257,16 @@ html.display {
 
     .match-count {
         font-size: 4vh;
+        display: flex;
+        align-items: center;
+        gap: 3vh;
+    }
+    
+    .match-divider {
+        width: 0.25vh;
+        height: 3vh;
+        background-color: var(--flld-color-text-inverse);
+        border-radius: 999px;
     }
 
     .timer-time {
@@ -170,45 +291,106 @@ html.display {
 
 #brandBar {
     grid-area: brand-bar;
-    padding: var(--flld-spacing-lg) 0;
+    padding: 2vh 0;
     background-color: var(--white-bg-base);
     background-color: var(--white-bg-fancy);
-    display: flex;
-    justify-content: center;
-    gap: var(--flld-spacing-xl);
     border-radius: var(--flld-border-radius-xl) var(--flld-border-radius-xl) 0 0;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* Edge fade/warp effect */
+#brandBar::before,
+#brandBar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 15vh;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#brandBar::before {
+    left: 0;
+    background: linear-gradient(to right, 
+        var(--white-bg-fancy) 0%, 
+        transparent 100%);
+}
+
+#brandBar::after {
+    right: 0;
+    background: linear-gradient(to left, 
+        var(--white-bg-fancy) 0%, 
+        transparent 100%);
+}
+
+.marquee {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.marquee-content, .marquee-content-text {
+    display: flex;
     align-items: center;
+    gap: 12vh;
+    flex-shrink: 0;
+    animation: scroll-marquee 60s linear infinite;
+    padding: 0 4vh;
 
-    /* Viewport Height Update */
-    padding: 2vh 0;
-    gap: 0;
+    /* Adjust specific logo sizes */
 
-    img {
-        /* max-height: 128px; */
+    #fllLogoAndWordmark {
+        display: flex;
+        align-items: center;
+        gap: .5vh;
 
-        /* Viewport Height Update */
-        height: 14vh;
+        #logoUnearthed {
+            height: 11vh;
+        }
+
+        #wordmarkUnearthed {
+            height: 12vh;
+            margin: 0 -1.5vh;
+        }
     }
 
-    :nth-child(1){
-        margin-right: 10vh;
+    #logoFLL {
         height: 10vh;
     }
 
-    :nth-child(2){
-        height: 12vh;
+    #logoArconic {
+        height: 11vh;
     }
 
-    :nth-child(3){
-        margin-left: -2vh;
-        margin-right: -4vh;
+    #logoISU {
+        height: 8vh;
+    }
+
+    #logoJohnDeere {
+        --LRmargin: -4vh;
+        height: 14vh;
+        margin-left: var(--LRmargin);
+        margin-right: var(--LRmargin);
+    }
+
+    #logoRTX {
+        height: 10vh;
+        padding-right: 4vh;
     }
 }
 
-/* .divider {
-    height: 100%;
-    width: 4px;
-    background-color: var(--flld-color-gray-10);
-    border-radius: 999px;
-    margin: 0 4vh;
-} */
+.marquee-content-text {
+    animation: scroll-marquee 30s linear infinite;
+}
+
+@keyframes scroll-marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}

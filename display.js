@@ -1,6 +1,17 @@
 // FLL Timer Display Page
 console.log('FLL Timer Display loaded');
 
+// Get display ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const displayId = urlParams.get('id');
+
+if (!displayId) {
+    console.error('No display ID provided in URL');
+    document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: white;"><h1>Invalid Display</h1><p>No display ID provided in URL. Please open this display from the control page.</p></div>';
+}
+
+console.log('Display ID:', displayId);
+
 // DOM elements
 const eventName = document.getElementById('eventName');
 const customText = document.getElementById('customText');
@@ -31,6 +42,7 @@ const defaultDisplayState = {
 
 // Current state
 let currentState = { ...defaultDisplayState };
+let myDisplayConfig = null; // This display's configuration
 
 // Load initial state from localStorage
 function loadState() {
@@ -39,7 +51,18 @@ function loadState() {
         if (savedState) {
             const parsedState = JSON.parse(savedState);
             currentState = { ...defaultDisplayState, ...parsedState };
+            
+            // Find this display's configuration
+            myDisplayConfig = currentState.displays?.find(d => d.id === displayId);
+            
+            if (!myDisplayConfig) {
+                console.warn('Display config not found for ID:', displayId);
+                document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: white;"><h1>Display Not Found</h1><p>This display (ID: ' + displayId + ') has been removed from the control page.</p></div>';
+                return;
+            }
+            
             console.log('Display state loaded from localStorage');
+            console.log('My display config:', myDisplayConfig);
         } else {
             console.log('No saved state found, using defaults');
         }
@@ -60,8 +83,12 @@ function formatTime(seconds) {
 
 // Update display based on current state
 function updateDisplay() {
+    if (!myDisplayConfig) return;
+    
+    const displayType = myDisplayConfig.type;
+    
     // Show/hide display modes based on type
-    if (currentState.displayType === 'text') {
+    if (displayType === 'text') {
         textDisplay.style.display = 'grid';
         timerDisplay.style.display = 'none';
         
@@ -81,7 +108,7 @@ function updateDisplay() {
         }
         
         console.log('Text display updated - Event:', currentState.eventName, 'Custom:', currentState.customText);
-    } else if (currentState.displayType === 'match-timer') {
+    } else if (displayType === 'match-timer') {
         textDisplay.style.display = 'none';
         timerDisplay.style.display = 'grid';
         
@@ -193,7 +220,18 @@ window.addEventListener('storage', (event) => {
     if (event.key === 'fll-timer-state') {
         if (event.newValue) {
             try {
-                currentState = JSON.parse(event.newValue);
+                const newState = JSON.parse(event.newValue);
+                currentState = newState;
+                
+                // Update our display config reference
+                myDisplayConfig = currentState.displays?.find(d => d.id === displayId);
+                
+                if (!myDisplayConfig) {
+                    console.warn('Display config removed for ID:', displayId);
+                    document.body.innerHTML = '<div style="padding: 2rem; text-align: center; color: white;"><h1>Display Removed</h1><p>This display has been removed from the control page.</p></div>';
+                    return;
+                }
+                
                 updateDisplay();
                 console.log('State updated from control page');
             } catch (error) {

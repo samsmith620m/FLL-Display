@@ -2,16 +2,12 @@
 console.log('FLL Timer Control loaded');
 
 // DOM elements
-const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
 const eventNameInput = document.getElementById('eventName');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
-const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
 const nextMatchBtn = document.getElementById('nextMatchBtn');
-const textDisplayConfig = document.getElementById('textDisplayConfig');
-const matchTimerConfig = document.getElementById('matchTimerConfig');
 const addMatchBtn = document.getElementById('addMatchBtn');
 const deleteAllMatchesBtn = document.getElementById('deleteAllMatchesBtn');
 const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
@@ -34,14 +30,19 @@ const TIMER_DURATION = 150; // Timer duration in seconds (150 = 2:30 for officia
 // ============================================================
 
 const defaultState = {
-    displayType: 'text',
     eventName: '',
     customText: '',
+    // Display management - NEW: array of display configurations
+    displays: [
+        // Each display: { id: '1', name: 'Main Display', type: 'text' }
+    ],
+    nextDisplayId: 1, // Auto-increment for new displays
     // Event configuration
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
     tableCount: 4,
+    previewShown: false, // Has preview been shown for current match cycle
     // Timer settings
     timerState: 'stopped', // stopped, running, paused
     timerStartTime: null,
@@ -53,7 +54,7 @@ const defaultState = {
 let timerState = { ...defaultState };
 let timerInterval = null; // For the countdown timer
 let matchStartTimestamp = null; // Track when match started for abort delay
-let displayWindow = null; // Track the display window
+let displayWindows = {}; // Track all display windows by ID
 
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
@@ -112,14 +113,10 @@ function resetConfiguration() {
         // Update UI to reflect reset
         eventNameInput.value = '';
         displayTextInput.value = '';
-        // Set display type toggle
-        setDisplayTypeToggle(timerState.displayType);
-        
-        // Update UI based on display type
-        updateDisplayTypeUI();
         
         // Reset match schedule display
         renderMatchSchedule();
+        renderDisplayList();
         
         console.log('Configuration reset to defaults');
         alert('Configuration has been reset.');
@@ -142,39 +139,13 @@ function updateState(newState) {
 function initializeUI() {
     eventNameInput.value = timerState.eventName || '';
     displayTextInput.value = timerState.customText || '';
-    // Set display type toggle
-    setDisplayTypeToggle(timerState.displayType);
-    
-    // Update UI based on display type
-    updateDisplayTypeUI();
     
     // Initialize match schedule display
     renderMatchSchedule();
     // Initialize table count toggle
     if (tableCountToggle) setTableCountToggle(timerState.tableCount);
     
-    // Initialize display button state
-    updateOpenDisplayButton();
-    
     console.log('UI initialized with saved configuration');
-}
-
-// Update UI based on selected display type
-function updateDisplayTypeUI() {
-    const displayType = getSelectedDisplayType();
-    
-    if (displayType === 'text') {
-        textDisplayConfig.style.display = 'inherit';
-        textDisplayConfig.style.flexDirection = 'column';
-        matchTimerConfig.style.display = 'none';
-    } else if (displayType === 'match-timer') {
-        textDisplayConfig.style.display = 'none';
-        matchTimerConfig.style.display = 'inherit';
-        matchTimerConfig.style.flexDirection = 'column';
-    }
-    
-    // Update match control buttons
-    updateMatchControlButtons();
 }
 
 // Table count toggle helpers
@@ -189,66 +160,9 @@ function setTableCountToggle(count) {
     });
 }
 
-// Helper functions for display type toggle
-function getSelectedDisplayType() {
-    const activeBtn = displayTypeToggle.querySelector('.toggle.active');
-    return activeBtn ? activeBtn.dataset.value : 'text';
-}
-
-function setDisplayTypeToggle(displayType) {
-    const buttons = displayTypeToggle.querySelectorAll('.toggle');
-    buttons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === displayType);
-    });
-}
-
-// Open display page in new window/tab or close existing display
-function openDisplay() {
-    if (displayWindow && !displayWindow.closed) {
-        // Display is open, close it
-        displayWindow.close();
-        displayWindow = null;
-        updateOpenDisplayButton();
-        console.log('Display window closed');
-    } else {
-        // Open new display window
-        displayWindow = window.open('display.html', 'fll-display', 'width=1920,height=1080');
-        
-        if (displayWindow) {
-            console.log('Display window opened');
-            updateOpenDisplayButton();
-            
-            // Check if window is closed by user to update button
-            const checkClosed = setInterval(() => {
-                if (displayWindow && displayWindow.closed) {
-                    displayWindow = null;
-                    updateOpenDisplayButton();
-                    clearInterval(checkClosed);
-                    console.log('Display window was closed by user');
-                }
-            }, 1000);
-        } else {
-            alert('Please allow popups for this site to open the display window.');
-        }
-    }
-}
-
-// Update Open Display button based on display window state
-function updateOpenDisplayButton() {
-    if (displayWindow && !displayWindow.closed) {
-        openDisplayBtn.textContent = 'Close Display';
-        openDisplayBtn.className = 'secondary';
-    } else {
-        openDisplayBtn.textContent = 'Open Display';
-        openDisplayBtn.className = 'primary';
-        displayWindow = null; // Clear reference if window is closed
-    }
-}
-
 // Update match control buttons based on state
 function updateMatchControlButtons() {
     const hasMatches = timerState.matches.length > 0;
-    const isMatchTimer = timerState.displayType === 'match-timer';
     const currentMatch = timerState.currentMatchNumber;
     const isRunning = timerState.timerState === 'running';
     const isFinished = timerState.timerState === 'finished';
@@ -272,8 +186,8 @@ function updateMatchControlButtons() {
     prevMatchBtn.disabled = !hasMatches || currentMatch <= 1 || isRunning;
     nextMatchBtn.disabled = !hasMatches || currentMatch >= timerState.matches.length || isRunning;
     
-    // Start/Abort button logic
-    if (!isMatchTimer || !hasMatches) {
+    // Start/Abort button logic - now works independently of display type
+    if (!hasMatches) {
         currentMatchBtn.disabled = true;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
@@ -293,19 +207,6 @@ function updateMatchControlButtons() {
         currentMatchBtn.disabled = false;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
-    }
-
-    // Prevent accidental display type change or closing display while a match is running
-    const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
-    const matchTimerToggleBtn = displayTypeToggle?.querySelector('[data-value="match-timer"]');
-    if (textToggleBtn) {
-        textToggleBtn.disabled = isRunning;
-    }
-    if (matchTimerToggleBtn) {
-        matchTimerToggleBtn.disabled = isRunning;
-    }
-    if (openDisplayBtn) {
-        openDisplayBtn.disabled = isRunning;
     }
 }
 
@@ -502,13 +403,23 @@ function deleteAllMatches() {
 }
 
 function renderMatchSchedule() {
+    console.log('renderMatchSchedule called, matches:', timerState.matches);
     const tbody = matchScheduleBody;
     const noMatches = noMatchesMessage;
     const table = matchScheduleTable;
     
+    if (!tbody || !table || !noMatches) {
+        console.error('Match schedule DOM elements not found:', { tbody, table, noMatches });
+        return;
+    }
+    
+    console.log('DOM elements found, rendering', timerState.matches.length, 'matches');
+    
     // Update match count
     const count = timerState.matches.length;
-    matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
+    if (matchCount) {
+        matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
+    }
     
     // Show/hide Delete All button
     if (deleteAllMatchesBtn) {
@@ -536,18 +447,22 @@ function renderMatchSchedule() {
 
     // Clear existing rows
     tbody.innerHTML = '';
+    console.log('tbody cleared, innerHTML:', tbody.innerHTML);
     
     if (timerState.matches.length === 0) {
         table.style.display = 'none';
         noMatches.style.display = 'block';
+        console.log('No matches, showing empty message');
         return;
     }
     
     table.style.display = 'table';
     noMatches.style.display = 'none';
+    console.log('Building rows for', timerState.matches.length, 'matches');
     
     // Create rows for each match
     timerState.matches.forEach(match => {
+        console.log('Creating row for match', match.matchNumber);
         const row = document.createElement('tr');
         
         // Add highlighting for current match
@@ -590,7 +505,10 @@ function renderMatchSchedule() {
         row.appendChild(actionsCell);
         
         tbody.appendChild(row);
+        console.log('Row appended for match', match.matchNumber);
     });
+    
+    console.log('renderMatchSchedule complete, tbody children:', tbody.children.length);
 }
 
 // --- CSV Upload & Parsing ---
@@ -711,8 +629,179 @@ tableCountToggle?.addEventListener('click', (e) => {
     }
 });
 
+// ============================================================
+// DISPLAY MANAGEMENT FUNCTIONS - NEW
+// ============================================================
+
+function addDisplay() {
+    const id = String(timerState.nextDisplayId);
+    const newDisplay = {
+        id: id,
+        name: `Display ${id}`,
+        type: 'text' // Default to text display
+    };
+    
+    const updatedDisplays = [...timerState.displays, newDisplay];
+    updateState({
+        displays: updatedDisplays,
+        nextDisplayId: timerState.nextDisplayId + 1
+    });
+    
+    renderDisplayList();
+    console.log('Display added:', newDisplay);
+}
+
+function removeDisplay(displayId) {
+    // Close window if open
+    if (displayWindows[displayId] && !displayWindows[displayId].closed) {
+        displayWindows[displayId].close();
+        delete displayWindows[displayId];
+    }
+    
+    const updatedDisplays = timerState.displays.filter(d => d.id !== displayId);
+    updateState({ displays: updatedDisplays });
+    renderDisplayList();
+    console.log('Display removed:', displayId);
+}
+
+function updateDisplayType(displayId, newType) {
+    const updatedDisplays = timerState.displays.map(d => {
+        if (d.id === displayId) {
+            return { ...d, type: newType };
+        }
+        return d;
+    });
+    
+    updateState({ displays: updatedDisplays });
+    renderDisplayList();
+    console.log('Display type updated:', { displayId, newType });
+}
+
+function updateDisplayName(displayId, newName) {
+    const updatedDisplays = timerState.displays.map(d => {
+        if (d.id === displayId) {
+            return { ...d, name: newName };
+        }
+        return d;
+    });
+    
+    updateState({ displays: updatedDisplays });
+    renderDisplayList();
+}
+
+function openDisplayWindow(displayId) {
+    const display = timerState.displays.find(d => d.id === displayId);
+    if (!display) return;
+    
+    // Check if already open
+    if (displayWindows[displayId] && !displayWindows[displayId].closed) {
+        displayWindows[displayId].focus();
+        console.log('Display window focused:', displayId);
+        return;
+    }
+    
+    // Open new window with display ID in URL
+    const url = `display.html?id=${displayId}`;
+    const windowName = `fll-display-${displayId}`;
+    const newWindow = window.open(url, windowName, 'width=1920,height=1080');
+    
+    if (newWindow) {
+        displayWindows[displayId] = newWindow;
+        console.log('Display window opened:', displayId);
+        renderDisplayList();
+        
+        // Monitor if window closes
+        const checkClosed = setInterval(() => {
+            if (newWindow.closed) {
+                delete displayWindows[displayId];
+                renderDisplayList();
+                clearInterval(checkClosed);
+                console.log('Display window closed by user:', displayId);
+            }
+        }, 1000);
+    } else {
+        alert('Please allow popups for this site to open display windows.');
+    }
+}
+
+function renderDisplayList() {
+    const container = document.getElementById('displayList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (timerState.displays.length === 0) {
+        container.innerHTML = '<p class="no-displays">No displays configured. Click "Add Display" to create one.</p>';
+        return;
+    }
+    
+    timerState.displays.forEach(display => {
+        const isOpen = displayWindows[display.id] && !displayWindows[display.id].closed;
+        
+        const displayCard = document.createElement('div');
+        displayCard.className = 'card alternate';
+        displayCard.innerHTML = `
+            <div class="card-header">
+                <h3>Display ${display.id}</h3>
+                <div class="form-control horizontal">
+                    <label>Display Type</label>
+                    <div class="toggle-button-group" data-display-id="${display.id}">
+                        <button class="toggle start ${display.type === 'text' ? 'active' : ''}" data-value="text">Custom Text</button>
+                        <button class="toggle end ${display.type === 'match-timer' ? 'active' : ''}" data-value="match-timer">Match Timer</button>
+                    </div>
+                </div>
+                <div class="card-header-actions">
+                    <button class="primary ${isOpen ? 'secondary' : ''}" 
+                            data-display-id="${display.id}" 
+                            data-action="toggle-window">
+                        ${isOpen ? 'Focus Display' : 'Open Display'}
+                    </button>
+                    <button class="destructive" data-display-id="${display.id}" data-action="remove">Delete</button>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(displayCard);
+    });
+    
+    // Add event listeners
+    container.querySelectorAll('[data-action="remove"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const displayId = e.target.dataset.displayId;
+            if (confirm(`Remove "Display ${displayId}"?`)) {
+                removeDisplay(displayId);
+            }
+        });
+    });
+    
+    container.querySelectorAll('[data-action="toggle-window"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const displayId = e.target.dataset.displayId;
+            openDisplayWindow(displayId);
+        });
+    });
+    
+    container.querySelectorAll('.toggle-button-group').forEach(group => {
+        group.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toggle')) {
+                const displayId = group.dataset.displayId;
+                const newType = e.target.dataset.value;
+                updateDisplayType(displayId, newType);
+            }
+        });
+    });
+}
+
+// ============================================================
+// END DISPLAY MANAGEMENT FUNCTIONS
+// ============================================================
+
 // Event listeners
-openDisplayBtn.addEventListener('click', openDisplay);
+const addDisplayBtn = document.getElementById('addDisplayBtn');
+if (addDisplayBtn) {
+    addDisplayBtn.addEventListener('click', addDisplay);
+}
+
 resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
@@ -724,27 +813,8 @@ deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 eventNameInput.addEventListener('input', updateEventName);
 displayTextInput.addEventListener('input', updateCustomText);
 
-// Handle display type toggle buttons
-displayTypeToggle.addEventListener('click', (e) => {
-    if (e.target.classList.contains('toggle')) {
-        const currentDisplayType = e.target.dataset.value;
-        
-        // Update button states
-        setDisplayTypeToggle(currentDisplayType);
-        
-        updateState({ 
-            displayType: currentDisplayType,
-            // Reset timer when switching to timer display
-            ...(currentDisplayType === 'match-timer' && {
-                timerCurrentTime: TIMER_DURATION,
-                timerState: 'stopped'
-            })
-        });
-        updateDisplayTypeUI();
-    }
-});
-
 // Initialize when page loads
 loadState();
 initializeUI();
+renderDisplayList(); // Render display management UI
 console.log('Control page initialized with persistent configuration');

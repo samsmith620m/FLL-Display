@@ -21,39 +21,17 @@
     <main class="control-content">
         <div class="card">
             <div class="card-header">
-                <h2>Display Controls</h2>
-                <button id="openDisplayBtn" class="primary">
-                    Open Display
-                </button>
+                <h2>Display Management</h2>
+                <button id="addDisplayBtn" class="primary">Add Display</button>
             </div>
+            <p>Create and configure multiple display windows. Each display can show different content independently.</p>
             <div class="form-control">
-                <p class="label">Current Display Type</p>
-                <div class="toggle-button-group" id="displayTypeToggle">
-                    <button type="button" class="toggle start active" data-value="text">Custom Text</button>
-                    <button type="button" class="toggle end" data-value="match-timer">Match Timer</button>
-                </div>
-            </div>
-            <div id="textDisplayConfig" class="form-control">
-                <label for="displayText">Custom Text</label>
+                <label for="displayText">Custom Text (for Text Displays)</label>
                 <textarea id="displayText" placeholder="Enter custom text (optional)" rows="3"></textarea>
-                <p class="helper-text">Optional custom text shown below the event name on the text display.</p>
+                <p class="helper-text">Optional custom text shown below the event name on text displays.</p>
             </div>
-            <div id="matchTimerConfig" class="form-control" style="display: none;">
-                <p class="label">Match Controls</p>
-                <div class="button-group">
-                    <button id="prevMatchBtn" class="secondary" disabled>
-                        <span class="button-main-text">Previous</span>
-                        <span class="button-sub-text" id="prevMatchSub">Match --</span>
-                    </button>
-                    <button id="currentMatchBtn" class="primary" disabled>
-                        <span class="button-main-text">Start</span>
-                        <span class="button-sub-text" id="currentMatchSub">Match --</span>
-                    </button>
-                    <button id="nextMatchBtn" class="secondary" disabled>
-                        <span class="button-main-text">Next</span>
-                        <span class="button-sub-text" id="nextMatchSub">Match --</span>
-                    </button>
-                </div>
+            <div id="displayList" class="display-list">
+                <!-- Display cards will be rendered here -->
             </div>
         </div>
 
@@ -97,10 +75,31 @@
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
             </div>
             <div class="input-group">
-                <label class="label">Number of Tables</label>
+                <label for="numberOfTables">Number of Tables</label>
                 <div class="toggle-button-group" id="tableCountToggle">
                     <button type="button" class="toggle" data-value="2">2</button>
                     <button type="button" class="toggle active" data-value="4">4</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Match Controls</h2>
+            <p>Control the match timer display. Navigate between matches and start/stop the timer.</p>
+            <div class="form-control">
+                <div class="button-group" id="matchTimerConfig">
+                    <button id="prevMatchBtn" class="secondary" disabled>
+                        <span class="button-main-text">Previous</span>
+                        <span class="button-sub-text" id="prevMatchSub">Match --</span>
+                    </button>
+                    <button id="currentMatchBtn" class="primary" disabled>
+                        <span class="button-main-text">Start</span>
+                        <span class="button-sub-text" id="currentMatchSub">Match --</span>
+                    </button>
+                    <button id="nextMatchBtn" class="secondary" disabled>
+                        <span class="button-main-text">Next</span>
+                        <span class="button-sub-text" id="nextMatchSub">Match --</span>
+                    </button>
                 </div>
             </div>
         </div>

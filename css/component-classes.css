@@ -13,11 +13,11 @@
     border-radius: 8px;
 
     &.banner {
-      border-radius: 0;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      padding: 32px;
+        border-radius: 0;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        padding: 32px;
     }
 }
 

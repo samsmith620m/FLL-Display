@@ -379,6 +379,10 @@ html.display {
         height: 10vh;
         padding-right: 4vh;
     }
+
+    #logoFirstIllinois {
+        height: 10vh;
+    }
 }
 
 .marquee-content-text {
@@ -392,4 +396,154 @@ html.display {
     100% {
         transform: translateX(-100%);
     }
+}
+
+/* Sponsor Logo Preview */
+#sponsorPreview {
+    display: flex;
+    gap: var(--flld-spacing-sm);
+    flex-wrap: wrap;
+    margin-top: var(--flld-spacing-sm);
+    min-height: 80px;
+    padding: var(--flld-spacing-sm);
+    border: 2px dashed var(--flld-color-gray-90);
+    border-radius: var(--flld-border-radius-md);
+    background-color: var(--flld-color-gray-98);
+}
+
+/* Logo Library */
+#logoLibrary {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--flld-spacing-sm);
+    margin-top: var(--flld-spacing-sm);
+    padding: var(--flld-spacing-md);
+    border: 2px solid var(--flld-color-gray-90);
+    border-radius: var(--flld-border-radius-md);
+    background-color: var(--flld-color-gray-98);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.library-logo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--flld-spacing-xs);
+    padding: var(--flld-spacing-sm);
+    border: 2px solid var(--flld-color-gray-90);
+    border-radius: var(--flld-border-radius-md);
+    background-color: var(--flld-color-white);
+    transition: all 0.2s ease;
+}
+
+.library-logo-item:hover {
+    border-color: var(--flld-color-gray-40);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.library-logo-item img {
+    height: 60px;
+    object-fit: contain;
+    width: 100%;
+}
+
+.library-logo-name {
+    font-size: 12px;
+    text-align: center;
+    color: var(--flld-color-gray-20);
+    line-height: 1.2;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.library-logo-item .add-from-library {
+    width: 100%;
+    padding: var(--flld-spacing-xs);
+    background: var(--flld-color-unearthed-green-base);
+    color: var(--flld-color-white);
+    border: none;
+    border-radius: var(--flld-border-radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.library-logo-item .add-from-library:hover {
+    background: var(--flld-color-unearthed-green-40);
+}
+
+.sponsor-preview-item {
+    position: relative;
+    cursor: move;
+    border: 2px solid var(--flld-color-gray-90);
+    border-radius: var(--flld-border-radius-md);
+    padding: var(--flld-spacing-xs);
+    background-color: var(--flld-color-white);
+    transition: all 0.2s ease;
+}
+
+.sponsor-preview-item:hover {
+    border-color: var(--flld-color-gray-40);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sponsor-preview-item img {
+    height: 60px;
+    display: block;
+    border-radius: var(--flld-border-radius-sm);
+}
+
+.sponsor-preview-item .remove-sponsor {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--flld-color-unearthed-red-70);
+    color: var(--flld-color-white);
+    border: 2px solid var(--flld-color-white);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.sponsor-preview-item .remove-sponsor:hover {
+    background: var(--flld-color-unearthed-red-base);
+}
+
+.sponsor-preview-item .drag-handle {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--flld-color-gray-40);
+    color: var(--flld-color-white);
+    border: 2px solid var(--flld-color-white);
+    border-radius: 12px;
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 1;
+    cursor: move;
+    user-select: none;
+}
+
+.sponsor-preview-item.dragging {
+    opacity: 0.4;
+}
+
+/* Custom sponsor logos in marquee */
+.marquee-content .custom-sponsor-logo,
+.marquee-content-text .custom-sponsor-logo {
+    height: 12vh;
+    flex-shrink: 0;
 }

@@ -96,6 +96,18 @@
                 <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
             </div>
+            <div class="form-control">
+                <label for="sponsorLogos">Sponsor Logos</label>
+                <p class="helper-text">Select from available logos or upload your own. Drag to reorder.</p>
+                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
+                <div style="display: flex; gap: var(--flld-spacing-sm); flex-wrap: wrap;">
+                    <button id="selectFromLibraryBtn" class="secondary">Select from Library</button>
+                    <button id="uploadSponsorsBtn" class="secondary">Upload Custom</button>
+                    <button id="clearSponsorsBtn" class="secondary">Clear All</button>
+                </div>
+                <div id="logoLibrary" style="display: none;"></div>
+                <div id="sponsorPreview"></div>
+            </div>
             <div class="input-group">
                 <label class="label">Number of Tables</label>
                 <div class="toggle-button-group" id="tableCountToggle">

@@ -18,6 +18,7 @@ const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
 const uploadScheduleInput = document.getElementById('uploadScheduleInput');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
+const toggleScheduleBtn = document.getElementById('toggleScheduleBtn');
 const matchScheduleHead = document.getElementById('matchScheduleHead');
 const prevMatchSub = document.getElementById('prevMatchSub');
 const currentMatchSub = document.getElementById('currentMatchSub');
@@ -25,6 +26,23 @@ const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.querySelector('.match-count');
 const tableCountToggle = document.getElementById('tableCountToggle');
+const uploadSponsorsBtn = document.getElementById('uploadSponsorsBtn');
+const sponsorLogosInput = document.getElementById('sponsorLogosInput');
+const sponsorPreview = document.getElementById('sponsorPreview');
+const clearSponsorsBtn = document.getElementById('clearSponsorsBtn');
+const selectFromLibraryBtn = document.getElementById('selectFromLibraryBtn');
+const logoLibrary = document.getElementById('logoLibrary');
+
+// Available sponsor logos in the library
+const availableLogos = [
+    { name: 'Arconic', path: 'media/sponsor-logos/logo-arconic.png' },
+    { name: 'FIRST Illinois', path: 'media/sponsor-logos/first-illinois.png' },
+    { name: 'ISU College of Engineering', path: 'media/sponsor-logos/logo-isu_college_of_engineering.png' },
+    { name: 'John Deere', path: 'media/sponsor-logos/logo-john_deere.PNG' },
+    { name: 'QC ESC', path: 'media/sponsor-logos/qcesc.png' },
+    { name: 'QC ESC Square', path: 'media/sponsor-logos/qcesc-square.png' },
+    { name: 'RTX', path: 'media/sponsor-logos/logo-rtx.png' }
+];
 
 // State management
 // ============================================================
@@ -38,6 +56,7 @@ const defaultState = {
     eventName: '',
     customText: '',
     // Event configuration
+    sponsorLogos: [], // Array of base64 encoded images
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
@@ -312,7 +331,21 @@ function updateMatchControlButtons() {
 // Navigate to previous match
 function previousMatch() {
     if (timerState.currentMatchNumber > 1) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber - 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to previous match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber - 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to previous match:', timerState.currentMatchNumber);
@@ -322,7 +355,21 @@ function previousMatch() {
 // Navigate to next match
 function nextMatch() {
     if (timerState.currentMatchNumber < timerState.matches.length) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to next match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber + 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to next match:', timerState.currentMatchNumber);
@@ -501,6 +548,13 @@ function deleteAllMatches() {
     }
 }
 
+// Toggle schedule collapse state
+function toggleScheduleCollapse() {
+    isScheduleCollapsed = !isScheduleCollapsed;
+    toggleScheduleBtn.textContent = isScheduleCollapsed ? 'Expand' : 'Collapse';
+    renderMatchSchedule();
+}
+
 function renderMatchSchedule() {
     const tbody = matchScheduleBody;
     const noMatches = noMatchesMessage;
@@ -510,9 +564,12 @@ function renderMatchSchedule() {
     const count = timerState.matches.length;
     matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
     
-    // Show/hide Delete All button
+    // Show/hide Delete All button and Collapse button
     if (deleteAllMatchesBtn) {
         deleteAllMatchesBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    if (toggleScheduleBtn) {
+        toggleScheduleBtn.style.display = count > 3 ? 'inline-flex' : 'none';
     }
     
     // Update match control buttons
@@ -540,14 +597,34 @@ function renderMatchSchedule() {
     if (timerState.matches.length === 0) {
         table.style.display = 'none';
         noMatches.style.display = 'block';
+        isScheduleCollapsed = false; // Reset collapse state
         return;
+    }
+    
+    // Reset collapse state if we have 3 or fewer matches
+    if (timerState.matches.length <= 3) {
+        isScheduleCollapsed = false;
     }
     
     table.style.display = 'table';
     noMatches.style.display = 'none';
     
+    // Filter matches if collapsed: show only previous, current, and next
+    let matchesToDisplay = timerState.matches;
+    if (isScheduleCollapsed && timerState.matches.length > 0) {
+        const currentMatchNum = timerState.currentMatchNumber;
+        matchesToDisplay = timerState.matches.filter(match => {
+            const diff = match.matchNumber - currentMatchNum;
+            return diff >= -1 && diff <= 1; // Show current, ±1
+        });
+        // If filtered list is empty (edge case), show all
+        if (matchesToDisplay.length === 0) {
+            matchesToDisplay = timerState.matches;
+        }
+    }
+    
     // Create rows for each match
-    timerState.matches.forEach(match => {
+    matchesToDisplay.forEach(match => {
         const row = document.createElement('tr');
         
         // Add highlighting for current match
@@ -711,8 +788,9 @@ tableCountToggle?.addEventListener('click', (e) => {
     }
 });
 
-// Event listeners
+// Event Listeners
 openDisplayBtn.addEventListener('click', openDisplay);
+toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
@@ -723,6 +801,162 @@ deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
 displayTextInput.addEventListener('input', updateCustomText);
+
+// Sponsor logo upload handlers
+selectFromLibraryBtn.addEventListener('click', () => {
+    toggleLogoLibrary();
+});
+
+uploadSponsorsBtn.addEventListener('click', () => {
+    sponsorLogosInput.click();
+});
+
+function toggleLogoLibrary() {
+    const isVisible = logoLibrary.style.display !== 'none';
+    
+    if (isVisible) {
+        logoLibrary.style.display = 'none';
+        selectFromLibraryBtn.textContent = 'Select from Library';
+    } else {
+        renderLogoLibrary();
+        logoLibrary.style.display = 'grid';
+        selectFromLibraryBtn.textContent = 'Hide Library';
+    }
+}
+
+function renderLogoLibrary() {
+    logoLibrary.innerHTML = availableLogos.map((logo, index) => `
+        <div class="library-logo-item" data-index="${index}">
+            <img src="${logo.path}" alt="${logo.name}">
+            <div class="library-logo-name">${logo.name}</div>
+            <button class="add-from-library" onclick="addLogoFromLibrary(${index})">Add</button>
+        </div>
+    `).join('');
+}
+
+async function addLogoFromLibrary(index) {
+    const logo = availableLogos[index];
+    
+    try {
+        // Fetch the image and convert to base64
+        const response = await fetch(logo.path);
+        const blob = await response.blob();
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            updateState({ sponsorLogos: [...timerState.sponsorLogos, e.target.result] });
+            renderSponsorPreview();
+        };
+        reader.readAsDataURL(blob);
+    } catch (error) {
+        console.error('Error loading logo from library:', error);
+        alert('Error loading logo. Please try again.');
+    }
+}
+
+sponsorLogosInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    const logoPromises = files.map(file => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    try {
+        const logos = await Promise.all(logoPromises);
+        updateState({ sponsorLogos: [...timerState.sponsorLogos, ...logos] });
+        renderSponsorPreview();
+    } catch (error) {
+        console.error('Error loading sponsor logos:', error);
+        alert('Error loading one or more images. Please try again.');
+    }
+    
+    // Reset input so same file can be uploaded again
+    sponsorLogosInput.value = '';
+});
+
+clearSponsorsBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to remove all sponsor logos?')) {
+        updateState({ sponsorLogos: [] });
+        renderSponsorPreview();
+    }
+});
+
+// Drag and drop handlers
+let draggedIndex = null;
+
+function handleDragStart(e) {
+    draggedIndex = parseInt(e.currentTarget.dataset.index);
+    e.currentTarget.style.opacity = '0.4';
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    const dropIndex = parseInt(e.currentTarget.dataset.index);
+    
+    if (draggedIndex !== null && draggedIndex !== dropIndex) {
+        const newLogos = [...timerState.sponsorLogos];
+        const [removed] = newLogos.splice(draggedIndex, 1);
+        newLogos.splice(dropIndex, 0, removed);
+        updateState({ sponsorLogos: newLogos });
+        renderSponsorPreview();
+    }
+    
+    return false;
+}
+
+function handleDragEnd(e) {
+    e.currentTarget.style.opacity = '1';
+    draggedIndex = null;
+}
+
+function removeSponsor(index) {
+    const newLogos = [...timerState.sponsorLogos];
+    newLogos.splice(index, 1);
+    updateState({ sponsorLogos: newLogos });
+    renderSponsorPreview();
+}
+
+function renderSponsorPreview() {
+    if (!timerState.sponsorLogos || timerState.sponsorLogos.length === 0) {
+        sponsorPreview.innerHTML = '<p style="color: var(--flld-color-gray-40); font-size: 14px; margin: 0;">No sponsor logos uploaded</p>';
+        return;
+    }
+    
+    sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
+        <div class="sponsor-preview-item" draggable="true" data-index="${index}">
+            <img src="${logo}" alt="Sponsor ${index + 1}">
+            <button class="remove-sponsor" onclick="removeSponsor(${index})" title="Remove logo">×</button>
+            <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+        </div>
+    `).join('');
+    
+    // Add drag and drop event listeners
+    const items = sponsorPreview.querySelectorAll('.sponsor-preview-item');
+    items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragend', handleDragEnd);
+    });
+}
 
 // Handle display type toggle buttons
 displayTypeToggle.addEventListener('click', (e) => {
@@ -747,4 +981,5 @@ displayTypeToggle.addEventListener('click', (e) => {
 // Initialize when page loads
 loadState();
 initializeUI();
+renderSponsorPreview();
 console.log('Control page initialized with persistent configuration');

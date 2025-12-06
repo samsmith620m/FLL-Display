@@ -330,7 +330,21 @@ function updateMatchControlButtons() {
 // Navigate to previous match
 function previousMatch() {
     if (timerState.currentMatchNumber > 1) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber - 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to previous match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber - 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to previous match:', timerState.currentMatchNumber);
@@ -340,7 +354,21 @@ function previousMatch() {
 // Navigate to next match
 function nextMatch() {
     if (timerState.currentMatchNumber < timerState.matches.length) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to next match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber + 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to next match:', timerState.currentMatchNumber);

@@ -86,6 +86,11 @@ button {
     .button-sub-text {
         font-weight: var(--flld-font-weight-regular);
     }
+
+    &.icon-only {
+        width: 44px;
+        padding: 0px;
+    }
 }
 
 .button-group {
@@ -193,6 +198,86 @@ textarea {
 
     .helper-text {
         font-size: var(--flld-font-size-sm);
-        color: var(--flld-color-gray-50);
+        color: var(--flld-color-text-secondary);
     }
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    background-color: var(--flld-color-white);
+    border-radius: var(--flld-border-radius-lg);
+    padding: var(--flld-spacing-lg);
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--flld-spacing-sm);
+    margin-bottom: var(--flld-spacing-md);
+    color: var(--flld-color-messaging-critical-shade);
+
+    .material-symbols-outlined {
+        font-size: 32px;
+    }
+
+    h3 {
+        margin: 0;
+        font-size: var(--flld-font-size-xl);
+        color: var(--flld-color-gray-10);
+    }
+}
+
+.modal p {
+    margin: 0 0 var(--flld-spacing-lg) 0;
+    font-size: var(--flld-font-size-md);
+    color: var(--flld-color-text-primary);
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--flld-spacing-sm);
+    justify-content: flex-end;
 }

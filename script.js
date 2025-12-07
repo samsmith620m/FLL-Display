@@ -31,6 +31,9 @@ const sponsorPreview = document.getElementById('sponsorPreview');
 const clearSponsorsBtn = document.getElementById('clearSponsorsBtn');
 const selectFromLibraryBtn = document.getElementById('selectFromLibraryBtn');
 const logoLibrary = document.getElementById('logoLibrary');
+const resetModal = document.getElementById('resetModal');
+const confirmResetBtn = document.getElementById('confirmResetBtn');
+const cancelResetBtn = document.getElementById('cancelResetBtn');
 
 // Available sponsor logos in the library
 const availableLogos = [
@@ -114,34 +117,48 @@ function saveState() {
 
 // Reset all configuration to defaults
 function resetConfiguration() {
-    const confirmReset = confirm('Are you sure you want to reset all configuration? This will clear all your event settings and cannot be undone.');
-    
-    if (confirmReset) {
-        // Stop any running timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        timerState = { ...defaultState };
-        saveState();
-        updateState(timerState);
-        
-        // Update UI to reflect reset
-        eventNameInput.value = '';
-        displayTextInput.value = '';
-        // Set display type toggle
-        setDisplayTypeToggle(timerState.displayType);
-        
-        // Update UI based on display type
-        updateDisplayTypeUI();
-        
-        // Reset match schedule display
-        renderMatchSchedule();
-        
-        console.log('Configuration reset to defaults');
-        alert('Configuration has been reset.');
+    showResetModal();
+}
+
+// Show custom reset confirmation modal
+function showResetModal() {
+    resetModal.style.display = 'flex';
+}
+
+// Close reset modal
+function closeResetModal() {
+    resetModal.style.display = 'none';
+}
+
+// Confirm reset and execute
+function confirmReset() {
+    // Stop any running timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
     }
+    
+    timerState = { ...defaultState };
+    saveState();
+    updateState(timerState);
+    
+    // Update UI to reflect reset
+    eventNameInput.value = '';
+    displayTextInput.value = '';
+    // Set display type toggle
+    setDisplayTypeToggle(timerState.displayType);
+    
+    // Update UI based on display type
+    updateDisplayTypeUI();
+    
+    // Reset match schedule display
+    renderMatchSchedule();
+    
+    console.log('Configuration reset to defaults');
+    alert('Configuration has been reset.');
+    
+    // Close the modal
+    closeResetModal();
 }
 
 // Update state and notify display
@@ -732,11 +749,20 @@ tableCountToggle?.addEventListener('click', (e) => {
 // Event listeners
 openDisplayBtn.addEventListener('click', openDisplay);
 resetConfigBtn.addEventListener('click', resetConfiguration);
+confirmResetBtn.addEventListener('click', confirmReset);
+cancelResetBtn.addEventListener('click', closeResetModal);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
+
+// Close modal when clicking outside of it
+resetModal.addEventListener('click', (e) => {
+    if (e.target === resetModal) {
+        closeResetModal();
+    }
+});
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
@@ -768,8 +794,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <div class="library-logo-name">${logo.name}</div>
-            <button class="add-from-library" onclick="addLogoFromLibrary(${index})">Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-outlined">add</span>Add</button>
         </div>
     `).join('');
 }
@@ -829,9 +854,11 @@ clearSponsorsBtn.addEventListener('click', () => {
 
 // Drag and drop handlers
 let draggedIndex = null;
+let draggedElement = null;
 
 function handleDragStart(e) {
     draggedIndex = parseInt(e.currentTarget.dataset.index);
+    draggedElement = e.currentTarget;
     e.currentTarget.style.opacity = '0.4';
     e.dataTransfer.effectAllowed = 'move';
 }
@@ -841,6 +868,29 @@ function handleDragOver(e) {
         e.preventDefault();
     }
     e.dataTransfer.dropEffect = 'move';
+    
+    const dropTarget = e.currentTarget;
+    if (draggedElement && dropTarget !== draggedElement && dropTarget.classList.contains('sponsor-preview-item')) {
+        const dropIndex = parseInt(dropTarget.dataset.index);
+        
+        // Get bounding boxes
+        const dropRect = dropTarget.getBoundingClientRect();
+        const afterElement = (e.clientX > dropRect.left + dropRect.width / 2);
+        
+        // Insert visual placeholder
+        if (afterElement) {
+            dropTarget.parentNode.insertBefore(draggedElement, dropTarget.nextSibling);
+        } else {
+            dropTarget.parentNode.insertBefore(draggedElement, dropTarget);
+        }
+        
+        // Update indices
+        const items = sponsorPreview.querySelectorAll('.sponsor-preview-item');
+        items.forEach((item, idx) => {
+            item.dataset.index = idx;
+        });
+    }
+    
     return false;
 }
 
@@ -865,6 +915,22 @@ function handleDrop(e) {
 function handleDragEnd(e) {
     e.currentTarget.style.opacity = '1';
     draggedIndex = null;
+    draggedElement = null;
+    
+    // Save final order
+    const finalOrder = [];
+    const items = sponsorPreview.querySelectorAll('.sponsor-preview-item');
+    items.forEach((item) => {
+        const index = parseInt(item.dataset.index);
+        if (timerState.sponsorLogos[index]) {
+            finalOrder.push(timerState.sponsorLogos[index]);
+        }
+    });
+    
+    if (finalOrder.length > 0) {
+        updateState({ sponsorLogos: finalOrder });
+        renderSponsorPreview();
+    }
 }
 
 function removeSponsor(index) {
@@ -875,16 +941,21 @@ function removeSponsor(index) {
 }
 
 function renderSponsorPreview() {
+    // Show/hide clear all button based on whether there are logos
+    if (clearSponsorsBtn) {
+        clearSponsorsBtn.style.display = (timerState.sponsorLogos && timerState.sponsorLogos.length > 0) ? 'inline-flex' : 'none';
+    }
+    
     if (!timerState.sponsorLogos || timerState.sponsorLogos.length === 0) {
-        sponsorPreview.innerHTML = '<p style="color: var(--flld-color-gray-40); font-size: 14px; margin: 0;">No sponsor logos uploaded</p>';
+        sponsorPreview.innerHTML = '<div class="no-data-area-neutral">No sponsor logos added. Select logos from the library or upload your own!</div>';
         return;
     }
     
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
         <div class="sponsor-preview-item" draggable="true" data-index="${index}">
+            <div class="drag-handle material-symbols-outlined" title="Drag to reorder">drag_indicator</div>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="remove-sponsor" onclick="removeSponsor(${index})" title="Remove logo">×</button>
-            <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+            <button class="destructive icon-only material-symbols-outlined" onclick="removeSponsor(${index})" title="Remove logo">close</button>
         </div>
     `).join('');
     

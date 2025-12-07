@@ -62,7 +62,11 @@
                 <h2>Match Schedule</h2>
                 <div class="schedule-header-right">
                     <span class="match-count">0 matches scheduled</span>
-                    <button id="deleteAllMatchesBtn" class="destructive" style="display: none;">Delete All</button>
+                    <div class="button-group">
+                        <button id="uploadScheduleBtn" class="secondary">Upload Schedule (CSV)</button>
+                        <button id="addMatchBtn" class="primary">Add Match</button>
+                        <button id="deleteAllMatchesBtn" class="destructive" style="display: none;">Delete All</button>
+                    </div>
                 </div>
             </div>
             <div>
@@ -72,15 +76,11 @@
                         <!-- Match rows will be added here dynamically -->
                     </tbody>
                 </table>
-                <div id="noMatchesMessage" class="no-matches">
+                <div id="noMatchesMessage" class="no-data-area-neutral">
                     No matches scheduled. Click "Add Match" to create your first match, or use "Upload Schedule (CSV)" to import matches.
                 </div>
             </div>
-            <div class="schedule-controls">
-                <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
-                <button id="uploadScheduleBtn" class="secondary">Upload Schedule (CSV)</button>
-                <button id="addMatchBtn" class="primary">Add Match</button>
-            </div>
+            <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
         </div>
 
         <div class="card">
@@ -98,15 +98,15 @@
             </div>
             <div class="form-control">
                 <label for="sponsorLogos">Sponsor Logos</label>
-                <p class="helper-text">Select from available logos or upload your own. Drag to reorder.</p>
-                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
-                <div style="display: flex; gap: var(--flld-spacing-sm); flex-wrap: wrap;">
+                <div class="button-group">
                     <button id="selectFromLibraryBtn" class="secondary">Select from Library</button>
                     <button id="uploadSponsorsBtn" class="secondary">Upload Custom</button>
-                    <button id="clearSponsorsBtn" class="secondary">Clear All</button>
+                    <button id="clearSponsorsBtn" class="destructive">Remove All</button>
                 </div>
                 <div id="logoLibrary" style="display: none;"></div>
                 <div id="sponsorPreview"></div>
+                <p class="helper-text">These logos will appear at the bottom of the display.</p>
+                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
             </div>
             <div class="input-group">
                 <label class="label">Number of Tables</label>

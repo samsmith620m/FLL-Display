@@ -57,6 +57,39 @@
             </div>
         </div>
 
+        <div class="card" id="teamsConfig">
+            <div class="card-header">
+                <div class="button-group">
+                    <h2>Teams</h2>
+                    <button id="toggleTeamsBtn" class="secondary">Collapse</button>
+                </div>
+                <div class="schedule-header-right">
+                    <span id="teamCount">0 teams</span>
+                    <div class="button-group">
+                        <button id="addTeamBtn" class="primary">Add Team</button>
+                        <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-outlined">delete</span>Delete All</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <table id="teamsTable" class="match-table">
+                    <thead id="teamsHead">
+                        <tr>
+                            <th>Team Number</th>
+                            <th>Team Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamsBody">
+                        <!-- Team rows will be added here dynamically -->
+                    </tbody>
+                </table>
+                <div id="noTeamsMessage" class="no-data-area-neutral">
+                    No teams added. Click "Add Team" to create your first team.
+                </div>
+            </div>
+        </div>
+
         <div class="card" id="matchScheduleConfig">
             <div class="card-header">
                 <div class="button-group">

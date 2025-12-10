@@ -90,3 +90,15 @@
     border: 1px dashed var(--flld-color-border-base);
     width: 100%;
 }
+
+/* --- TEAMS TABLE COLUMN WIDTHS --- */
+
+#teamsTable th:nth-child(1),
+#teamsTable td:nth-child(1) {
+    width: 33.33%;
+}
+
+#teamsTable th:nth-child(2),
+#teamsTable td:nth-child(2) {
+    width: 66.67%;
+}

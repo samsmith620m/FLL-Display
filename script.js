@@ -25,6 +25,13 @@ const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.getElementById('matchCount');
+const addTeamBtn = document.getElementById('addTeamBtn');
+const deleteAllTeamsBtn = document.getElementById('deleteAllTeamsBtn');
+const toggleTeamsBtn = document.getElementById('toggleTeamsBtn');
+const teamsTable = document.getElementById('teamsTable');
+const teamsBody = document.getElementById('teamsBody');
+const noTeamsMessage = document.getElementById('noTeamsMessage');
+const teamCount = document.getElementById('teamCount');
 const uploadSponsorsBtn = document.getElementById('uploadSponsorsBtn');
 const sponsorLogosInput = document.getElementById('sponsorLogosInput');
 const sponsorPreview = document.getElementById('sponsorPreview');
@@ -56,6 +63,8 @@ const defaultState = {
     customText: '',
     // Event configuration
     sponsorLogos: [], // Array of base64 encoded images
+    // Teams
+    teams: [], // Array of team objects: { teamNumber: '1234', teamName: 'Team Name' }
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
@@ -73,6 +82,7 @@ let timerInterval = null; // For the countdown timer
 let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
 let isScheduleCollapsed = false; // Track schedule collapse state
+let isTeamsCollapsed = false; // Track teams collapse state
 
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
@@ -157,6 +167,9 @@ function resetConfiguration() {
         // Update UI based on display type
         updateDisplayTypeUI();
         
+        // Reset teams display
+        renderTeams();
+        
         // Reset match schedule display
         renderMatchSchedule();
         
@@ -186,6 +199,9 @@ function initializeUI() {
     
     // Update UI based on display type
     updateDisplayTypeUI();
+    
+    // Initialize teams display
+    renderTeams();
     
     // Initialize match schedule display
     renderMatchSchedule();
@@ -261,6 +277,136 @@ function updateTableName(index, newName) {
     updatedTableNames[index] = newName;
     updateState({ tableNames: updatedTableNames });
 }
+
+// Teams management functions
+function addTeam() {
+    const newTeam = {
+        teamNumber: '',
+        teamName: ''
+    };
+    
+    const updatedTeams = [...timerState.teams, newTeam];
+    updateState({ teams: updatedTeams });
+    renderTeams();
+}
+
+function deleteTeam(index) {
+    if (!confirm('Are you sure you want to delete this team?')) {
+        return;
+    }
+    
+    const updatedTeams = timerState.teams.filter((_, i) => i !== index);
+    updateState({ teams: updatedTeams });
+    renderTeams();
+}
+
+function deleteAllTeams() {
+    if (confirm('Are you sure you want to delete all teams? This action cannot be undone.')) {
+        updateState({ teams: [] });
+        renderTeams();
+        console.log('All teams deleted');
+    }
+}
+
+function updateTeamNumber(index, value) {
+    const updatedTeams = [...timerState.teams];
+    updatedTeams[index] = { ...updatedTeams[index], teamNumber: value };
+    updateState({ teams: updatedTeams });
+}
+
+function updateTeamName(index, value) {
+    const updatedTeams = [...timerState.teams];
+    updatedTeams[index] = { ...updatedTeams[index], teamName: value };
+    updateState({ teams: updatedTeams });
+}
+
+function toggleTeamsCollapse() {
+    isTeamsCollapsed = !isTeamsCollapsed;
+    toggleTeamsBtn.textContent = isTeamsCollapsed ? 'Expand' : 'Collapse';
+    renderTeams();
+}
+
+function renderTeams() {
+    const tbody = teamsBody;
+    const noTeams = noTeamsMessage;
+    const table = teamsTable;
+    
+    // Update team count
+    const count = timerState.teams.length;
+    teamCount.textContent = `${count} team${count !== 1 ? 's' : ''}`;
+    
+    // Show/hide Delete All button and Collapse button
+    if (deleteAllTeamsBtn) {
+        deleteAllTeamsBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    if (toggleTeamsBtn) {
+        toggleTeamsBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+    }
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    if (timerState.teams.length === 0) {
+        table.style.display = 'none';
+        noTeams.style.display = 'block';
+        isTeamsCollapsed = false;
+        return;
+    }
+    
+    // Reset collapse state if we have 3 or fewer teams
+    if (timerState.teams.length <= 3) {
+        isTeamsCollapsed = false;
+    }
+    
+    table.style.display = 'table';
+    noTeams.style.display = 'none';
+    
+    // Filter teams if collapsed (show all for now, can add filtering later if needed)
+    let teamsToDisplay = timerState.teams;
+    
+    // Create rows for each team
+    teamsToDisplay.forEach((team, index) => {
+        const row = document.createElement('tr');
+        
+        // Team number column
+        const numberCell = document.createElement('td');
+        const numberInput = document.createElement('input');
+        numberInput.type = 'text';
+        numberInput.className = 'team-input';
+        numberInput.value = team.teamNumber;
+        numberInput.placeholder = 'Team Number';
+        numberInput.addEventListener('input', (e) => {
+            updateTeamNumber(index, e.target.value);
+        });
+        numberCell.appendChild(numberInput);
+        row.appendChild(numberCell);
+        
+        // Team name column
+        const nameCell = document.createElement('td');
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'team-input';
+        nameInput.value = team.teamName;
+        nameInput.placeholder = 'Team Name';
+        nameInput.addEventListener('input', (e) => {
+            updateTeamName(index, e.target.value);
+        });
+        nameCell.appendChild(nameInput);
+        row.appendChild(nameCell);
+        
+        // Actions column
+        const actionsCell = document.createElement('td');
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'destructive icon-only material-symbols-outlined';
+        deleteBtn.title = 'Delete Team';
+        deleteBtn.textContent = 'delete';
+        deleteBtn.addEventListener('click', () => {
+            deleteTeam(index);
+        });
+        actionsCell.appendChild(deleteBtn);
+        row.appendChild(actionsCell);
+        
+        tbody.appendChild(row);
     });
 }
 
@@ -881,11 +1027,14 @@ if (uploadScheduleBtn && uploadScheduleInput) {
 
 // Event Listeners
 openDisplayBtn.addEventListener('click', openDisplay);
+toggleTeamsBtn.addEventListener('click', toggleTeamsCollapse);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
+addTeamBtn.addEventListener('click', addTeam);
+deleteAllTeamsBtn.addEventListener('click', deleteAllTeams);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 

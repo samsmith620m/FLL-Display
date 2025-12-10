@@ -73,6 +73,17 @@ button {
         }
     }
 
+    &.tertiary {
+        background-color: var(--flld-color-white);
+        color: var(--flld-color-gray-10);
+        border: none;
+        padding: var(--flld-spacing-sm);
+
+        &:hover:not(:disabled) {
+            background-color: var(--flld-color-gray-95);
+        }
+    }
+
     &.destructive {
         border: 2px solid var(--flld-color-messaging-critical-shade);
         color: var(--flld-color-messaging-critical-shade);
@@ -85,6 +96,12 @@ button {
 
     .button-sub-text {
         font-weight: var(--flld-font-weight-regular);
+    }
+
+    &.icon-only {
+        width: 44px;
+        padding: 0px;
+        justify-content: center;
     }
 }
 
@@ -190,10 +207,15 @@ textarea {
 
 .form-control {
     display: grid;
-    gap: var(--flld-spacing-sm);
+    gap: var(--flld-spacing-xs);
+
+    .description {
+        font-size: var(--flld-font-size-md);
+        color: var(--flld-color-text-primary);
+    }
 
     .helper-text {
         font-size: var(--flld-font-size-sm);
-        color: var(--flld-color-gray-50);
+        color: var(--flld-color-text-secondary);
     }
 }

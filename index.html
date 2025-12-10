@@ -64,8 +64,12 @@
                     <button id="toggleScheduleBtn" class="secondary">Collapse</button>
                 </div>
                 <div class="schedule-header-right">
-                    <span class="match-count">0 matches scheduled</span>
-                    <button id="deleteAllMatchesBtn" class="destructive" style="display: none;">Delete All</button>
+                    <span id="matchCount">0 matches</span>
+                    <div class="button-group">
+                        <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
+                        <button id="addMatchBtn" class="primary">Add Match</button>
+                        <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-outlined">delete</span>Delete All</button>
+                    </div>
                 </div>
             </div>
             <div>
@@ -75,15 +79,11 @@
                         <!-- Match rows will be added here dynamically -->
                     </tbody>
                 </table>
-                <div id="noMatchesMessage" class="no-matches">
+                <div id="noMatchesMessage" class="no-data-area-neutral">
                     No matches scheduled. Click "Add Match" to create your first match, or use "Upload Schedule (CSV)" to import matches.
                 </div>
             </div>
-            <div class="schedule-controls">
-                <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
-                <button id="uploadScheduleBtn" class="secondary">Upload Schedule (CSV)</button>
-                <button id="addMatchBtn" class="primary">Add Match</button>
-            </div>
+            <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
         </div>
 
         <div class="card">
@@ -100,23 +100,18 @@
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
             </div>
             <div class="form-control">
-                <label for="sponsorLogos">Sponsor Logos</label>
-                <p class="helper-text">Select from available logos or upload your own. Drag to reorder.</p>
-                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
-                <div style="display: flex; gap: var(--flld-spacing-sm); flex-wrap: wrap;">
+                <div class="button-group">
+                    <div style="width: 100%;">
+                        <label for="sponsorLogos">Sponsor Logos</label>
+                        <p class="description">These logos will appear at the bottom of the display in the order you specify.</p>
+                    </div>
+                    <button id="uploadSponsorsBtn" class="secondary">Upload Logo</button>
                     <button id="selectFromLibraryBtn" class="secondary">Select from Library</button>
-                    <button id="uploadSponsorsBtn" class="secondary">Upload Custom</button>
-                    <button id="clearSponsorsBtn" class="destructive">Delete All</button>
+                    <button id="clearSponsorsBtn" class="destructive">Remove All</button>
                 </div>
-                <div id="logoLibrary" style="display: none;"></div>
                 <div id="sponsorPreview"></div>
-            </div>
-            <div class="input-group">
-                <label class="label">Number of Tables</label>
-                <div class="toggle-button-group" id="tableCountToggle">
-                    <button type="button" class="toggle" data-value="2">2</button>
-                    <button type="button" class="toggle active" data-value="4">4</button>
-                </div>
+                <div id="logoLibrary" style="display: none;"></div>
+                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
             </div>
         </div>
     </main>

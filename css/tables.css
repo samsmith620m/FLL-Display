@@ -80,7 +80,7 @@
 
 /* --- EMPTY STATE --- */
 
-.no-matches {
+.no-data-area-neutral {
     text-align: center;
     padding: 32px 0px;
     color: var(--flld-color-neutral-secondary);
@@ -88,4 +88,5 @@
     background-color: var(--flld-color-surface-2);
     border-radius: var(--flld-border-radius-lg);
     border: 1px dashed var(--flld-color-border-base);
+    width: 100%;
 }

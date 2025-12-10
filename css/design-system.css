@@ -131,6 +131,7 @@
     --flld-border-radius-lg: 8px;
     --flld-border-radius-xl: 16px;
     --flld-border-radius-2xl: 32px;
+    --flld-border-radius-full: 9999px;
 
     /* Typography Primitives */
     --flld-font-family-base: var(--flld-font-family-sans-serif);
@@ -198,6 +199,7 @@
 
     /* Text Colors */
     --flld-color-text-primary: var(--flld-color-neutral-primary);
+    --flld-color-text-secondary: var(--flld-color-neutral-secondary);
     --flld-color-text-inverse: var(--flld-color-white);
     --flld-color-text-theme: var(--flld-color-theme-primary);
     --flld-color-text-theme-active: var(--flld-color-theme-primary-shade);

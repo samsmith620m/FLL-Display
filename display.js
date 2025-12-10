@@ -27,6 +27,7 @@ const defaultDisplayState = {
     timerCurrentTime: TIMER_DURATION,
     matches: [],
     currentMatchNumber: 1,
+    tableNames: ['1A', '1B'],
     sponsorLogos: []
 };
 
@@ -34,7 +35,7 @@ const defaultDisplayState = {
 let currentState = { ...defaultDisplayState };
 
 // Track previous state to avoid unnecessary DOM recreation
-let previousTableCount = null;
+let previousTableNames = null;
 let previousSponsorLogos = null;
 
 // Load initial state from localStorage
@@ -44,6 +45,25 @@ function loadState() {
         if (savedState) {
             const parsedState = JSON.parse(savedState);
             currentState = { ...defaultDisplayState, ...parsedState };
+            
+            // Migrate old tableCount to tableNames if needed
+            if (currentState.tableCount !== undefined && !currentState.tableNames) {
+                const count = currentState.tableCount;
+                if (count === 2) {
+                    currentState.tableNames = ['1A', '1B'];
+                } else if (count === 4) {
+                    currentState.tableNames = ['1A', '1B', '2A', '2B'];
+                } else {
+                    currentState.tableNames = ['1A', '1B'];
+                }
+                delete currentState.tableCount;
+            }
+            
+            // Ensure tableNames exists
+            if (!currentState.tableNames || !Array.isArray(currentState.tableNames) || currentState.tableNames.length === 0) {
+                currentState.tableNames = ['1A', '1B'];
+            }
+            
             console.log('Display state loaded from localStorage');
         } else {
             console.log('No saved state found, using defaults');
@@ -128,7 +148,9 @@ function updateTimerDisplay() {
 // Update match display with current match data
 function ensureTeamCards() {
     if (!timerDisplay) return;
-    const tableCount = currentState.tableCount || 4;
+    const tableNames = currentState.tableNames || ['1A', '1B'];
+    const tableCount = tableNames.length;
+    
     // Remove existing team-card elements
     const existing = timerDisplay.querySelectorAll('.team-card');
     existing.forEach(el => el.remove());
@@ -137,23 +159,20 @@ function ensureTeamCards() {
     const timerContainer = timerDisplay.querySelector('.timer-container');
     if (!timerContainer) return;
 
-    const tables = tableCount === 2
-        ? [ ['Table 1A', 'team-color-a'], ['Table 1B', 'team-color-b'] ]
-        : [ ['Table 1A','team-color-a'], ['Table 1B','team-color-b'], ['Table 2A','team-color-c'], ['Table 2B','team-color-d'] ];
-    tables.forEach((t, i) => {
+    const teamColors = ['team-color-a', 'team-color-b', 'team-color-c', 'team-color-d'];
+    tableNames.forEach((tableName, i) => {
         const card = document.createElement('div');
         card.className = 'team-card';
-        card.dataset.slot = i; // 0..3
-        card.innerHTML = `\n            <div class="team-number display-small">Team ${i+1}</div>\n            <div class="table-name heading-large">${t[0]}</div>`;
+        card.dataset.slot = i;
+        card.innerHTML = `\n            <div class="team-number display-small">Team ${i+1}</div>\n            <div class="table-name heading-large">${tableName}</div>`;
         timerDisplay.insertBefore(card, timerContainer);
     });
 
-    // Adjust grid template
-    if (tableCount === 2) {
-        timerDisplay.style.gridTemplate = `"team1 team2" auto "timer timer" 1fr "brand-bar brand-bar" auto`;
-    } else {
-        timerDisplay.style.gridTemplate = `"team1 team2 team3 team4" auto "timer timer timer timer" 1fr "brand-bar brand-bar brand-bar brand-bar" auto`;
-    }
+    // Adjust grid template dynamically based on table count
+    const teamAreas = tableNames.map((_, i) => `team${i+1}`).join(' ');
+    const timerAreas = tableNames.map(() => 'timer').join(' ');
+    const brandAreas = tableNames.map(() => 'brand-bar').join(' ');
+    timerDisplay.style.gridTemplate = `"${teamAreas}" auto "${timerAreas}" 1fr "${brandAreas}" auto`;
 }
 
 function updateMatchDisplay() {
@@ -171,18 +190,16 @@ function updateMatchDisplay() {
     if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
     if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
 
-    // Only recreate team cards if table count changed
-    const tableCount = currentState.tableCount || 4;
-    if (previousTableCount !== tableCount) {
+    // Only recreate team cards if table names changed
+    const tableNamesString = JSON.stringify(currentState.tableNames || ['1A', '1B']);
+    if (previousTableNames !== tableNamesString) {
         ensureTeamCards();
-        previousTableCount = tableCount;
+        previousTableNames = tableNamesString;
     }
     const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
     const cards = timerDisplay.querySelectorAll('.team-card');
     cards.forEach(card => {
         const slot = parseInt(card.dataset.slot, 10);
-        if (tableCount === 2 && slot > 1) { card.style.display = 'none'; return; }
-        card.style.display = '';
         const numEl = card.querySelector('.team-number');
         if (currentMatch && currentMatch.teams) {
             const val = currentMatch.teams[slot];

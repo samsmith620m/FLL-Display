@@ -261,8 +261,6 @@ function updateTableName(index, newName) {
     updatedTableNames[index] = newName;
     updateState({ tableNames: updatedTableNames });
 }
-    });
-}
 
 // Helper functions for display type toggle
 function getSelectedDisplayType() {

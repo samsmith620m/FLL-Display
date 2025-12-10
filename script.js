@@ -18,6 +18,7 @@ const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
 const uploadScheduleInput = document.getElementById('uploadScheduleInput');
 const matchScheduleTable = document.getElementById('matchScheduleTable');
 const matchScheduleBody = document.getElementById('matchScheduleBody');
+const toggleScheduleBtn = document.getElementById('toggleScheduleBtn');
 const matchScheduleHead = document.getElementById('matchScheduleHead');
 const prevMatchSub = document.getElementById('prevMatchSub');
 const currentMatchSub = document.getElementById('currentMatchSub');
@@ -347,7 +348,21 @@ function updateMatchControlButtons() {
 // Navigate to previous match
 function previousMatch() {
     if (timerState.currentMatchNumber > 1) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber - 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to previous match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber - 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to previous match:', timerState.currentMatchNumber);
@@ -357,7 +372,21 @@ function previousMatch() {
 // Navigate to next match
 function nextMatch() {
     if (timerState.currentMatchNumber < timerState.matches.length) {
-        updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        matchStartTimestamp = null;
+        
+        // Update to next match and reset timer
+        updateState({ 
+            currentMatchNumber: timerState.currentMatchNumber + 1,
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to next match:', timerState.currentMatchNumber);
@@ -536,6 +565,13 @@ function deleteAllMatches() {
     }
 }
 
+// Toggle schedule collapse state
+function toggleScheduleCollapse() {
+    isScheduleCollapsed = !isScheduleCollapsed;
+    toggleScheduleBtn.textContent = isScheduleCollapsed ? 'Expand' : 'Collapse';
+    renderMatchSchedule();
+}
+
 function renderMatchSchedule() {
     const tbody = matchScheduleBody;
     const noMatches = noMatchesMessage;
@@ -545,9 +581,12 @@ function renderMatchSchedule() {
     const count = timerState.matches.length;
     matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
     
-    // Show/hide Delete All button
+    // Show/hide Delete All button and Collapse button
     if (deleteAllMatchesBtn) {
         deleteAllMatchesBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    if (toggleScheduleBtn) {
+        toggleScheduleBtn.style.display = count > 3 ? 'inline-flex' : 'none';
     }
     
     // Update match control buttons
@@ -575,14 +614,34 @@ function renderMatchSchedule() {
     if (timerState.matches.length === 0) {
         table.style.display = 'none';
         noMatches.style.display = 'block';
+        isScheduleCollapsed = false; // Reset collapse state
         return;
+    }
+    
+    // Reset collapse state if we have 3 or fewer matches
+    if (timerState.matches.length <= 3) {
+        isScheduleCollapsed = false;
     }
     
     table.style.display = 'table';
     noMatches.style.display = 'none';
     
+    // Filter matches if collapsed: show only previous, current, and next
+    let matchesToDisplay = timerState.matches;
+    if (isScheduleCollapsed && timerState.matches.length > 0) {
+        const currentMatchNum = timerState.currentMatchNumber;
+        matchesToDisplay = timerState.matches.filter(match => {
+            const diff = match.matchNumber - currentMatchNum;
+            return diff >= -1 && diff <= 1; // Show current, ±1
+        });
+        // If filtered list is empty (edge case), show all
+        if (matchesToDisplay.length === 0) {
+            matchesToDisplay = timerState.matches;
+        }
+    }
+    
     // Create rows for each match
-    timerState.matches.forEach(match => {
+    matchesToDisplay.forEach(match => {
         const row = document.createElement('tr');
         
         // Add highlighting for current match
@@ -746,8 +805,9 @@ tableCountToggle?.addEventListener('click', (e) => {
     }
 });
 
-// Event listeners
+// Event Listeners
 openDisplayBtn.addEventListener('click', openDisplay);
+toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
 confirmResetBtn.addEventListener('click', confirmReset);
 cancelResetBtn.addEventListener('click', closeResetModal);

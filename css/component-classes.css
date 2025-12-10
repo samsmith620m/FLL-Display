@@ -96,6 +96,7 @@ button {
 .button-group {
     display: flex;
     gap: var(--flld-spacing-sm);
+    align-items: center;
 }
 
 .toggle-button-group {

@@ -33,6 +33,10 @@ const defaultDisplayState = {
 // Current state
 let currentState = { ...defaultDisplayState };
 
+// Track previous state to avoid unnecessary DOM recreation
+let previousTableCount = null;
+let previousSponsorLogos = null;
+
 // Load initial state from localStorage
 function loadState() {
     try {
@@ -167,9 +171,13 @@ function updateMatchDisplay() {
     if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
     if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
 
-    ensureTeamCards();
-    const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
+    // Only recreate team cards if table count changed
     const tableCount = currentState.tableCount || 4;
+    if (previousTableCount !== tableCount) {
+        ensureTeamCards();
+        previousTableCount = tableCount;
+    }
+    const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
     const cards = timerDisplay.querySelectorAll('.team-card');
     cards.forEach(card => {
         const slot = parseInt(card.dataset.slot, 10);
@@ -196,6 +204,14 @@ function updateMatchDisplay() {
 function updateMarquee() {
     const marquees = document.querySelectorAll('.marquee');
     if (!marquees || marquees.length === 0) return;
+    
+    // Check if sponsor logos changed
+    const currentLogosString = JSON.stringify(currentState.sponsorLogos || []);
+    const sponsorLogosChanged = previousSponsorLogos !== currentLogosString;
+    if (!sponsorLogosChanged) {
+        return; // No need to update if logos haven't changed
+    }
+    previousSponsorLogos = currentLogosString;
     
     // Update each marquee (text display and timer display)
     marquees.forEach(marquee => {
@@ -263,7 +279,17 @@ window.addEventListener('storage', (event) => {
     if (event.key === 'fll-timer-state') {
         if (event.newValue) {
             try {
-                currentState = JSON.parse(event.newValue);
+                const newState = JSON.parse(event.newValue);
+                // Check what changed to optimize updates
+                const tableCountChanged = newState.tableCount !== currentState.tableCount;
+                const sponsorLogosChanged = JSON.stringify(newState.sponsorLogos) !== JSON.stringify(currentState.sponsorLogos);
+                
+                currentState = newState;
+                
+                // Reset tracking if these changed
+                if (tableCountChanged) previousTableCount = null;
+                if (sponsorLogosChanged) previousSponsorLogos = null;
+                
                 updateDisplay();
                 console.log('State updated from control page');
             } catch (error) {
@@ -271,6 +297,8 @@ window.addEventListener('storage', (event) => {
             }
         } else {
             // State was cleared/reset
+            previousTableCount = null;
+            previousSponsorLogos = null;
             currentState = { ...defaultDisplayState };
             updateDisplay();
             console.log('State was reset');
@@ -281,6 +309,9 @@ window.addEventListener('storage', (event) => {
 // Handle page visibility changes to reload state when coming back to tab
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
+        // Reset tracking to force full update on visibility change
+        previousTableCount = null;
+        previousSponsorLogos = null;
         loadState();
         console.log('Page became visible, reloaded state');
     }

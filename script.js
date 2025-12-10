@@ -32,9 +32,6 @@ const sponsorPreview = document.getElementById('sponsorPreview');
 const clearSponsorsBtn = document.getElementById('clearSponsorsBtn');
 const selectFromLibraryBtn = document.getElementById('selectFromLibraryBtn');
 const logoLibrary = document.getElementById('logoLibrary');
-const resetModal = document.getElementById('resetModal');
-const confirmResetBtn = document.getElementById('confirmResetBtn');
-const cancelResetBtn = document.getElementById('cancelResetBtn');
 
 // Available sponsor logos in the library
 const availableLogos = [
@@ -118,48 +115,34 @@ function saveState() {
 
 // Reset all configuration to defaults
 function resetConfiguration() {
-    showResetModal();
-}
-
-// Show custom reset confirmation modal
-function showResetModal() {
-    resetModal.style.display = 'flex';
-}
-
-// Close reset modal
-function closeResetModal() {
-    resetModal.style.display = 'none';
-}
-
-// Confirm reset and execute
-function confirmReset() {
-    // Stop any running timer
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
+    const confirmReset = confirm('Are you sure you want to reset all configuration? This will clear all your event settings and cannot be undone.');
+    
+    if (confirmReset) {
+        // Stop any running timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        timerState = { ...defaultState };
+        saveState();
+        updateState(timerState);
+        
+        // Update UI to reflect reset
+        eventNameInput.value = '';
+        displayTextInput.value = '';
+        // Set display type toggle
+        setDisplayTypeToggle(timerState.displayType);
+        
+        // Update UI based on display type
+        updateDisplayTypeUI();
+        
+        // Reset match schedule display
+        renderMatchSchedule();
+        
+        console.log('Configuration reset to defaults');
+        alert('Configuration has been reset.');
     }
-    
-    timerState = { ...defaultState };
-    saveState();
-    updateState(timerState);
-    
-    // Update UI to reflect reset
-    eventNameInput.value = '';
-    displayTextInput.value = '';
-    // Set display type toggle
-    setDisplayTypeToggle(timerState.displayType);
-    
-    // Update UI based on display type
-    updateDisplayTypeUI();
-    
-    // Reset match schedule display
-    renderMatchSchedule();
-    
-    console.log('Configuration reset to defaults');
-    alert('Configuration has been reset.');
-    
-    // Close the modal
-    closeResetModal();
 }
 
 // Update state and notify display
@@ -348,21 +331,7 @@ function updateMatchControlButtons() {
 // Navigate to previous match
 function previousMatch() {
     if (timerState.currentMatchNumber > 1) {
-        // Stop any running timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        matchStartTimestamp = null;
-        
-        // Update to previous match and reset timer
-        updateState({ 
-            currentMatchNumber: timerState.currentMatchNumber - 1,
-            timerState: 'stopped',
-            timerCurrentTime: TIMER_DURATION,
-            timerStartTime: null,
-            timerEndTime: null
-        });
+        updateState({ currentMatchNumber: timerState.currentMatchNumber - 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to previous match:', timerState.currentMatchNumber);
@@ -372,21 +341,7 @@ function previousMatch() {
 // Navigate to next match
 function nextMatch() {
     if (timerState.currentMatchNumber < timerState.matches.length) {
-        // Stop any running timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        matchStartTimestamp = null;
-        
-        // Update to next match and reset timer
-        updateState({ 
-            currentMatchNumber: timerState.currentMatchNumber + 1,
-            timerState: 'stopped',
-            timerCurrentTime: TIMER_DURATION,
-            timerStartTime: null,
-            timerEndTime: null
-        });
+        updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
         console.log('Moved to next match:', timerState.currentMatchNumber);
@@ -809,20 +764,11 @@ tableCountToggle?.addEventListener('click', (e) => {
 openDisplayBtn.addEventListener('click', openDisplay);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
-confirmResetBtn.addEventListener('click', confirmReset);
-cancelResetBtn.addEventListener('click', closeResetModal);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
-
-// Close modal when clicking outside of it
-resetModal.addEventListener('click', (e) => {
-    if (e.target === resetModal) {
-        closeResetModal();
-    }
-});
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);

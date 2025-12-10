@@ -127,13 +127,6 @@ body {
     display: flex;
     align-items: center;
     gap: var(--flld-spacing-md);
-
-    .match-count {
-    font-weight: var(--flld-font-weight-semibold);
-    color: var(--flld-color-gray-50);
-    font-size: var(--flld-font-size-sm);
-    font-style: italic;
-}
 }
 
 .schedule-controls {

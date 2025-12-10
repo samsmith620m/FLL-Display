@@ -24,8 +24,7 @@ const prevMatchSub = document.getElementById('prevMatchSub');
 const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
-const matchCount = document.querySelector('.match-count');
-const tableCountToggle = document.getElementById('tableCountToggle');
+const matchCount = document.getElementById('matchCount');
 const uploadSponsorsBtn = document.getElementById('uploadSponsorsBtn');
 const sponsorLogosInput = document.getElementById('sponsorLogosInput');
 const sponsorPreview = document.getElementById('sponsorPreview');
@@ -60,7 +59,7 @@ const defaultState = {
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
-    tableCount: 4,
+    tableNames: ['Table 1A', 'Table 1B'], // Array of table names, supports 1-4 tables
     // Timer settings
     timerState: 'stopped', // stopped, running, paused
     timerStartTime: null,
@@ -73,6 +72,7 @@ let timerState = { ...defaultState };
 let timerInterval = null; // For the countdown timer
 let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
+let isScheduleCollapsed = false; // Track schedule collapse state
 
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
@@ -88,6 +88,26 @@ function loadState() {
         try {
             const parsedState = JSON.parse(savedState);
             timerState = { ...defaultState, ...parsedState };
+            
+            // Migrate old tableCount to tableNames if needed
+            if (timerState.tableCount !== undefined && !timerState.tableNames) {
+                const count = timerState.tableCount;
+                if (count === 2) {
+                    timerState.tableNames = ['1A', '1B'];
+                } else if (count === 4) {
+                    timerState.tableNames = ['1A', '1B', '2A', '2B'];
+                } else {
+                    timerState.tableNames = ['1A', '1B'];
+                }
+                delete timerState.tableCount;
+                console.log('Migrated tableCount to tableNames');
+            }
+            
+            // Ensure tableNames exists
+            if (!timerState.tableNames || !Array.isArray(timerState.tableNames) || timerState.tableNames.length === 0) {
+                timerState.tableNames = ['1A', '1B'];
+            }
+            
             console.log('Loaded existing configuration');
         } catch (error) {
             console.warn('Error loading saved state, using defaults:', error);
@@ -169,8 +189,6 @@ function initializeUI() {
     
     // Initialize match schedule display
     renderMatchSchedule();
-    // Initialize table count toggle
-    if (tableCountToggle) setTableCountToggle(timerState.tableCount);
     
     // Initialize display button state
     updateOpenDisplayButton();
@@ -196,15 +214,53 @@ function updateDisplayTypeUI() {
     updateMatchControlButtons();
 }
 
-// Table count toggle helpers
-function getSelectedTableCount() {
-    const active = tableCountToggle?.querySelector('.toggle.active');
-    return active ? parseInt(active.dataset.value, 10) : 4;
+// Table management functions
+function addTable() {
+    if (timerState.tableNames.length >= 4) {
+        alert('Maximum of 4 tables supported');
+        return;
+    }
+    
+    const defaultNames = ['Table 1A', 'Table 1B', 'Table 2A', 'Table 2B'];
+    const newName = defaultNames[timerState.tableNames.length] || `Table ${timerState.tableNames.length + 1}`;
+    
+    const updatedTableNames = [...timerState.tableNames, newName];
+    
+    // Expand all matches to include empty slot for new table
+    const updatedMatches = timerState.matches.map(match => ({
+        ...match,
+        teams: [...match.teams, '']
+    }));
+    
+    updateState({ 
+        tableNames: updatedTableNames,
+        matches: updatedMatches
+    });
+    renderMatchSchedule();
 }
-function setTableCountToggle(count) {
-    if (!tableCountToggle) return;
-    tableCountToggle.querySelectorAll('.toggle').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.value, 10) === count);
+
+function removeTable() {
+    if (timerState.tableNames.length <= 1) {
+        alert('At least 1 table is required');
+        return;
+    }
+    
+    if (!confirm(`Remove table "${timerState.tableNames[timerState.tableNames.length - 1]}"? Team data for this table will be preserved but hidden.`)) {
+        return;
+    }
+    
+    const updatedTableNames = timerState.tableNames.slice(0, -1);
+    
+    // Keep team data but it will be hidden
+    updateState({ tableNames: updatedTableNames });
+    renderMatchSchedule();
+}
+
+function updateTableName(index, newName) {
+    const updatedTableNames = [...timerState.tableNames];
+    updatedTableNames[index] = newName;
+    updateState({ tableNames: updatedTableNames });
+}
     });
 }
 
@@ -534,7 +590,7 @@ function renderMatchSchedule() {
     
     // Update match count
     const count = timerState.matches.length;
-    matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''} scheduled`;
+    matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''}`;
     
     // Show/hide Delete All button and Collapse button
     if (deleteAllMatchesBtn) {
@@ -547,17 +603,61 @@ function renderMatchSchedule() {
     // Update match control buttons
     updateMatchControlButtons();
     
-    // Build header based on table count
-    const tableCount = timerState.tableCount || 4;
+    // Build header dynamically from tableNames
     const headerRow = document.createElement('tr');
-    const headers = ['Match #'];
-    if (tableCount === 2) {
-        headers.push('Table 1A', 'Table 1B');
-    } else { // 4 tables
-        headers.push('Table 1A', 'Table 1B', 'Table 2A', 'Table 2B');
+    const matchNumHeader = document.createElement('th');
+    matchNumHeader.textContent = 'Match #';
+    headerRow.appendChild(matchNumHeader);
+
+    // Add editable table name headers
+    timerState.tableNames.forEach((tableName, index) => {
+        const th = document.createElement('th');
+        
+        // Create container for input and remove button
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.gap = 'var(--flld-spacing-xs)';
+        container.style.alignItems = 'center';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'table-name-input';
+        input.value = tableName;
+        input.placeholder = `Table ${index + 1} Name`;
+        input.style.flex = '1';
+        input.style.minWidth = '0';
+        input.addEventListener('input', (e) => {
+            updateTableName(index, e.target.value);
+        });
+        container.appendChild(input);
+        
+        // Add remove button to the last table header
+        if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1) {
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'destructive icon-only';
+            removeBtn.title = 'Remove Table';
+            removeBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
+            removeBtn.addEventListener('click', removeTable);
+            container.appendChild(removeBtn);
+        }
+        
+        th.appendChild(container);
+        headerRow.appendChild(th);
+    });
+
+    // Actions column header with Add Table button (only if not at max)
+    const actionsHeader = document.createElement('th');
+    if (timerState.tableNames.length < 4) {
+        const addTableBtn = document.createElement('button');
+        addTableBtn.className = 'secondary icon-only';
+        addTableBtn.style.width = '100%';
+        addTableBtn.title = 'Add Table';
+        addTableBtn.innerHTML = '<span class="material-symbols-outlined">add</span>';
+        addTableBtn.addEventListener('click', addTable);
+        actionsHeader.appendChild(addTableBtn);
     }
-    headers.push('');
-    headerRow.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+    headerRow.appendChild(actionsHeader);
+
     if (matchScheduleHead) {
         matchScheduleHead.innerHTML = '';
         matchScheduleHead.appendChild(headerRow);
@@ -609,27 +709,28 @@ function renderMatchSchedule() {
         matchNumberCell.innerHTML = `<span class="match-number">${match.matchNumber}</span>`;
         row.appendChild(matchNumberCell);
         
-        // Team columns (limit by tableCount)
-        const visibleTeams = tableCount === 2 ? match.teams.slice(0,2) : match.teams;
-        visibleTeams.forEach((team, teamIndex) => {
+        // Team columns based on tableNames length
+        const tableCount = timerState.tableNames.length;
+        for (let teamIndex = 0; teamIndex < tableCount; teamIndex++) {
             const teamCell = document.createElement('td');
             const teamInput = document.createElement('input');
             teamInput.type = 'text';
             teamInput.className = 'team-input';
-            teamInput.value = team;
+            teamInput.value = match.teams[teamIndex] || '';
             teamInput.placeholder = `Team ${teamIndex + 1}`;
             teamInput.addEventListener('input', (e) => {
                 updateMatchTeam(match.matchNumber, teamIndex, e.target.value);
             });
             teamCell.appendChild(teamInput);
             row.appendChild(teamCell);
-        });
+        }
         
         // Actions column
         const actionsCell = document.createElement('td');
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'destructive';
-        deleteBtn.textContent = 'Delete';
+        deleteBtn.className = 'destructive icon-only material-symbols-outlined';
+        deleteBtn.title = 'Delete Match';
+        deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
             if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
                 deleteMatch(match.matchNumber);
@@ -692,26 +793,56 @@ function buildMatchesFromRows(rows) {
         if (!groups.has(r.start)) groups.set(r.start, []);
         groups.get(r.start).push(r);
     });
+    
+    // Detect unique tables from the CSV and preserve original names
+    const uniqueTablesMap = new Map(); // maps lowercase to original case
+    rows.forEach(r => {
+        const tableLower = r.table.toLowerCase().trim();
+        if (!uniqueTablesMap.has(tableLower)) {
+            uniqueTablesMap.set(tableLower, r.table.trim()); // preserve original
+        }
+    });
+    
+    // Sort table names and create mapping
+    const sortedTables = [...uniqueTablesMap.keys()].sort();
+    const tableMapping = new Map();
+    const detectedTableNames = [];
+    
+    sortedTables.forEach((tableLower) => {
+        if (detectedTableNames.length < 4) { // Limit to 4 tables
+            const originalName = uniqueTablesMap.get(tableLower);
+            detectedTableNames.push(originalName);
+            tableMapping.set(tableLower, detectedTableNames.length - 1);
+        }
+    });
+    
+    const maxSlots = detectedTableNames.length;
+    
+    // Update tableNames to use full CSV table names
+    if (detectedTableNames.length > 0) {
+        updateState({ tableNames: detectedTableNames });
+    }
+    
     // Sort start times
     const orderedStarts = [...groups.keys()].sort((a,b) => timeToMinutes(a) - timeToMinutes(b));
     const matches = [];
-    const tableCount = timerState.tableCount || 4;
+    
     orderedStarts.forEach((start) => {
         const group = groups.get(start);
-        // Map tables to fixed order columns, but maintain 4-slot internal model
-        const slots = ['', '', '', ''];
+        // Initialize slots based on detected table count
+        const slots = new Array(maxSlots).fill('');
+        
         group.forEach(entry => {
-            const table = entry.table.toLowerCase();
-            let slotIndex = -1;
-            if (table.includes('1a')) slotIndex = 0;
-            else if (table.includes('1b')) slotIndex = 1;
-            else if (table.includes('2a')) slotIndex = 2;
-            else if (table.includes('2b')) slotIndex = 3;
-            if (slotIndex >= 0) slots[slotIndex] = entry.team;
+            const tableLower = entry.table.toLowerCase().trim();
+            const slotIndex = tableMapping.get(tableLower);
+            if (slotIndex !== undefined && slotIndex < maxSlots) {
+                slots[slotIndex] = entry.team;
+            }
         });
-        // If only 2 tables configured, we ignore 2A/2B for display but keep data
+        
         matches.push({ matchNumber: matches.length + 1, teams: slots });
     });
+    
     return matches;
 }
 
@@ -747,18 +878,6 @@ if (uploadScheduleBtn && uploadScheduleInput) {
         e.target.value = '';
     });
 }
-
-// Handle table count change
-tableCountToggle?.addEventListener('click', (e) => {
-    if (e.target.classList.contains('toggle')) {
-        const newCount = parseInt(e.target.dataset.value, 10);
-        if (newCount !== timerState.tableCount) {
-            setTableCountToggle(newCount);
-            updateState({ tableCount: newCount });
-            renderMatchSchedule();
-        }
-    }
-});
 
 // Event Listeners
 openDisplayBtn.addEventListener('click', openDisplay);

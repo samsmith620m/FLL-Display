@@ -334,12 +334,14 @@ function updateTeamNumber(index, value) {
     const updatedTeams = [...timerState.teams];
     updatedTeams[index] = { ...updatedTeams[index], teamNumber: value };
     updateState({ teams: updatedTeams });
+    renderMatchSchedule(); // Update match schedule dropdowns
 }
 
 function updateTeamName(index, value) {
     const updatedTeams = [...timerState.teams];
     updatedTeams[index] = { ...updatedTeams[index], teamName: value };
     updateState({ teams: updatedTeams });
+    renderMatchSchedule(); // Update match schedule dropdowns
 }
 
 function toggleTeamsCollapse() {

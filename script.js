@@ -586,6 +586,18 @@ function nextMatch() {
         updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
+
+        // Resets the timer
+        const updates = {
+            timerState: 'stopped',
+            timerCurrentTime: TIMER_DURATION,
+            timerStartTime: null,
+            timerEndTime: null
+        };
+        
+        updateState(updates);
+        updateMatchControlButtons();
+        
         console.log('Moved to next match:', timerState.currentMatchNumber);
     }
 }

@@ -46,6 +46,10 @@
     color: var(--flld-color-text-primary);
     font-weight: var(--flld-font-weight-semibold);
     font-size: var(--flld-font-size-sm);
+
+    input {
+        font-weight: var(--flld-font-weight-semibold);
+    }
 }
 
 .match-table td {

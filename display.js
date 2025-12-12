@@ -126,7 +126,7 @@ function updateTimerDisplay() {
     timerTime.innerHTML = formatTime(time);
     
     // Remove all state classes
-    timerTime.classList.remove('running', 'warning', 'critical');
+    timerTime.classList.remove('warning', 'critical');
     
     // Update match and team information
     updateMatchDisplay();
@@ -134,7 +134,6 @@ function updateTimerDisplay() {
     // Update status and styling based on timer state
     // Visual emphasis only handled by timerTime classes; status text removed.
     if (currentState.timerState === 'running') {
-        timerTime.classList.add('running');
         if (time <= 10) {
             timerTime.classList.add('critical');
         } else if (time <= 30) {

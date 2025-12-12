@@ -180,7 +180,7 @@ button.toggle {
     }
 }
 
-input[type="text"], textarea {
+input[type="text"], textarea, select {
     width: 100%;
     height: 44px;
     padding: 0 var(--flld-spacing-sm);
@@ -199,6 +199,39 @@ input[type="text"], textarea {
     }
 }
 
+select {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    
+    /* Hide default arrow */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    /* Add custom Material Symbols arrow */
+    background-image: url('../icons/keyboard_arrow_down_24dp_1B1B1B_FILL0_wght400_GRAD0_opsz24.svg');
+    background-repeat: no-repeat;
+    background-position: right var(--flld-spacing-sm) center;
+    background-size: 24px 24px;
+    
+    /* Add padding to prevent text from overlapping the icon */
+    padding-right: calc(var(--flld-spacing-sm) + 24px + var(--flld-spacing-xs));
+    
+    /* Style placeholder option */
+    &:has(option[value=""]:checked) {
+        color: var(--flld-color-gray-50);
+    }
+}
+
+select option {
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    font-family: var(--flld-font-family-base);
+    color: var(--flld-color-text-primary);
+}
+
 textarea {
     resize: none;
     height: auto;
@@ -212,6 +245,7 @@ textarea {
     .description {
         font-size: var(--flld-font-size-md);
         color: var(--flld-color-text-primary);
+        margin-top: -4px;
     }
 
     .helper-text {

@@ -46,6 +46,10 @@
     color: var(--flld-color-text-primary);
     font-weight: var(--flld-font-weight-semibold);
     font-size: var(--flld-font-size-sm);
+
+    input {
+        font-weight: var(--flld-font-weight-semibold);
+    }
 }
 
 .match-table td {
@@ -89,4 +93,16 @@
     border-radius: var(--flld-border-radius-lg);
     border: 1px dashed var(--flld-color-border-base);
     width: 100%;
+}
+
+/* --- TEAMS TABLE COLUMN WIDTHS --- */
+
+#teamsTable th:nth-child(1),
+#teamsTable td:nth-child(1) {
+    width: 33.33%;
+}
+
+#teamsTable th:nth-child(2),
+#teamsTable td:nth-child(2) {
+    width: 66.67%;
 }

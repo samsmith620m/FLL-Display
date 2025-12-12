@@ -164,7 +164,12 @@ function ensureTeamCards() {
         const card = document.createElement('div');
         card.className = 'team-card';
         card.dataset.slot = i;
-        card.innerHTML = `\n            <div class="team-number display-small">Team ${i+1}</div>\n            <div class="table-name heading-large">${tableName}</div>`;
+        card.innerHTML = `
+            <div class="team-info">
+                <div class="team-number display-small">Team ${i+1}</div>
+                <div class="team-name"></div>
+            </div>
+            <div class="table-name heading-large">${tableName}</div>`;
         timerDisplay.insertBefore(card, timerContainer);
     });
 
@@ -198,21 +203,39 @@ function updateMatchDisplay() {
     }
     const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
     const cards = timerDisplay.querySelectorAll('.team-card');
+    const teams = currentState.teams || [];
+    
     cards.forEach(card => {
         const slot = parseInt(card.dataset.slot, 10);
         const numEl = card.querySelector('.team-number');
+        const nameEl = card.querySelector('.team-name');
+        
         if (currentMatch && currentMatch.teams) {
-            const val = currentMatch.teams[slot];
-            if (val) {
-                numEl.innerHTML = val;
+            const teamNumber = currentMatch.teams[slot];
+            if (teamNumber) {
+                numEl.innerHTML = teamNumber;
                 numEl.style.fontStyle = 'normal';
+                
+                // Find and display team name
+                const teamData = teams.find(t => t.teamNumber === teamNumber);
+                if (teamData && teamData.teamName) {
+                    nameEl.textContent = teamData.teamName;
+                    nameEl.style.display = 'block';
+                } else {
+                    nameEl.textContent = '';
+                    nameEl.style.display = 'none';
+                }
             } else {
                 numEl.innerHTML = '<em> — </em>';
                 numEl.style.fontStyle = 'italic';
+                nameEl.textContent = '';
+                nameEl.style.display = 'none';
             }
         } else {
             numEl.innerHTML = '<em> — </em>';
             numEl.style.fontStyle = 'italic';
+            nameEl.textContent = '';
+            nameEl.style.display = 'none';
         }
     });
 }
@@ -254,7 +277,7 @@ function updateMarquee() {
             
             // Build alternating pattern
             const items = [];
-            const maxLength = Math.max(2, sponsorLogos.length);
+            const maxLength = Math.max(4, sponsorLogos.length);
             
             for (let i = 0; i < maxLength; i++) {
                 // Alternate season logos

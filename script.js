@@ -25,6 +25,13 @@ const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
 const matchCount = document.getElementById('matchCount');
+const addTeamBtn = document.getElementById('addTeamBtn');
+const deleteAllTeamsBtn = document.getElementById('deleteAllTeamsBtn');
+const toggleTeamsBtn = document.getElementById('toggleTeamsBtn');
+const teamsTable = document.getElementById('teamsTable');
+const teamsBody = document.getElementById('teamsBody');
+const noTeamsMessage = document.getElementById('noTeamsMessage');
+const teamCount = document.getElementById('teamCount');
 const uploadSponsorsBtn = document.getElementById('uploadSponsorsBtn');
 const sponsorLogosInput = document.getElementById('sponsorLogosInput');
 const sponsorPreview = document.getElementById('sponsorPreview');
@@ -56,6 +63,8 @@ const defaultState = {
     customText: '',
     // Event configuration
     sponsorLogos: [], // Array of base64 encoded images
+    // Teams
+    teams: [], // Array of team objects: { teamNumber: '1234', teamName: 'Team Name' }
     // Match schedule
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
@@ -65,6 +74,9 @@ const defaultState = {
     timerStartTime: null,
     timerEndTime: null,
     timerCurrentTime: TIMER_DURATION,
+    // UI state
+    isScheduleCollapsed: false,
+    isTeamsCollapsed: false,
     // More state properties will be added as we build features
 };
 
@@ -73,6 +85,7 @@ let timerInterval = null; // For the countdown timer
 let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
 let isScheduleCollapsed = false; // Track schedule collapse state
+let isTeamsCollapsed = false; // Track teams collapse state
 
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
@@ -107,6 +120,10 @@ function loadState() {
             if (!timerState.tableNames || !Array.isArray(timerState.tableNames) || timerState.tableNames.length === 0) {
                 timerState.tableNames = ['1A', '1B'];
             }
+            
+            // Load collapsed states
+            isScheduleCollapsed = timerState.isScheduleCollapsed || false;
+            isTeamsCollapsed = timerState.isTeamsCollapsed || false;
             
             console.log('Loaded existing configuration');
         } catch (error) {
@@ -157,6 +174,9 @@ function resetConfiguration() {
         // Update UI based on display type
         updateDisplayTypeUI();
         
+        // Reset teams display
+        renderTeams();
+        
         // Reset match schedule display
         renderMatchSchedule();
         
@@ -187,8 +207,26 @@ function initializeUI() {
     // Update UI based on display type
     updateDisplayTypeUI();
     
+    // Initialize teams display
+    renderTeams();
+    
     // Initialize match schedule display
     renderMatchSchedule();
+    
+    // Apply saved collapsed states
+    if (isTeamsCollapsed && timerState.teams.length > 3) {
+        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        teamsTable.style.display = 'none';
+        addTeamBtn.style.display = 'none';
+        deleteAllTeamsBtn.style.display = 'none';
+    }
+    
+    if (isScheduleCollapsed && timerState.matches.length > 3) {
+        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        uploadScheduleBtn.style.display = 'none';
+        addMatchBtn.style.display = 'none';
+        deleteAllMatchesBtn.style.display = 'none';
+    }
     
     // Initialize display button state
     updateOpenDisplayButton();
@@ -262,6 +300,154 @@ function updateTableName(index, newName) {
     updateState({ tableNames: updatedTableNames });
 }
 
+// Teams management functions
+function addTeam() {
+    const newTeam = {
+        teamNumber: '',
+        teamName: ''
+    };
+    
+    const updatedTeams = [...timerState.teams, newTeam];
+    updateState({ teams: updatedTeams });
+    renderTeams();
+}
+
+function deleteTeam(index) {
+    if (!confirm('Are you sure you want to delete this team?')) {
+        return;
+    }
+    
+    const updatedTeams = timerState.teams.filter((_, i) => i !== index);
+    updateState({ teams: updatedTeams });
+    renderTeams();
+}
+
+function deleteAllTeams() {
+    if (confirm('Are you sure you want to delete all teams? This action cannot be undone.')) {
+        updateState({ teams: [] });
+        renderTeams();
+        console.log('All teams deleted');
+    }
+}
+
+function updateTeamNumber(index, value) {
+    const updatedTeams = [...timerState.teams];
+    updatedTeams[index] = { ...updatedTeams[index], teamNumber: value };
+    updateState({ teams: updatedTeams });
+}
+
+function updateTeamName(index, value) {
+    const updatedTeams = [...timerState.teams];
+    updatedTeams[index] = { ...updatedTeams[index], teamName: value };
+    updateState({ teams: updatedTeams });
+}
+
+function toggleTeamsCollapse() {
+    isTeamsCollapsed = !isTeamsCollapsed;
+    toggleTeamsBtn.innerHTML = isTeamsCollapsed 
+        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+    
+    // Save collapsed state
+    updateState({ isTeamsCollapsed });
+    
+    // Hide/show the teams table and action buttons
+    if (isTeamsCollapsed) {
+        teamsTable.style.display = 'none';
+        addTeamBtn.style.display = 'none';
+        deleteAllTeamsBtn.style.display = 'none';
+    } else {
+        teamsTable.style.display = 'table';
+        addTeamBtn.style.display = 'inline-flex';
+        // Show delete all button only if there are teams
+        deleteAllTeamsBtn.style.display = timerState.teams.length > 0 ? 'inline-flex' : 'none';
+    }
+}
+
+function renderTeams() {
+    const tbody = teamsBody;
+    const noTeams = noTeamsMessage;
+    const table = teamsTable;
+    
+    // Update team count
+    const count = timerState.teams.length;
+    teamCount.textContent = `${count} team${count !== 1 ? 's' : ''}`;
+    
+    // Show/hide Delete All button and Collapse button
+    if (deleteAllTeamsBtn) {
+        deleteAllTeamsBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    if (toggleTeamsBtn) {
+        toggleTeamsBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+    }
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    if (timerState.teams.length === 0) {
+        table.style.display = 'none';
+        noTeams.style.display = 'block';
+        isTeamsCollapsed = false;
+        return;
+    }
+    
+    // Reset collapse state if we have 3 or fewer teams
+    if (timerState.teams.length <= 3) {
+        isTeamsCollapsed = false;
+    }
+    
+    table.style.display = 'table';
+    noTeams.style.display = 'none';
+    
+    // Filter teams if collapsed (show all for now, can add filtering later if needed)
+    let teamsToDisplay = timerState.teams;
+    
+    // Create rows for each team
+    teamsToDisplay.forEach((team, index) => {
+        const row = document.createElement('tr');
+        
+        // Team number column
+        const numberCell = document.createElement('td');
+        const numberInput = document.createElement('input');
+        numberInput.type = 'text';
+        numberInput.className = 'team-input';
+        numberInput.value = team.teamNumber;
+        numberInput.placeholder = 'Team Number';
+        numberInput.addEventListener('input', (e) => {
+            updateTeamNumber(index, e.target.value);
+        });
+        numberCell.appendChild(numberInput);
+        row.appendChild(numberCell);
+        
+        // Team name column
+        const nameCell = document.createElement('td');
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'team-input';
+        nameInput.value = team.teamName;
+        nameInput.placeholder = 'Team Name';
+        nameInput.addEventListener('input', (e) => {
+            updateTeamName(index, e.target.value);
+        });
+        nameCell.appendChild(nameInput);
+        row.appendChild(nameCell);
+        
+        // Actions column
+        const actionsCell = document.createElement('td');
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'destructive icon-only material-symbols-rounded';
+        deleteBtn.title = 'Delete Team';
+        deleteBtn.textContent = 'delete';
+        deleteBtn.addEventListener('click', () => {
+            deleteTeam(index);
+        });
+        actionsCell.appendChild(deleteBtn);
+        row.appendChild(actionsCell);
+        
+        tbody.appendChild(row);
+    });
+}
+
 // Helper functions for display type toggle
 function getSelectedDisplayType() {
     const activeBtn = displayTypeToggle.querySelector('.toggle.active');
@@ -284,11 +470,11 @@ function openDisplay() {
         updateOpenDisplayButton();
         console.log('Display window closed');
     } else {
-        // Open new display window
-        displayWindow = window.open('display.html', 'fll-display', 'width=1920,height=1080');
+        // Open new display tab
+        displayWindow = window.open('display.html', 'fll-display');
         
         if (displayWindow) {
-            console.log('Display window opened');
+            console.log('Display tab opened');
             updateOpenDisplayButton();
             
             // Check if window is closed by user to update button
@@ -577,7 +763,25 @@ function deleteAllMatches() {
 // Toggle schedule collapse state
 function toggleScheduleCollapse() {
     isScheduleCollapsed = !isScheduleCollapsed;
-    toggleScheduleBtn.textContent = isScheduleCollapsed ? 'Expand' : 'Collapse';
+    toggleScheduleBtn.innerHTML = isScheduleCollapsed 
+        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+    
+    // Save collapsed state
+    updateState({ isScheduleCollapsed });
+    
+    // Hide/show the action buttons (table remains visible to show filtered matches)
+    if (isScheduleCollapsed) {
+        uploadScheduleBtn.style.display = 'none';
+        addMatchBtn.style.display = 'none';
+        deleteAllMatchesBtn.style.display = 'none';
+    } else {
+        uploadScheduleBtn.style.display = 'inline-flex';
+        addMatchBtn.style.display = 'inline-flex';
+        // Show delete all button only if there are matches
+        deleteAllMatchesBtn.style.display = timerState.matches.length > 0 ? 'inline-flex' : 'none';
+    }
+    
     renderMatchSchedule();
 }
 
@@ -592,7 +796,7 @@ function renderMatchSchedule() {
     
     // Show/hide Delete All button and Collapse button
     if (deleteAllMatchesBtn) {
-        deleteAllMatchesBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+        deleteAllMatchesBtn.style.display = (count > 0 && !isScheduleCollapsed) ? 'inline-flex' : 'none';
     }
     if (toggleScheduleBtn) {
         toggleScheduleBtn.style.display = count > 3 ? 'inline-flex' : 'none';
@@ -632,9 +836,9 @@ function renderMatchSchedule() {
         // Add remove button to the last table header
         if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1) {
             const removeBtn = document.createElement('button');
-            removeBtn.className = 'destructive icon-only';
+            removeBtn.className = 'destructive icon-only material-symbols-rounded';
             removeBtn.title = 'Remove Table';
-            removeBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
+            removeBtn.textContent = 'close';
             removeBtn.addEventListener('click', removeTable);
             container.appendChild(removeBtn);
         }
@@ -647,10 +851,10 @@ function renderMatchSchedule() {
     const actionsHeader = document.createElement('th');
     if (timerState.tableNames.length < 4) {
         const addTableBtn = document.createElement('button');
-        addTableBtn.className = 'secondary icon-only';
+        addTableBtn.className = 'secondary icon-only material-symbols-rounded';
         addTableBtn.style.width = '100%';
         addTableBtn.title = 'Add Table';
-        addTableBtn.innerHTML = '<span class="material-symbols-outlined">add</span>';
+        addTableBtn.textContent = 'add';
         addTableBtn.addEventListener('click', addTable);
         actionsHeader.appendChild(addTableBtn);
     }
@@ -679,13 +883,13 @@ function renderMatchSchedule() {
     table.style.display = 'table';
     noMatches.style.display = 'none';
     
-    // Filter matches if collapsed: show only previous, current, and next
+    // Filter matches if collapsed: show only current and next
     let matchesToDisplay = timerState.matches;
     if (isScheduleCollapsed && timerState.matches.length > 0) {
         const currentMatchNum = timerState.currentMatchNumber;
         matchesToDisplay = timerState.matches.filter(match => {
             const diff = match.matchNumber - currentMatchNum;
-            return diff >= -1 && diff <= 1; // Show current, ±1
+            return diff >= 0 && diff <= 1; // Show current and next only
         });
         // If filtered list is empty (edge case), show all
         if (matchesToDisplay.length === 0) {
@@ -711,22 +915,40 @@ function renderMatchSchedule() {
         const tableCount = timerState.tableNames.length;
         for (let teamIndex = 0; teamIndex < tableCount; teamIndex++) {
             const teamCell = document.createElement('td');
-            const teamInput = document.createElement('input');
-            teamInput.type = 'text';
-            teamInput.className = 'team-input';
-            teamInput.value = match.teams[teamIndex] || '';
-            teamInput.placeholder = `Team ${teamIndex + 1}`;
-            teamInput.addEventListener('input', (e) => {
+            const teamSelect = document.createElement('select');
+            teamSelect.className = 'team-input';
+            
+            // Add placeholder option (disabled and hidden)
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = '';
+            placeholderOption.textContent = 'Select a team';
+            placeholderOption.disabled = true;
+            placeholderOption.selected = true;
+            placeholderOption.hidden = true;
+            teamSelect.appendChild(placeholderOption);
+            
+            // Add option for each team
+            timerState.teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team.teamNumber;
+                option.textContent = `${team.teamNumber}${team.teamName ? ' - ' + team.teamName : ''}`;
+                teamSelect.appendChild(option);
+            });
+            
+            // Set current value
+            teamSelect.value = match.teams[teamIndex] || '';
+            
+            teamSelect.addEventListener('change', (e) => {
                 updateMatchTeam(match.matchNumber, teamIndex, e.target.value);
             });
-            teamCell.appendChild(teamInput);
+            teamCell.appendChild(teamSelect);
             row.appendChild(teamCell);
         }
         
         // Actions column
         const actionsCell = document.createElement('td');
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'destructive icon-only material-symbols-outlined';
+        deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Match';
         deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
@@ -753,7 +975,8 @@ function parseCSV(text) {
         type: header.findIndex(h => h.toLowerCase().includes('type')),
         start: header.findIndex(h => h.toLowerCase().includes('start time')),
         table: header.findIndex(h => h.toLowerCase().includes('room') || h.toLowerCase().includes('table')),
-        team: header.findIndex(h => h.toLowerCase().includes('team number'))
+        team: header.findIndex(h => h.toLowerCase().includes('team number')),
+        teamName: header.findIndex(h => h.toLowerCase().includes('team name'))
     };
     const rows = [];
     for (let i = 1; i < lines.length; i++) {
@@ -766,10 +989,32 @@ function parseCSV(text) {
         const start = cols[idx.start]?.trim();
         const table = cols[idx.table]?.trim();
         const team = cols[idx.team]?.trim();
+        const teamName = cols[idx.teamName]?.trim() || '';
         if (!start || !table || !team) continue;
-        rows.push({ start, table, team });
+        rows.push({ start, table, team, teamName });
     }
     return rows;
+}
+
+// Extract unique teams from parsed CSV rows
+function extractTeamsFromRows(rows) {
+    const teamMap = new Map(); // Use Map to track unique teams by team number
+    
+    rows.forEach(row => {
+        if (row.team && !teamMap.has(row.team)) {
+            teamMap.set(row.team, {
+                teamNumber: row.team,
+                teamName: row.teamName || ''
+            });
+        }
+    });
+    
+    // Convert to array and sort by team number
+    return Array.from(teamMap.values()).sort((a, b) => {
+        const numA = parseInt(a.teamNumber) || 0;
+        const numB = parseInt(b.teamNumber) || 0;
+        return numA - numB;
+    });
 }
 
 // Convert 12h time like '9:07 AM' to minutes since midnight for sorting
@@ -856,9 +1101,27 @@ function handleScheduleFile(file) {
                 return;
             }
             const matches = buildMatchesFromRows(rows);
-            updateState({ matches, currentMatchNumber: matches.length ? 1 : 1 });
+            
+            // Extract unique teams from CSV
+            const extractedTeams = extractTeamsFromRows(rows);
+            
+            // Merge with existing teams, avoiding duplicates
+            const existingTeamNumbers = new Set(timerState.teams.map(t => t.teamNumber));
+            const newTeams = extractedTeams.filter(t => !existingTeamNumbers.has(t.teamNumber));
+            const allTeams = [...timerState.teams, ...newTeams];
+            
+            updateState({ 
+                matches, 
+                teams: allTeams,
+                currentMatchNumber: matches.length ? 1 : 1 
+            });
             renderMatchSchedule();
-            alert(`Imported ${matches.length} matches.`);
+            renderTeams();
+            
+            const teamsMessage = newTeams.length > 0 
+                ? ` ${newTeams.length} new team(s) added.`
+                : ' No new teams (all teams already exist).';
+            alert(`Imported ${matches.length} matches.${teamsMessage}`);
         } catch (err) {
             console.error('Error importing schedule', err);
             alert('Failed to import schedule.');
@@ -879,11 +1142,14 @@ if (uploadScheduleBtn && uploadScheduleInput) {
 
 // Event Listeners
 openDisplayBtn.addEventListener('click', openDisplay);
+toggleTeamsBtn.addEventListener('click', toggleTeamsCollapse);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
+addTeamBtn.addEventListener('click', addTeam);
+deleteAllTeamsBtn.addEventListener('click', deleteAllTeams);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
@@ -917,7 +1183,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-outlined">add</span>Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded">add</span>Add</button>
         </div>
     `).join('');
 }
@@ -1076,9 +1342,9 @@ function renderSponsorPreview() {
     
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
         <div class="sponsor-preview-item" draggable="true" data-index="${index}">
-            <div class="drag-handle material-symbols-outlined" title="Drag to reorder">drag_indicator</div>
+            <div class="drag-handle material-symbols-rounded" title="Drag to reorder">drag_indicator</div>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="destructive icon-only material-symbols-outlined" onclick="removeSponsor(${index})" title="Remove logo">close</button>
+            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo">close</button>
         </div>
     `).join('');
     

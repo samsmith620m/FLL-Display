@@ -172,7 +172,7 @@ function resetConfiguration() {
         setDisplayTypeToggle(timerState.displayType);
         
         // Update UI based on display type
-        updateDisplayTypeUI();
+        updateMatchControlButtons();
         
         // Reset teams display
         renderTeams();
@@ -205,7 +205,7 @@ function initializeUI() {
     setDisplayTypeToggle(timerState.displayType);
     
     // Update UI based on display type
-    updateDisplayTypeUI();
+    updateMatchControlButtons();
     
     // Initialize teams display
     renderTeams();
@@ -232,24 +232,6 @@ function initializeUI() {
     updateOpenDisplayButton();
     
     console.log('UI initialized with saved configuration');
-}
-
-// Update UI based on selected display type
-function updateDisplayTypeUI() {
-    const displayType = getSelectedDisplayType();
-    
-    if (displayType === 'text') {
-        textDisplayConfig.style.display = 'inherit';
-        textDisplayConfig.style.flexDirection = 'column';
-        matchTimerConfig.style.display = 'none';
-    } else if (displayType === 'match-timer') {
-        textDisplayConfig.style.display = 'none';
-        matchTimerConfig.style.display = 'inherit';
-        matchTimerConfig.style.flexDirection = 'column';
-    }
-    
-    // Update match control buttons
-    updateMatchControlButtons();
 }
 
 // Table management functions
@@ -1376,7 +1358,7 @@ displayTypeToggle.addEventListener('click', (e) => {
                 timerState: 'stopped'
             })
         });
-        updateDisplayTypeUI();
+        updateMatchControlButtons();
     }
 });
 

@@ -57,53 +57,50 @@ body {
 .control-footer {
     grid-area: footer;
     background-color: var(--flld-color-gray-25);
+    color: var(--flld-color-white);
     padding: var(--flld-spacing-lg);
+    display: grid;
+    grid-template: 
+        "greeting contributors supporters"
+        "message contributors supporters"
+        "sam contributors supporters"
+        "links contributors supporters" / max-content max-content max-content;
+    gap: var(--flld-spacing-md) var(--flld-spacing-lg);
 
     .footer-greeting {
-        color: var(--flld-color-white);
-        line-height: var(--flld-line-height-base);
-        margin: 0 0 var(--flld-spacing-md) 0;
         font-size: var(--flld-font-size-lg);
         font-weight: var(--flld-font-weight-bold);
+        grid-area: greeting;
     }
 }
 
 .footer-message {
-    color: var(--flld-color-white);
-    line-height: var(--flld-line-height-base);
-    margin: 0 0 var(--flld-spacing-md) 0;
     font-size: var(--flld-font-size-md);
+    grid-area: message;
 }
 
 .footer-links {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     gap: var(--flld-spacing-sm);
-    flex-wrap: wrap;
+    grid-area: links;
 }
 
 .footer-links a {
-    color: var(--flld-color-white);
     text-decoration: none;
     font-weight: var(--flld-font-weight-bold);
-    transition: color 0.2s ease;
+    color: var(--flld-color-white);
 }
 
 .footer-links a:hover {
     text-decoration: underline;
 }
 
-.footer-links .separator {
-    color: var(--flld-color-white);
-    font-weight: var(--flld-font-weight-regular);
-}
-
 .footer-avatar {
     display: flex;
     align-items: center;
     gap: var(--flld-spacing-md);
-    margin-bottom: var(--flld-spacing-md);
+    grid-area: sam;
 }
 
 .avatar-name {
@@ -111,6 +108,38 @@ body {
     font-size: var(--flld-font-size-xl);
     color: var(--flld-color-white);
     margin-bottom: -4px;
+}
+
+.footer-contributors {
+    grid-area: contributors;
+}
+
+.footer-supporters {
+    grid-area: supporters;
+}
+
+.footer-contributors, .footer-supporters {
+    color: var(--flld-color-white);
+    border-left: 1px solid var(--flld-color-white);
+    padding-left: var(--flld-spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--flld-spacing-sm);
+    
+    p {
+        color: var(--flld-color-white);
+        font-size: var(--flld-font-size-lg);
+        font-weight: var(--flld-font-weight-bold);
+    }
+
+    ul {
+        display: grid;
+        gap: var(--flld-spacing-sm);
+
+        li {
+            list-style-position: inside;
+        }
+    }
 }
 
 /* --- SECTION LAYOUTS --- */

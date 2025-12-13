@@ -294,6 +294,14 @@ html.display {
         line-height: 41vh;
     }
 
+    .critical {
+    color: var(--flld-color-fll-challenge-red);
+    }
+    
+    .warning {
+        color: var(--flld-color-unearthed-yellow-base);
+    }
+
     .colon {
         letter-spacing: -64px;
 

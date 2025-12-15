@@ -12,7 +12,7 @@
 
 <body class="control-page">
     <div class="alert banner" role="status" aria-live="polite">
-        <span class="material-symbols-rounded" aria-hidden="true">info</span>
+        <span class="material-symbols-rounded" aria-hidden="true" translate="no">info</span>
         Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
     </div>
     <header class="control-header">
@@ -38,7 +38,7 @@
                 <label for="displayText">Custom Text</label>
                 <p class="description">Optional custom text shown below the event name on the text display.</p>
                 <textarea id="displayText" placeholder="Enter custom text (optional)" rows="3"></textarea>
-                
+                <button id="updateCustomTextBtn" class="primary" disabled>Update Display</button>
             </div>
             <div id="matchTimerConfig" class="form-control">
                 <p class="label">Match Controls</p>
@@ -63,14 +63,14 @@
             <div class="card-header">
                 <div class="button-group">
                     <h2>Match Schedule</h2>
-                    <button id="toggleScheduleBtn" class="secondary"><span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse</button>
+                    <button id="toggleScheduleBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
                 </div>
                 <div class="schedule-header-right">
                     <span id="matchCount">0 matches</span>
                     <div class="button-group">
                         <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
                         <button id="addMatchBtn" class="primary">Add Match</button>
-                        <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded">delete</span>Delete All</button>
+                        <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
                     </div>
                 </div>
             </div>
@@ -90,13 +90,13 @@
             <div class="card-header">
                 <div class="button-group">
                     <h2>Teams</h2>
-                    <button id="toggleTeamsBtn" class="secondary"><span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse</button>
+                    <button id="toggleTeamsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
                 </div>
                 <div class="schedule-header-right">
                     <span id="teamCount">0 teams</span>
                     <div class="button-group">
                         <button id="addTeamBtn" class="primary">Add Team</button>
-                        <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded">delete</span>Delete All</button>
+                        <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
                     </div>
                 </div>
             </div>
@@ -126,6 +126,25 @@
             </div>
             <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
             <div class="form-control">
+                <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
+                    <label for="soundOptions">Sound Profile</label>
+                    <div class="badge">Try it out!</div>
+                </div>
+                <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which more closely matches the other <i>FIRST</i> programs!</p>
+                <div>
+                    <label class="radio-label">
+                        <input type="radio" name="soundOption" value="none" checked>
+                        No sound
+                    </label>
+                </div>
+                <div>
+                    <label class="radio-label">
+                        <input type="radio" name="soundOption" value="ftc">
+                        <span><i>FIRST</i> Tech Challenge / <i>FIRST</i> Robotics Competition</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-control">
                 <label for="eventName">Event Name</label>
                 <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
@@ -138,7 +157,7 @@
                     </div>
                     <button id="uploadSponsorsBtn" class="secondary">Upload Logo</button>
                     <button id="selectFromLibraryBtn" class="secondary">Select from Library</button>
-                    <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded">close</span>Remove All</button>
+                    <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
                 </div>
                 <div id="sponsorPreview"></div>
                 <div id="logoLibrary" style="display: none;"></div>

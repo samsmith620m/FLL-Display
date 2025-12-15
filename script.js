@@ -4,7 +4,9 @@ console.log('FLL Timer Control loaded');
 // DOM elements
 const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
+const updateCustomTextBtn = document.getElementById('updateCustomTextBtn');
 const eventNameInput = document.getElementById('eventName');
+const soundOptionInputs = document.querySelectorAll('input[name="soundOption"]');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
@@ -61,6 +63,7 @@ const defaultState = {
     displayType: 'text',
     eventName: '',
     customText: '',
+    soundOption: 'none', // 'none' or 'ftc'
     // Event configuration
     sponsorLogos: [], // Array of base64 encoded images
     // Teams
@@ -86,6 +89,7 @@ let matchStartTimestamp = null; // Track when match started for abort delay
 let displayWindow = null; // Track the display window
 let isScheduleCollapsed = false; // Track schedule collapse state
 let isTeamsCollapsed = false; // Track teams collapse state
+let warningPlayed = false; // Track if warning sound has played for this match
 
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
@@ -200,6 +204,12 @@ function updateState(newState) {
 // Initialize UI with loaded state
 function initializeUI() {
     eventNameInput.value = timerState.eventName || '';
+    
+    // Restore sound option
+    const soundOption = timerState.soundOption || 'none';
+    soundOptionInputs.forEach(input => {
+        input.checked = input.value === soundOption;
+    });
     displayTextInput.value = timerState.customText || '';
     // Set display type toggle
     setDisplayTypeToggle(timerState.displayType);
@@ -215,14 +225,14 @@ function initializeUI() {
     
     // Apply saved collapsed states
     if (isTeamsCollapsed && timerState.teams.length > 3) {
-        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
         teamsTable.style.display = 'none';
         addTeamBtn.style.display = 'none';
         deleteAllTeamsBtn.style.display = 'none';
     }
     
     if (isScheduleCollapsed && timerState.matches.length > 3) {
-        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
@@ -329,8 +339,8 @@ function updateTeamName(index, value) {
 function toggleTeamsCollapse() {
     isTeamsCollapsed = !isTeamsCollapsed;
     toggleTeamsBtn.innerHTML = isTeamsCollapsed 
-        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
     
     // Save collapsed state
     updateState({ isTeamsCollapsed });
@@ -421,6 +431,7 @@ function renderTeams() {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Team';
+        deleteBtn.setAttribute('translate', 'no');
         deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
             deleteTeam(index);
@@ -591,11 +602,27 @@ function updateEventName() {
     console.log('Event name updated to:', newName);
 }
 
-// Update custom text when input changes
-function updateCustomText() {
+// Check if custom text has unsaved changes
+function checkCustomTextChanges() {
+    const currentText = displayTextInput.value.trim();
+    const savedText = timerState.customText || '';
+    const hasChanges = currentText !== savedText;
+    updateCustomTextBtn.disabled = !hasChanges;
+}
+
+// Save custom text changes
+function saveCustomText() {
     const newText = displayTextInput.value.trim();
     updateState({ customText: newText });
-    console.log('Custom text updated to:', newText);
+    updateCustomTextBtn.disabled = true;
+    console.log('Custom text saved:', newText);
+}
+
+// Update sound option when radio changes
+function updateSoundOption() {
+    const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'none';
+    updateState({ soundOption: selectedOption });
+    console.log('Sound option updated to:', selectedOption);
 }
 
 // Timer Functions - Updated for new button behavior
@@ -614,6 +641,7 @@ function startMatch() {
         }
         
         matchStartTimestamp = null;
+        warningPlayed = false; // Reset warning flag
         const updates = {
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
@@ -626,6 +654,7 @@ function startMatch() {
         console.log('Match aborted');
     } else if (timerState.timerState === 'finished') {
         // Reset timer
+        warningPlayed = false; // Reset warning flag
         const updates = {
             timerState: 'stopped',
             timerCurrentTime: TIMER_DURATION,
@@ -640,6 +669,7 @@ function startMatch() {
         // Start match
         const now = Date.now();
         matchStartTimestamp = now; // Track start time for abort delay
+        warningPlayed = false; // Reset warning flag for new match
         const updates = {
             timerState: 'running',
             timerStartTime: now,
@@ -658,18 +688,35 @@ function startTimerCountdown() {
         clearInterval(timerInterval);
     }
     
+    let lastRemaining = timerState.timerCurrentTime; // Track last value to prevent skipping
+    let lastStateSave = lastRemaining; // Track last value saved to state
+    
     timerInterval = setInterval(() => {
         const now = Date.now();
         const remaining = Math.max(0, Math.ceil((timerState.timerEndTime - now) / 1000));
         
-        if (remaining !== timerState.timerCurrentTime) {
-            updateState({ timerCurrentTime: remaining });
+        // Update local display immediately
+        if (remaining !== lastRemaining) {
+            lastRemaining = remaining;
+            timerState.timerCurrentTime = remaining;
             // Update control button subtext with new time
             updateMatchControlButtons();
+            
+            // Only save to state (and broadcast to display) every second to reduce load
+            if (remaining !== lastStateSave) {
+                lastStateSave = remaining;
+                saveState();
+                // Trigger storage event for display page
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'fll-timer-state',
+                    newValue: JSON.stringify(timerState)
+                }));
+            }
         }
         
         if (remaining <= 0) {
             stopTimerCountdown();
+            warningPlayed = false; // Reset for next match
             updateState({ timerState: 'finished' });
             updateMatchControlButtons();
             console.log('Match finished');
@@ -760,8 +807,8 @@ function deleteAllMatches() {
 function toggleScheduleCollapse() {
     isScheduleCollapsed = !isScheduleCollapsed;
     toggleScheduleBtn.innerHTML = isScheduleCollapsed 
-        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
     
     // Save collapsed state
     updateState({ isScheduleCollapsed });
@@ -834,6 +881,7 @@ function renderMatchSchedule() {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'destructive icon-only material-symbols-rounded';
             removeBtn.title = 'Remove Table';
+            removeBtn.setAttribute('translate', 'no');
             removeBtn.textContent = 'close';
             removeBtn.addEventListener('click', removeTable);
             container.appendChild(removeBtn);
@@ -850,6 +898,7 @@ function renderMatchSchedule() {
         addTableBtn.className = 'secondary icon-only material-symbols-rounded';
         addTableBtn.style.width = '100%';
         addTableBtn.title = 'Add Table';
+        addTableBtn.setAttribute('translate', 'no');
         addTableBtn.textContent = 'add';
         addTableBtn.addEventListener('click', addTable);
         actionsHeader.appendChild(addTableBtn);
@@ -946,6 +995,7 @@ function renderMatchSchedule() {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Match';
+        deleteBtn.setAttribute('translate', 'no');
         deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
             if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
@@ -1151,7 +1201,11 @@ deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
-displayTextInput.addEventListener('input', updateCustomText);
+displayTextInput.addEventListener('input', checkCustomTextChanges);
+updateCustomTextBtn.addEventListener('click', saveCustomText);
+soundOptionInputs.forEach(input => {
+    input.addEventListener('change', updateSoundOption);
+});
 
 // Sponsor logo upload handlers
 selectFromLibraryBtn.addEventListener('click', () => {
@@ -1179,7 +1233,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded">add</span>Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded" translate="no">add</span>Add</button>
         </div>
     `).join('');
 }
@@ -1338,9 +1392,9 @@ function renderSponsorPreview() {
     
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
         <div class="sponsor-preview-item" draggable="true" data-index="${index}">
-            <div class="drag-handle material-symbols-rounded" title="Drag to reorder">drag_indicator</div>
+            <div class="drag-handle material-symbols-rounded" title="Drag to reorder" translate="no">drag_indicator</div>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo">close</button>
+            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo" translate="no">close</button>
         </div>
     `).join('');
     

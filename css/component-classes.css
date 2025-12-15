@@ -29,9 +29,20 @@
     border: 1px solid var(--flld-color-white);
 }
 
+.badge {
+    display: inline-block;
+    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+    border-radius: var(--flld-border-radius-sm);
+    font-size: var(--flld-font-size-sm);
+    font-weight: var(--flld-font-weight-semibold);
+    background-color: var(--flld-color-unearthed-red-40);
+    color: var(--flld-color-white);
+}
+
 button {
     min-height: 44px;
     min-width: max-content;
+    width: max-content;
     font-size: var(--flld-font-size-md);
     font-family: var(--flld-font-family-base);
     font-weight: var(--flld-font-weight-semibold);
@@ -197,6 +208,21 @@ input[type="text"], textarea, select {
         outline: 2px solid var(--flld-color-black);
         outline-offset: 2px;
     }
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: var(--flld-font-weight-regular);
+}
+
+input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--flld-color-gray-10);
+    cursor: pointer;
+    margin-right: var(--flld-spacing-sm);
 }
 
 select {

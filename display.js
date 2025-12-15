@@ -38,6 +38,9 @@ let currentState = { ...defaultDisplayState };
 let previousTableNames = null;
 let previousSponsorLogos = null;
 
+// Display timer interval for smooth countdown
+let displayTimerInterval = null;
+
 // Load initial state from localStorage
 function loadState() {
     try {
@@ -119,29 +122,134 @@ function updateDisplay() {
     updateMarquee();
 }
 
+// Track whether sounds have been played
+let warningSoundPlayed = false;
+let endSoundPlayed = false;
+
+// Start display's own countdown timer for smooth animation
+function startDisplayTimer() {
+    // Clear any existing timer (shouldn't happen with proper state management)
+    if (displayTimerInterval) {
+        clearInterval(displayTimerInterval);
+        displayTimerInterval = null;
+    }
+    
+    // Reset sound flags when starting a new timer
+    warningSoundPlayed = false;
+    endSoundPlayed = false;
+    
+    // Play start sound if sound is enabled
+    if (currentState.soundOption === 'ftc') {
+        const startSound = new Audio('sounds/start.wav');
+        startSound.play().catch(err => console.error('Error playing start sound:', err));
+    }
+    
+    displayTimerInterval = setInterval(() => {
+        if (currentState.timerState === 'running' && currentState.timerEndTime) {
+            const now = Date.now();
+            const remaining = Math.max(0, Math.ceil((currentState.timerEndTime - now) / 1000));
+            
+            // Update display with calculated time
+            timerTime.innerHTML = formatTime(remaining);
+            
+            // Remove all state classes
+            timerTime.classList.remove('warning', 'critical', 'pulsate');
+            
+            // Update styling based on time
+            if (remaining === 0) {
+                timerTime.classList.add('critical', 'pulsate');
+                
+                // Play end sound once when timer reaches 0
+                if (!endSoundPlayed && currentState.soundOption === 'ftc') {
+                    const endSound = new Audio('sounds/end.wav');
+                    endSound.play().catch(err => console.error('Error playing end sound:', err));
+                    endSoundPlayed = true;
+                }
+            } else if (remaining <= 5) {
+                timerTime.classList.add('critical');
+            } else if (remaining <= 20) {
+                timerTime.classList.add('warning');
+                
+                // Play warning sound once when crossing 20 second threshold
+                if (!warningSoundPlayed && currentState.soundOption === 'ftc') {
+                    const warningSound = new Audio('sounds/warning.wav');
+                    warningSound.play().catch(err => console.error('Error playing warning sound:', err));
+                    warningSoundPlayed = true;
+                }
+            }
+            
+            // Reset warning sound flag when timer is above 20 seconds
+            if (remaining > 20) {
+                warningSoundPlayed = false;
+            }
+        }
+    }, 100); // Update every 100ms for smooth countdown
+}
+
+// Stop display timer
+function stopDisplayTimer() {
+    if (displayTimerInterval) {
+        clearInterval(displayTimerInterval);
+        displayTimerInterval = null;
+    }
+    endSoundPlayed = false;
+}
+
+// Track previous timer state to detect transitions
+let previousTimerState = null;
+
 // Update timer display specifically
 function updateTimerDisplay() {
     // Preserve 0 when match has finished; only fall back when value is null/undefined
     const time = (currentState.timerCurrentTime ?? TIMER_DURATION);
     timerTime.innerHTML = formatTime(time);
     
-    // Remove all state classes
+    // Remove all state classes (but keep pulsate if timer is at 0 and finished)
     timerTime.classList.remove('warning', 'critical');
+    if (currentState.timerState !== 'finished' || time !== 0) {
+        timerTime.classList.remove('pulsate');
+    }
     
     // Update match and team information
     updateMatchDisplay();
     
-    // Update status and styling based on timer state
-    // Visual emphasis only handled by timerTime classes; status text removed.
+    // Handle timer state changes
     if (currentState.timerState === 'running') {
-        if (time <= 10) {
+        // Only start the timer if transitioning from a non-running state
+        if (previousTimerState !== 'running') {
+            startDisplayTimer();
+        }
+        
+        // Initial styling
+        if (time <= 5) {
             timerTime.classList.add('critical');
-        } else if (time <= 30) {
+        } else if (time <= 20) {
             timerTime.classList.add('warning');
         }
-    } else if (currentState.timerState === 'finished') {
-        timerTime.classList.add('critical');
+    } else {
+        // Check if timer was aborted (transitioned from running to stopped)
+        if (previousTimerState === 'running' && currentState.timerState === 'stopped' && currentState.soundOption === 'ftc') {
+            const abortSound = new Audio('sounds/abort.wav');
+            abortSound.play().catch(err => console.error('Error playing abort sound:', err));
+        }
+        
+        stopDisplayTimer();
+        warningSoundPlayed = false;
+        endSoundPlayed = false;
+        
+        if (currentState.timerState === 'finished') {
+            timerTime.classList.add('critical');
+            if (time === 0) {
+                timerTime.classList.add('pulsate');
+            }
+        } else {
+            // Remove pulsate when resetting/stopping
+            timerTime.classList.remove('pulsate');
+        }
     }
+    
+    // Update previous state for next comparison
+    previousTimerState = currentState.timerState;
 }
 
 // Update match display with current match data

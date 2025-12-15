@@ -99,10 +99,10 @@
 
 #teamsTable th:nth-child(1),
 #teamsTable td:nth-child(1) {
-    width: 33.33%;
+    width: 32px;
 }
 
 #teamsTable th:nth-child(2),
 #teamsTable td:nth-child(2) {
-    width: 66.67%;
+    width: 1fr;
 }

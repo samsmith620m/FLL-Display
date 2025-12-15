@@ -4,6 +4,7 @@ console.log('FLL Timer Control loaded');
 // DOM elements
 const openDisplayBtn = document.getElementById('openDisplayBtn');
 const displayTextInput = document.getElementById('displayText');
+const updateCustomTextBtn = document.getElementById('updateCustomTextBtn');
 const eventNameInput = document.getElementById('eventName');
 const soundOptionInputs = document.querySelectorAll('input[name="soundOption"]');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
@@ -601,11 +602,22 @@ function updateEventName() {
     console.log('Event name updated to:', newName);
 }
 
-// Update custom text when input changes
-function updateCustomText() {
+// Check if custom text has unsaved changes
+function checkCustomTextChanges() {
+    const currentText = displayTextInput.value.trim();
+    const savedText = timerState.customText || '';
+    const hasChanges = currentText !== savedText;
+    updateCustomTextBtn.disabled = !hasChanges;
+}
+
+// Save custom text changes
+function saveCustomText() {
     const newText = displayTextInput.value.trim();
     updateState({ customText: newText });
-    console.log('Custom text updated to:', newText);
+    updateCustomTextBtn.disabled = true;
+    console.log('Custom text saved:', newText);
+}
+
 // Update sound option when radio changes
 function updateSoundOption() {
     const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'none';
@@ -1189,7 +1201,8 @@ deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
-displayTextInput.addEventListener('input', updateCustomText);
+displayTextInput.addEventListener('input', checkCustomTextChanges);
+updateCustomTextBtn.addEventListener('click', saveCustomText);
 soundOptionInputs.forEach(input => {
     input.addEventListener('change', updateSoundOption);
 });

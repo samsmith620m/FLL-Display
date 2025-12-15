@@ -224,14 +224,14 @@ function initializeUI() {
     
     // Apply saved collapsed states
     if (isTeamsCollapsed && timerState.teams.length > 3) {
-        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
         teamsTable.style.display = 'none';
         addTeamBtn.style.display = 'none';
         deleteAllTeamsBtn.style.display = 'none';
     }
     
     if (isScheduleCollapsed && timerState.matches.length > 3) {
-        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand';
+        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
@@ -338,8 +338,8 @@ function updateTeamName(index, value) {
 function toggleTeamsCollapse() {
     isTeamsCollapsed = !isTeamsCollapsed;
     toggleTeamsBtn.innerHTML = isTeamsCollapsed 
-        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
     
     // Save collapsed state
     updateState({ isTeamsCollapsed });
@@ -430,6 +430,7 @@ function renderTeams() {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Team';
+        deleteBtn.setAttribute('translate', 'no');
         deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
             deleteTeam(index);
@@ -794,8 +795,8 @@ function deleteAllMatches() {
 function toggleScheduleCollapse() {
     isScheduleCollapsed = !isScheduleCollapsed;
     toggleScheduleBtn.innerHTML = isScheduleCollapsed 
-        ? '<span class="material-symbols-rounded">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded">keyboard_arrow_up</span>Collapse';
+        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
+        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
     
     // Save collapsed state
     updateState({ isScheduleCollapsed });
@@ -868,6 +869,7 @@ function renderMatchSchedule() {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'destructive icon-only material-symbols-rounded';
             removeBtn.title = 'Remove Table';
+            removeBtn.setAttribute('translate', 'no');
             removeBtn.textContent = 'close';
             removeBtn.addEventListener('click', removeTable);
             container.appendChild(removeBtn);
@@ -884,6 +886,7 @@ function renderMatchSchedule() {
         addTableBtn.className = 'secondary icon-only material-symbols-rounded';
         addTableBtn.style.width = '100%';
         addTableBtn.title = 'Add Table';
+        addTableBtn.setAttribute('translate', 'no');
         addTableBtn.textContent = 'add';
         addTableBtn.addEventListener('click', addTable);
         actionsHeader.appendChild(addTableBtn);
@@ -980,6 +983,7 @@ function renderMatchSchedule() {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Match';
+        deleteBtn.setAttribute('translate', 'no');
         deleteBtn.textContent = 'delete';
         deleteBtn.addEventListener('click', () => {
             if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
@@ -1216,7 +1220,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded">add</span>Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded" translate="no">add</span>Add</button>
         </div>
     `).join('');
 }
@@ -1375,9 +1379,9 @@ function renderSponsorPreview() {
     
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
         <div class="sponsor-preview-item" draggable="true" data-index="${index}">
-            <div class="drag-handle material-symbols-rounded" title="Drag to reorder">drag_indicator</div>
+            <div class="drag-handle material-symbols-rounded" title="Drag to reorder" translate="no">drag_indicator</div>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo">close</button>
+            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo" translate="no">close</button>
         </div>
     `).join('');
     

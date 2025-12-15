@@ -126,6 +126,25 @@
             </div>
             <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
             <div class="form-control">
+                <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
+                    <label for="soundOptions">Sound Profile</label>
+                    <div class="badge">Try it out!</div>
+                </div>
+                <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which more closely matches the other <i>FIRST</i> programs!</p>
+                <div>
+                    <label class="radio-label">
+                        <input type="radio" name="soundOption" value="none" checked>
+                        No sound
+                    </label>
+                </div>
+                <div>
+                    <label class="radio-label">
+                        <input type="radio" name="soundOption" value="ftc">
+                        <span><i>FIRST</i> Tech Challenge / <i>FIRST</i> Robotics Competition</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-control">
                 <label for="eventName">Event Name</label>
                 <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>

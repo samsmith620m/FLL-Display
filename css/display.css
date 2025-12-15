@@ -3,6 +3,25 @@
 
 @import url('css/design-system.css');
 
+/* --- ANIMATIONS --- */
+
+@keyframes pulsate {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+}
+
+.pulsate {
+    animation: pulsate 2s ease-in-out infinite;
+}
+
+/* --- VARIABLES --- */
+
 :root{
     --white-bg-base: var(--flld-color-surface-1); /* fallback */
     --white-bg-fancy: rgb(from var(--flld-color-surface-1) r g b / 65%); /* 80% alpha in modern browsers */
@@ -295,11 +314,11 @@ html.display {
     }
 
     .critical {
-    color: var(--flld-color-fll-challenge-red);
+        color: var(--flld-color-messaging-critical);
     }
     
     .warning {
-        color: var(--flld-color-unearthed-yellow-base);
+        color: var(--flld-color-messaging-warning);
     }
 
     .colon {

@@ -20,6 +20,58 @@
     </header>
     
     <main class="control-content">
+        <div class="card" id="setupChecklistCard">
+            <div class="card-header">
+                <h2>Setup Checklist</h2>
+                <div class="button-group">
+                    <span id="checklistCount">0/6</span>
+                    <button id="toggleChecklistBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
+                </div>
+            </div>
+            <p class="description">To have the most successful event possible, complete these steps!</p>
+            <div id="checklistContainer">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistEventName">
+                    <span>Set your event name</span>
+                    <button class="checklist-button tertiary" data-target="eventName">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistUploadSchedule">
+                    <span>Upload your match schedule (optional)</span>
+                    <button class="checklist-button tertiary" data-target="uploadScheduleBtn">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistTeams">
+                    <span>Add teams to the system</span>
+                    <button class="checklist-button tertiary" data-target="teamsConfig">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistMatches">
+                    <span>Add match schedule</span>
+                    <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistSponsors">
+                    <span>Upload sponsor logos (optional)</span>
+                    <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistDisplay">
+                    <span>Open the display window</span>
+                    <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistCustomText">
+                    <span>Type a message and test the custom text display</span>
+                    <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistMatchTimer">
+                    <span>Test the match timer display and run a match</span>
+                    <button class="checklist-button tertiary" data-target="matchTimerToggle">Show me!</button>
+                </label>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 <h2>Display Controls</h2>
@@ -31,7 +83,7 @@
                 <p class="label">Current Display Type</p>
                 <div class="toggle-button-group" id="displayTypeToggle">
                     <button type="button" class="toggle start active" data-value="text">Custom Text</button>
-                    <button type="button" class="toggle end" data-value="match-timer">Match Timer</button>
+                    <button type="button" id="matchTimerToggle" class="toggle end" data-value="match-timer">Match Timer</button>
                 </div>
             </div>
             <div id="textDisplayConfig" class="form-control">
@@ -61,16 +113,14 @@
 
         <div class="card" id="matchScheduleConfig">
             <div class="card-header">
-                <div class="button-group">
-                    <h2>Match Schedule</h2>
-                    <button id="toggleScheduleBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
-                </div>
+                <h2>Match Schedule</h2>
                 <div class="schedule-header-right">
                     <span id="matchCount">0 matches</span>
                     <div class="button-group">
                         <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
                         <button id="addMatchBtn" class="primary">Add Match</button>
                         <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                        <button id="toggleScheduleBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
                     </div>
                 </div>
             </div>
@@ -88,15 +138,13 @@
 
         <div class="card" id="teamsConfig">
             <div class="card-header">
-                <div class="button-group">
-                    <h2>Teams</h2>
-                    <button id="toggleTeamsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
-                </div>
+                <h2>Teams</h2>
                 <div class="schedule-header-right">
                     <span id="teamCount">0 teams</span>
                     <div class="button-group">
                         <button id="addTeamBtn" class="primary">Add Team</button>
                         <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                        <button id="toggleTeamsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
                     </div>
                 </div>
             </div>
@@ -149,7 +197,7 @@
                 <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
             </div>
-            <div class="form-control">
+            <div class="form-control" id="sponsorLogosSection">
                 <div class="button-group">
                     <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
                         <label for="sponsorLogos">Sponsor Logos</label>

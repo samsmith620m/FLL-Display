@@ -20,6 +20,68 @@
     </header>
     
     <main class="control-content">
+        <div class="card" id="setupChecklistCard">
+            <div class="card-header">
+                <h2>Setup Checklist</h2>
+                <div class="button-group">
+                    <span id="checklistCount"></span>
+                    <button id="toggleChecklistBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                </div>
+            </div>
+            <p class="description" id="checklistDescription">To have the most successful event possible, complete these steps!</p>
+            <div id="checklistContainer">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistEventName" tabindex="-1">
+                    <span>Enter your event name</span>
+                    <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistSponsors" tabindex="-1">
+                    <span>Select/upload sponsor logos</span>
+                    <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistUploadSchedule" tabindex="-1">
+                    <span>Upload an event schedule (optional)</span>
+                    <button class="checklist-button tertiary" data-target="uploadScheduleBtn">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistTeams" tabindex="-1">
+                    <span>OR manually enter teams</span>
+                    <button class="checklist-button tertiary" data-target="teamsConfig">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistMatches" tabindex="-1">
+                    <span>AND manually enter matches</span>
+                    <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistDisplay" tabindex="-1">
+                    <span>Open the display window</span>
+                    <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
+                    <span>Test the match timer display and run a match</span>
+                    <button class="checklist-button tertiary" data-target="matchTimerToggle">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistSoundOption" tabindex="-1">
+                    <span>Try turning the match sounds on and run a match</span>
+                    <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistCustomText" tabindex="-1">
+                    <span>Type a message and test the custom text display</span>
+                    <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="checklistExpandCollapse" tabindex="-1">
+                    <span>Get comfortable with the collapse/expand buttons</span>
+                    <button class="checklist-button tertiary" data-target="toggleChecklistBtn">Show me!</button>
+                </label>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 <h2>Display Controls</h2>
@@ -31,7 +93,7 @@
                 <p class="label">Current Display Type</p>
                 <div class="toggle-button-group" id="displayTypeToggle">
                     <button type="button" class="toggle start active" data-value="text">Custom Text</button>
-                    <button type="button" class="toggle end" data-value="match-timer">Match Timer</button>
+                    <button type="button" id="matchTimerToggle" class="toggle end" data-value="match-timer">Match Timer</button>
                 </div>
             </div>
             <div id="textDisplayConfig" class="form-control">
@@ -61,16 +123,14 @@
 
         <div class="card" id="matchScheduleConfig">
             <div class="card-header">
-                <div class="button-group">
-                    <h2>Match Schedule</h2>
-                    <button id="toggleScheduleBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
-                </div>
+                <h2>Match Schedule</h2>
                 <div class="schedule-header-right">
                     <span id="matchCount">0 matches</span>
                     <div class="button-group">
                         <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
                         <button id="addMatchBtn" class="primary">Add Match</button>
                         <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                        <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
                     </div>
                 </div>
             </div>
@@ -88,15 +148,13 @@
 
         <div class="card" id="teamsConfig">
             <div class="card-header">
-                <div class="button-group">
-                    <h2>Teams</h2>
-                    <button id="toggleTeamsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse</button>
-                </div>
+                <h2>Teams</h2>
                 <div class="schedule-header-right">
                     <span id="teamCount">0 teams</span>
                     <div class="button-group">
                         <button id="addTeamBtn" class="primary">Add Team</button>
                         <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                        <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
                     </div>
                 </div>
             </div>
@@ -121,16 +179,16 @@
             <div class="card-header">
                 <h2>Event Configuration</h2>
                 <button id="resetConfigBtn" class="destructive">
-                    Reset Configuration
+                    <span class="material-symbols-rounded" translate="no">reset_settings</span>Reset Configuration
                 </button>
             </div>
             <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
-            <div class="form-control">
+            <div class="form-control" id="soundOptions">
                 <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
                     <label for="soundOptions">Sound Profile</label>
-                    <div class="badge">Try it out!</div>
+                    <div class="badge rainbow">Try it out!</div>
                 </div>
-                <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which more closely matches the other <i>FIRST</i> programs!</p>
+                <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which matches the other <i>FIRST</i> programs!</p>
                 <div>
                     <label class="radio-label">
                         <input type="radio" name="soundOption" value="none" checked>
@@ -149,17 +207,17 @@
                 <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
             </div>
-            <div class="form-control">
+            <div class="form-control" id="sponsorLogosSection">
                 <div class="button-group">
                     <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
                         <label for="sponsorLogos">Sponsor Logos</label>
-                        <p class="description">These logos will appear at the bottom of the display in the order you specify.</p>
+                        <p class="description">These logos will appear on the display in the order you choose.</p>
                     </div>
-                    <button id="uploadSponsorsBtn" class="secondary">Upload Logo</button>
-                    <button id="selectFromLibraryBtn" class="secondary">Select from Library</button>
+                    <button id="uploadSponsorsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">upload</span>Upload Logo</button>
                     <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
                 </div>
                 <div id="sponsorPreview"></div>
+                <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
                 <div id="logoLibrary" style="display: none;"></div>
                 <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
             </div>

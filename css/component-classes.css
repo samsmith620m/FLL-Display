@@ -1,5 +1,71 @@
 @import url('css/design-system.css');
 
+/* Checkbox color cycle animation */
+@keyframes color-cycle-accentColor {
+    0%, 100% {
+        accent-color: var(--flld-color-unearthed-red-50);
+    }
+    25% {
+        accent-color: var(--flld-color-unearthed-green-50);
+    }
+    50% {
+        accent-color: var(--flld-color-unearthed-yellow-50);
+    }
+    75% {
+        accent-color: var(--flld-color-unearthed-teal-50);
+    }
+}
+
+/* Button color cycle animation */
+@keyframes color-cycle-buttonBackgroundColor {
+    0%, 100% {
+        background-color: var(--flld-color-unearthed-red-90);
+    }
+    25% {
+        background-color: var(--flld-color-unearthed-green-90);
+    }
+    50% {
+        background-color: var(--flld-color-unearthed-yellow-90);
+    }
+    75% {
+        background-color: var(--flld-color-unearthed-teal-90);
+    }
+}
+
+/* Badge color cycle animation */
+@keyframes color-cycle-badgeBackgroundColor {
+    0%, 100% {
+        background-color: var(--flld-color-unearthed-red-50);
+    }
+    25% {
+        background-color: var(--flld-color-unearthed-green-50);
+    }
+    50% {
+        background-color: var(--flld-color-unearthed-yellow-50);
+    }
+    75% {
+        background-color: var(--flld-color-unearthed-teal-50);
+    }
+}
+
+/* Radar ping animation */
+@keyframes radarPing {
+    0% {
+        box-shadow: 0 0 0 0 color-mix(in oklab, var(--flld-color-fll-challenge-red), transparent 70%);
+    }
+    50% {
+        box-shadow: 0 0 0 8px color-mix(in oklab, var(--flld-color-fll-challenge-red), transparent 50%);
+    }
+    100% {
+        box-shadow: 0 0 0 16px color-mix(in oklab, var(--flld-color-fll-challenge-red), transparent 100%);
+    }
+}
+
+.pulse-highlight {
+    animation: radarPing 1.5s ease-out 3;
+    scroll-margin-top: 100px;
+}
+
 .alert {
     width: 100%;
     display: flex;
@@ -17,7 +83,7 @@
         border-top: none;
         border-left: none;
         border-right: none;
-        padding: 32px;
+        padding: 16px 32px;
     }
 }
 
@@ -37,6 +103,10 @@
     font-weight: var(--flld-font-weight-semibold);
     background-color: var(--flld-color-unearthed-red-40);
     color: var(--flld-color-white);
+
+    &.rainbow {
+        animation: color-cycle-badgeBackgroundColor 8s ease-in-out infinite;
+    }
 }
 
 button {
@@ -105,6 +175,16 @@ button {
         }
     }
 
+    &.rainbow {
+        animation: color-cycle-buttonBackgroundColor 8s ease-in-out infinite;
+        color: var(--flld-color-gray-10);
+        border: none;
+
+        &:hover:not(:disabled) {
+            filter: brightness(0.8);
+        }
+    }
+
     .button-sub-text {
         font-weight: var(--flld-font-weight-regular);
     }
@@ -131,16 +211,7 @@ button {
     border-radius: var(--flld-border-radius-lg);
 
     button {
-        border-radius: 0;
         border: none;
-
-        &:first-child {
-            border-radius: var(--flld-border-radius-lg) 0 0 var(--flld-border-radius-lg);
-        }
-
-        &:last-child {
-            border-radius: 0 var(--flld-border-radius-lg) var(--flld-border-radius-lg) 0;
-        }
     }
 }
 
@@ -160,8 +231,8 @@ button.toggle {
         background-color: var(--flld-color-gray-10);
         color: var(--flld-color-white);
         border: none;
-        outline: 4px solid white;
-        outline-offset: -4px;
+        outline: 4.5px solid white; /* is 4.5px to remove a small lingering black outline on the edges of the button radius */
+        outline-offset: -4px; 
 
         &:hover:not(:disabled) {
             background-color: var(--flld-color-gray-10);
@@ -210,6 +281,35 @@ input[type="text"], textarea, select {
     }
 }
 
+#checklistContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: var(--flld-font-weight-regular);
+    gap: var(--flld-spacing-xs);
+    pointer-events: none;
+}
+
+.checklist-button {
+    min-height: 32px;
+    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+    font-size: var(--flld-font-size-sm);
+    pointer-events: auto;
+}
+
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--flld-color-unearthed-red-70);
+    animation: color-cycle-accentColor 8s ease-in-out infinite;
+    cursor: default;
+    margin-right: var(--flld-spacing-sm);
+}
+
 .radio-label {
     display: flex;
     align-items: center;
@@ -223,6 +323,12 @@ input[type="radio"] {
     accent-color: var(--flld-color-gray-10);
     cursor: pointer;
     margin-right: var(--flld-spacing-sm);
+}
+
+#checklistContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flld-spacing-xs);
 }
 
 select {

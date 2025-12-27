@@ -8,6 +8,22 @@ const updateCustomTextBtn = document.getElementById('updateCustomTextBtn');
 const eventNameInput = document.getElementById('eventName');
 const soundOptionInputs = document.querySelectorAll('input[name="soundOption"]');
 const resetConfigBtn = document.getElementById('resetConfigBtn');
+
+// Setup checklist elements
+const toggleChecklistBtn = document.getElementById('toggleChecklistBtn');
+const checklistContainer = document.getElementById('checklistContainer');
+const checklistDescription = document.getElementById('checklistDescription');
+const checklistCount = document.getElementById('checklistCount');
+const checklistEventName = document.getElementById('checklistEventName');
+const checklistUploadSchedule = document.getElementById('checklistUploadSchedule');
+const checklistTeams = document.getElementById('checklistTeams');
+const checklistMatches = document.getElementById('checklistMatches');
+const checklistSponsors = document.getElementById('checklistSponsors');
+const checklistDisplay = document.getElementById('checklistDisplay');
+const checklistCustomText = document.getElementById('checklistCustomText');
+const checklistMatchTimer = document.getElementById('checklistMatchTimer');
+const checklistExpandCollapse = document.getElementById('checklistExpandCollapse');
+const checklistSoundOption = document.getElementById('checklistSoundOption');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
@@ -80,6 +96,20 @@ const defaultState = {
     // UI state
     isScheduleCollapsed: false,
     isTeamsCollapsed: false,
+    // Setup checklist state
+    checklist: {
+        eventName: false,
+        uploadSchedule: false,
+        teams: false,
+        matches: false,
+        sponsors: false,
+        display: false,
+        customText: false,
+        matchTimer: false,
+        expandCollapse: false,
+        soundOption: false
+    },
+    isChecklistCollapsed: false,
     // More state properties will be added as we build features
 };
 
@@ -105,6 +135,11 @@ function loadState() {
         try {
             const parsedState = JSON.parse(savedState);
             timerState = { ...defaultState, ...parsedState };
+            
+            // Merge checklist properties to ensure new items are included
+            if (parsedState.checklist) {
+                timerState.checklist = { ...defaultState.checklist, ...parsedState.checklist };
+            }
             
             // Migrate old tableCount to tableNames if needed
             if (timerState.tableCount !== undefined && !timerState.tableNames) {
@@ -172,6 +207,13 @@ function resetConfiguration() {
         // Update UI to reflect reset
         eventNameInput.value = '';
         displayTextInput.value = '';
+        updateCustomTextBtn.disabled = true;
+        
+        // Reset sound option to default
+        soundOptionInputs.forEach(input => {
+            input.checked = input.value === 'none';
+        });
+        
         // Set display type toggle
         setDisplayTypeToggle(timerState.displayType);
         
@@ -179,10 +221,38 @@ function resetConfiguration() {
         updateMatchControlButtons();
         
         // Reset teams display
+        isTeamsCollapsed = false;
         renderTeams();
         
         // Reset match schedule display
+        isScheduleCollapsed = false;
         renderMatchSchedule();
+        
+        // Ensure action buttons are visible after reset
+        if (addTeamBtn) addTeamBtn.style.display = 'inline-flex';
+        if (deleteAllTeamsBtn) deleteAllTeamsBtn.style.display = 'none';
+        if (uploadScheduleBtn) uploadScheduleBtn.style.display = 'inline-flex';
+        if (addMatchBtn) addMatchBtn.style.display = 'inline-flex';
+        if (deleteAllMatchesBtn) deleteAllMatchesBtn.style.display = 'none';
+        if (teamsTable) teamsTable.style.display = 'none'; // Will be shown by renderTeams if needed
+        if (toggleTeamsBtn) {
+            toggleTeamsBtn.textContent = 'keyboard_arrow_up';
+            toggleTeamsBtn.title = 'Collapse';
+        }
+        if (toggleScheduleBtn) {
+            toggleScheduleBtn.textContent = 'keyboard_arrow_up';
+            toggleScheduleBtn.title = 'Collapse';
+        }
+        
+        // Reset sponsor logos display
+        renderSponsorPreview();
+        
+        // Reset checklist and ensure it's expanded
+        syncChecklistUI();
+        checklistContainer.style.display = 'flex';
+        checklistDescription.style.display = 'block';
+        toggleChecklistBtn.textContent = 'keyboard_arrow_up';
+        toggleChecklistBtn.title = 'Collapse';
         
         console.log('Configuration reset to defaults');
         alert('Configuration has been reset.');
@@ -223,16 +293,28 @@ function initializeUI() {
     // Initialize match schedule display
     renderMatchSchedule();
     
+    // Initialize and sync setup checklist
+    autoCheckChecklistItems();
+    syncChecklistUI();
+    if (timerState.isChecklistCollapsed) {
+        toggleChecklistBtn.textContent = 'keyboard_arrow_down';
+        toggleChecklistBtn.title = 'Expand';
+        checklistContainer.style.display = 'none';
+        checklistDescription.style.display = 'none';
+    }
+    
     // Apply saved collapsed states
-    if (isTeamsCollapsed && timerState.teams.length > 3) {
-        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
+    if (isTeamsCollapsed && timerState.teams.length >= 1) {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_down';
+        toggleTeamsBtn.title = 'Expand';
         teamsTable.style.display = 'none';
         addTeamBtn.style.display = 'none';
         deleteAllTeamsBtn.style.display = 'none';
     }
     
-    if (isScheduleCollapsed && timerState.matches.length > 3) {
-        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
+    if (isScheduleCollapsed && timerState.matches.length >= 3) {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_down';
+        toggleScheduleBtn.title = 'Expand';
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
@@ -338,9 +420,13 @@ function updateTeamName(index, value) {
 
 function toggleTeamsCollapse() {
     isTeamsCollapsed = !isTeamsCollapsed;
-    toggleTeamsBtn.innerHTML = isTeamsCollapsed 
-        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+    if (isTeamsCollapsed) {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_down';
+        toggleTeamsBtn.title = 'Expand';
+    } else {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_up';
+        toggleTeamsBtn.title = 'Collapse';
+    }
     
     // Save collapsed state
     updateState({ isTeamsCollapsed });
@@ -372,7 +458,7 @@ function renderTeams() {
         deleteAllTeamsBtn.style.display = count > 0 ? 'inline-flex' : 'none';
     }
     if (toggleTeamsBtn) {
-        toggleTeamsBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+        toggleTeamsBtn.style.display = count >= 1 ? 'inline-flex' : 'none';
     }
     
     // Clear existing rows
@@ -385,12 +471,13 @@ function renderTeams() {
         return;
     }
     
-    // Reset collapse state if we have 3 or fewer teams
-    if (timerState.teams.length <= 3) {
-        isTeamsCollapsed = false;
-    }
-    
     table.style.display = 'table';
+    noTeams.style.display = 'none';
+    
+    // Apply collapsed state from saved preferences
+    if (isTeamsCollapsed) {
+        table.style.display = 'none';
+    }
     noTeams.style.display = 'none';
     
     // Filter teams if collapsed (show all for now, can add filtering later if needed)
@@ -428,6 +515,7 @@ function renderTeams() {
         
         // Actions column
         const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions-column';
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Team';
@@ -441,6 +529,10 @@ function renderTeams() {
         
         tbody.appendChild(row);
     });
+    
+    // Auto-check teams checklist item
+    autoCheckChecklistItems();
+    syncChecklistUI();
 }
 
 // Helper functions for display type toggle
@@ -471,6 +563,12 @@ function openDisplay() {
         if (displayWindow) {
             console.log('Display tab opened');
             updateOpenDisplayButton();
+            
+            // Auto-check display checklist item
+            if (!timerState.checklist.display) {
+                updateChecklistItem('display', true);
+                syncChecklistUI();
+            }
             
             // Check if window is closed by user to update button
             const checkClosed = setInterval(() => {
@@ -599,6 +697,7 @@ function nextMatch() {
 function updateEventName() {
     const newName = eventNameInput.value.trim();
     updateState({ eventName: newName });
+    autoCheckChecklistItems();
     console.log('Event name updated to:', newName);
 }
 
@@ -614,14 +713,144 @@ function checkCustomTextChanges() {
 function saveCustomText() {
     const newText = displayTextInput.value.trim();
     updateState({ customText: newText });
+    updateChecklistItem('customText', true);
     updateCustomTextBtn.disabled = true;
     console.log('Custom text saved:', newText);
+}
+
+// Setup Checklist Functions
+// ============================================================
+
+function updateChecklistItem(item, checked) {
+    const checklist = { ...timerState.checklist };
+    checklist[item] = checked;
+    updateState({ checklist });
+    syncChecklistUI();
+}
+
+function autoCheckChecklistItems() {
+    const checklist = { ...timerState.checklist };
+    
+    // Auto-check event name if set
+    if (timerState.eventName && timerState.eventName.trim() !== '') {
+        checklist.eventName = true;
+    }
+    
+    // Auto-check teams if any exist
+    if (timerState.teams && timerState.teams.length > 0) {
+        checklist.teams = true;
+    }
+    
+    // Auto-check matches if any exist
+    if (timerState.matches && timerState.matches.length > 0) {
+        checklist.matches = true;
+    }
+    
+    // Auto-check sponsors if any exist
+    if (timerState.sponsorLogos && timerState.sponsorLogos.length > 0) {
+        checklist.sponsors = true;
+    }
+    
+    // Update state if any changes
+    if (JSON.stringify(checklist) !== JSON.stringify(timerState.checklist)) {
+        updateState({ checklist });
+        syncChecklistUI();
+    }
+}
+
+function syncChecklistUI() {
+    if (timerState.checklist) {
+        checklistEventName.checked = timerState.checklist.eventName || false;
+        checklistUploadSchedule.checked = timerState.checklist.uploadSchedule || false;
+        checklistTeams.checked = timerState.checklist.teams || false;
+        checklistMatches.checked = timerState.checklist.matches || false;
+        checklistSponsors.checked = timerState.checklist.sponsors || false;
+        checklistDisplay.checked = timerState.checklist.display || false;
+        checklistCustomText.checked = timerState.checklist.customText || false;
+        checklistMatchTimer.checked = timerState.checklist.matchTimer || false;
+        checklistExpandCollapse.checked = timerState.checklist.expandCollapse || false;
+        checklistSoundOption.checked = timerState.checklist.soundOption || false;
+    }
+    updateChecklistCount();
+    updateChecklistRainbow();
+}
+
+function updateChecklistCount() {
+    const checklist = timerState.checklist || {};
+    const completed = Object.values(checklist).filter(Boolean).length;
+    const total = Object.keys(checklist).length;
+    
+    if (completed === total) {
+        checklistCount.textContent = `🎉 ${completed}/${total} complete! 🎉`;
+    } else {
+        checklistCount.textContent = `${completed}/${total} complete`;
+    }
+}
+
+function updateChecklistRainbow() {
+    // Get all checklist items in order
+    const checklistItems = [
+        { checkbox: checklistEventName, id: 'checklistEventName' },
+        { checkbox: checklistSponsors, id: 'checklistSponsors' },
+        { checkbox: checklistUploadSchedule, id: 'checklistUploadSchedule' },
+        { checkbox: checklistTeams, id: 'checklistTeams' },
+        { checkbox: checklistMatches, id: 'checklistMatches' },
+        { checkbox: checklistDisplay, id: 'checklistDisplay' },
+        { checkbox: checklistMatchTimer, id: 'checklistMatchTimer' },
+        { checkbox: checklistSoundOption, id: 'checklistSoundOption' },
+        { checkbox: checklistCustomText, id: 'checklistCustomText' },
+        { checkbox: checklistExpandCollapse, id: 'checklistExpandCollapse' }
+    ];
+    
+    // Remove rainbow class from all buttons and set to tertiary
+    document.querySelectorAll('.checklist-button').forEach(button => {
+        button.classList.remove('rainbow');
+        button.classList.add('tertiary');
+    });
+    
+    // Find the first unchecked item
+    const firstUnchecked = checklistItems.find(item => !item.checkbox.checked);
+    
+    // If found, add rainbow class to its button
+    if (firstUnchecked) {
+        const label = firstUnchecked.checkbox.closest('label');
+        const button = label.querySelector('.checklist-button');
+        if (button) {
+            button.classList.remove('tertiary');
+            button.classList.add('rainbow');
+        }
+    }
+}
+
+function toggleChecklistCollapse() {
+    const isCollapsed = !timerState.isChecklistCollapsed;
+    updateState({ isChecklistCollapsed: isCollapsed });
+    
+    if (isCollapsed) {
+        toggleChecklistBtn.textContent = 'keyboard_arrow_down';
+        toggleChecklistBtn.title = 'Expand';
+    } else {
+        toggleChecklistBtn.textContent = 'keyboard_arrow_up';
+        toggleChecklistBtn.title = 'Collapse';
+    }
+    
+    if (isCollapsed) {
+        checklistContainer.style.display = 'none';
+        checklistDescription.style.display = 'none';
+    } else {
+        checklistContainer.style.display = 'flex';
+        checklistDescription.style.display = 'block';
+    }
+    
+    // Auto-check expand/collapse checklist item
+    updateChecklistItem('expandCollapse', true);
 }
 
 // Update sound option when radio changes
 function updateSoundOption() {
     const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'none';
     updateState({ soundOption: selectedOption });
+    updateChecklistItem('soundOption', true);
     console.log('Sound option updated to:', selectedOption);
 }
 
@@ -677,6 +906,7 @@ function startMatch() {
         };
         
         updateState(updates);
+        updateChecklistItem('matchTimer', true);
         startTimerCountdown();
         updateMatchControlButtons();
         console.log('Match started');
@@ -806,9 +1036,13 @@ function deleteAllMatches() {
 // Toggle schedule collapse state
 function toggleScheduleCollapse() {
     isScheduleCollapsed = !isScheduleCollapsed;
-    toggleScheduleBtn.innerHTML = isScheduleCollapsed 
-        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+    if (isScheduleCollapsed) {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_down';
+        toggleScheduleBtn.title = 'Expand';
+    } else {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_up';
+        toggleScheduleBtn.title = 'Collapse';
+    }
     
     // Save collapsed state
     updateState({ isScheduleCollapsed });
@@ -842,7 +1076,7 @@ function renderMatchSchedule() {
         deleteAllMatchesBtn.style.display = (count > 0 && !isScheduleCollapsed) ? 'inline-flex' : 'none';
     }
     if (toggleScheduleBtn) {
-        toggleScheduleBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+        toggleScheduleBtn.style.display = count >= 3 ? 'inline-flex' : 'none';
     }
     
     // Update match control buttons
@@ -876,8 +1110,8 @@ function renderMatchSchedule() {
         });
         container.appendChild(input);
         
-        // Add remove button to the last table header
-        if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1) {
+        // Add remove button to the last table header (hide when collapsed)
+        if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1 && !isScheduleCollapsed) {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'destructive icon-only material-symbols-rounded';
             removeBtn.title = 'Remove Table';
@@ -891,19 +1125,22 @@ function renderMatchSchedule() {
         headerRow.appendChild(th);
     });
 
-    // Actions column header with Add Table button (only if not at max)
-    const actionsHeader = document.createElement('th');
-    if (timerState.tableNames.length < 4) {
-        const addTableBtn = document.createElement('button');
-        addTableBtn.className = 'secondary icon-only material-symbols-rounded';
-        addTableBtn.style.width = '100%';
-        addTableBtn.title = 'Add Table';
-        addTableBtn.setAttribute('translate', 'no');
-        addTableBtn.textContent = 'add';
-        addTableBtn.addEventListener('click', addTable);
-        actionsHeader.appendChild(addTableBtn);
+    // Actions column header with Add Table button (only if not at max and not collapsed)
+    if (!isScheduleCollapsed) {
+        const actionsHeader = document.createElement('th');
+        actionsHeader.className = 'actions-column';
+        if (timerState.tableNames.length < 4) {
+            const addTableBtn = document.createElement('button');
+            addTableBtn.className = 'secondary icon-only material-symbols-rounded';
+            addTableBtn.style.width = '100%';
+            addTableBtn.title = 'Add Table';
+            addTableBtn.setAttribute('translate', 'no');
+            addTableBtn.textContent = 'add';
+            addTableBtn.addEventListener('click', addTable);
+            actionsHeader.appendChild(addTableBtn);
+        }
+        headerRow.appendChild(actionsHeader);
     }
-    headerRow.appendChild(actionsHeader);
 
     if (matchScheduleHead) {
         matchScheduleHead.innerHTML = '';
@@ -918,11 +1155,6 @@ function renderMatchSchedule() {
         noMatches.style.display = 'block';
         isScheduleCollapsed = false; // Reset collapse state
         return;
-    }
-    
-    // Reset collapse state if we have 3 or fewer matches
-    if (timerState.matches.length <= 3) {
-        isScheduleCollapsed = false;
     }
     
     table.style.display = 'table';
@@ -990,23 +1222,30 @@ function renderMatchSchedule() {
             row.appendChild(teamCell);
         }
         
-        // Actions column
-        const actionsCell = document.createElement('td');
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'destructive icon-only material-symbols-rounded';
-        deleteBtn.title = 'Delete Match';
-        deleteBtn.setAttribute('translate', 'no');
-        deleteBtn.textContent = 'delete';
-        deleteBtn.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
-                deleteMatch(match.matchNumber);
-            }
-        });
-        actionsCell.appendChild(deleteBtn);
-        row.appendChild(actionsCell);
+        // Actions column (hide when collapsed)
+        if (!isScheduleCollapsed) {
+            const actionsCell = document.createElement('td');
+            actionsCell.className = 'actions-column';
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'destructive icon-only material-symbols-rounded';
+            deleteBtn.title = 'Delete Match';
+            deleteBtn.setAttribute('translate', 'no');
+            deleteBtn.textContent = 'delete';
+            deleteBtn.addEventListener('click', () => {
+                if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
+                    deleteMatch(match.matchNumber);
+                }
+            });
+            actionsCell.appendChild(deleteBtn);
+            row.appendChild(actionsCell);
+        }
         
         tbody.appendChild(row);
     });
+    
+    // Auto-check matches checklist item
+    autoCheckChecklistItems();
+    syncChecklistUI();
 }
 
 // --- CSV Upload & Parsing ---
@@ -1161,6 +1400,7 @@ function handleScheduleFile(file) {
                 teams: allTeams,
                 currentMatchNumber: matches.length ? 1 : 1 
             });
+            updateChecklistItem('uploadSchedule', true);
             renderMatchSchedule();
             renderTeams();
             
@@ -1190,6 +1430,7 @@ if (uploadScheduleBtn && uploadScheduleInput) {
 openDisplayBtn.addEventListener('click', openDisplay);
 toggleTeamsBtn.addEventListener('click', toggleTeamsCollapse);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
+toggleChecklistBtn.addEventListener('click', toggleChecklistCollapse);
 resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
@@ -1198,6 +1439,60 @@ addTeamBtn.addEventListener('click', addTeam);
 deleteAllTeamsBtn.addEventListener('click', deleteAllTeams);
 addMatchBtn.addEventListener('click', addMatch);
 deleteAllMatchesBtn.addEventListener('click', deleteAllMatches);
+
+// Setup checklist link clicks
+document.querySelectorAll('.checklist-button').forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent label click
+        const targetId = e.target.getAttribute('data-target');
+        const targetElement = document.getElementById(targetId);
+        
+        if (targetElement) {
+            // Expand sections if needed before scrolling
+            // Check if target is in match schedule section
+            if (['uploadScheduleBtn', 'addMatchBtn', 'matchScheduleConfig'].includes(targetId)) {
+                if (isScheduleCollapsed) {
+                    toggleScheduleCollapse();
+                }
+            }
+            // Check if target is in teams section
+            if (['addTeamBtn', 'teamsConfig'].includes(targetId)) {
+                if (isTeamsCollapsed) {
+                    toggleTeamsCollapse();
+                }
+            }
+            // Check if target is in checklist section
+            if (['toggleChecklistBtn'].includes(targetId)) {
+                if (timerState.isChecklistCollapsed) {
+                    toggleChecklistCollapse();
+                }
+            }
+            // Sound options is always visible, no need to expand anything
+            
+            // Wait a moment for the section to expand before scrolling
+            setTimeout(() => {
+                // Scroll to element
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Add pulse effect
+                targetElement.classList.add('pulse-highlight');
+                
+                // Remove pulse effect after animation completes
+                setTimeout(() => {
+                    targetElement.classList.remove('pulse-highlight');
+                }, 6000); // 3 pulses × 2s
+                
+                // Focus the element if it's an input
+                if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'BUTTON') {
+                    setTimeout(() => {
+                        targetElement.focus();
+                    }, 500);
+                }
+            }, 100); // Small delay to allow section to expand
+        }
+    });
+});
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
@@ -1221,11 +1516,11 @@ function toggleLogoLibrary() {
     
     if (isVisible) {
         logoLibrary.style.display = 'none';
-        selectFromLibraryBtn.textContent = 'Select from Library';
+        selectFromLibraryBtn.textContent = 'Open Logo Library';
     } else {
         renderLogoLibrary();
         logoLibrary.style.display = 'grid';
-        selectFromLibraryBtn.textContent = 'Hide Library';
+        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Logo Library';
     }
 }
 
@@ -1233,7 +1528,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded" translate="no">add</span>Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})">Add</button>
         </div>
     `).join('');
 }
@@ -1249,6 +1544,7 @@ async function addLogoFromLibrary(index) {
         const reader = new FileReader();
         reader.onload = (e) => {
             updateState({ sponsorLogos: [...timerState.sponsorLogos, e.target.result] });
+            updateChecklistItem('sponsors', true);
             renderSponsorPreview();
         };
         reader.readAsDataURL(blob);
@@ -1274,6 +1570,7 @@ sponsorLogosInput.addEventListener('change', async (e) => {
     try {
         const logos = await Promise.all(logoPromises);
         updateState({ sponsorLogos: [...timerState.sponsorLogos, ...logos] });
+        updateChecklistItem('sponsors', true);
         renderSponsorPreview();
     } catch (error) {
         console.error('Error loading sponsor logos:', error);

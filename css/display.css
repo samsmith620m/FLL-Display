@@ -449,6 +449,7 @@ html.display {
     border: 2px dashed var(--flld-color-gray-70);
     border-radius: var(--flld-border-radius-md);
     background-color: var(--flld-color-gray-98);
+    margin: var(--flld-spacing-xs) 0;
 }
 
 /* Logo Library */

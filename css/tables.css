@@ -21,10 +21,14 @@
     text-align: left;
     border-right: 1px solid var(--flld-color-border-base);
     border-bottom: 1px solid var(--flld-color-border-base);
+
+    &:last-child {
+        border-right: none;
+    }
 }
 
-.match-table th:last-child,
-.match-table td:last-child {
+.match-table th:last-child.actions-column,
+.match-table td:last-child.actions-column {
     border-right: none;
     /* Option B: collapse actions column to its min-content width */
     width: 0; /* lets table algorithm size to min-content (button width) */

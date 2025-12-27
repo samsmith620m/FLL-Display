@@ -1194,6 +1194,7 @@ function renderMatchSchedule() {
             const teamCell = document.createElement('td');
             const teamSelect = document.createElement('select');
             teamSelect.className = 'team-input';
+            teamSelect.setAttribute('translate', 'no');
             
             // Add placeholder option (disabled and hidden)
             const placeholderOption = document.createElement('option');
@@ -1209,6 +1210,7 @@ function renderMatchSchedule() {
                 const option = document.createElement('option');
                 option.value = team.teamNumber;
                 option.textContent = `${team.teamNumber}${team.teamName ? ' - ' + team.teamName : ''}`;
+                option.setAttribute('translate', 'no');
                 teamSelect.appendChild(option);
             });
             

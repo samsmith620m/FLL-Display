@@ -12,6 +12,7 @@ const resetConfigBtn = document.getElementById('resetConfigBtn');
 // Setup checklist elements
 const toggleChecklistBtn = document.getElementById('toggleChecklistBtn');
 const checklistContainer = document.getElementById('checklistContainer');
+const checklistDescription = document.getElementById('checklistDescription');
 const checklistCount = document.getElementById('checklistCount');
 const checklistEventName = document.getElementById('checklistEventName');
 const checklistUploadSchedule = document.getElementById('checklistUploadSchedule');
@@ -21,6 +22,8 @@ const checklistSponsors = document.getElementById('checklistSponsors');
 const checklistDisplay = document.getElementById('checklistDisplay');
 const checklistCustomText = document.getElementById('checklistCustomText');
 const checklistMatchTimer = document.getElementById('checklistMatchTimer');
+const checklistExpandCollapse = document.getElementById('checklistExpandCollapse');
+const checklistSoundOption = document.getElementById('checklistSoundOption');
 const displayTypeToggle = document.getElementById('displayTypeToggle');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
@@ -102,7 +105,9 @@ const defaultState = {
         sponsors: false,
         display: false,
         customText: false,
-        matchTimer: false
+        matchTimer: false,
+        expandCollapse: false,
+        soundOption: false
     },
     isChecklistCollapsed: false,
     // More state properties will be added as we build features
@@ -130,6 +135,11 @@ function loadState() {
         try {
             const parsedState = JSON.parse(savedState);
             timerState = { ...defaultState, ...parsedState };
+            
+            // Merge checklist properties to ensure new items are included
+            if (parsedState.checklist) {
+                timerState.checklist = { ...defaultState.checklist, ...parsedState.checklist };
+            }
             
             // Migrate old tableCount to tableNames if needed
             if (timerState.tableCount !== undefined && !timerState.tableNames) {
@@ -211,10 +221,28 @@ function resetConfiguration() {
         updateMatchControlButtons();
         
         // Reset teams display
+        isTeamsCollapsed = false;
         renderTeams();
         
         // Reset match schedule display
+        isScheduleCollapsed = false;
         renderMatchSchedule();
+        
+        // Ensure action buttons are visible after reset
+        if (addTeamBtn) addTeamBtn.style.display = 'inline-flex';
+        if (deleteAllTeamsBtn) deleteAllTeamsBtn.style.display = 'none';
+        if (uploadScheduleBtn) uploadScheduleBtn.style.display = 'inline-flex';
+        if (addMatchBtn) addMatchBtn.style.display = 'inline-flex';
+        if (deleteAllMatchesBtn) deleteAllMatchesBtn.style.display = 'none';
+        if (teamsTable) teamsTable.style.display = 'none'; // Will be shown by renderTeams if needed
+        if (toggleTeamsBtn) {
+            toggleTeamsBtn.textContent = 'keyboard_arrow_up';
+            toggleTeamsBtn.title = 'Collapse';
+        }
+        if (toggleScheduleBtn) {
+            toggleScheduleBtn.textContent = 'keyboard_arrow_up';
+            toggleScheduleBtn.title = 'Collapse';
+        }
         
         // Reset sponsor logos display
         renderSponsorPreview();
@@ -222,7 +250,9 @@ function resetConfiguration() {
         // Reset checklist and ensure it's expanded
         syncChecklistUI();
         checklistContainer.style.display = 'flex';
-        toggleChecklistBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+        checklistDescription.style.display = 'block';
+        toggleChecklistBtn.textContent = 'keyboard_arrow_up';
+        toggleChecklistBtn.title = 'Collapse';
         
         console.log('Configuration reset to defaults');
         alert('Configuration has been reset.');
@@ -267,20 +297,24 @@ function initializeUI() {
     autoCheckChecklistItems();
     syncChecklistUI();
     if (timerState.isChecklistCollapsed) {
-        toggleChecklistBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
+        toggleChecklistBtn.textContent = 'keyboard_arrow_down';
+        toggleChecklistBtn.title = 'Expand';
         checklistContainer.style.display = 'none';
+        checklistDescription.style.display = 'none';
     }
     
     // Apply saved collapsed states
-    if (isTeamsCollapsed && timerState.teams.length > 3) {
-        toggleTeamsBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
+    if (isTeamsCollapsed && timerState.teams.length >= 1) {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_down';
+        toggleTeamsBtn.title = 'Expand';
         teamsTable.style.display = 'none';
         addTeamBtn.style.display = 'none';
         deleteAllTeamsBtn.style.display = 'none';
     }
     
-    if (isScheduleCollapsed && timerState.matches.length > 3) {
-        toggleScheduleBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand';
+    if (isScheduleCollapsed && timerState.matches.length >= 3) {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_down';
+        toggleScheduleBtn.title = 'Expand';
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
@@ -386,9 +420,13 @@ function updateTeamName(index, value) {
 
 function toggleTeamsCollapse() {
     isTeamsCollapsed = !isTeamsCollapsed;
-    toggleTeamsBtn.innerHTML = isTeamsCollapsed 
-        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+    if (isTeamsCollapsed) {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_down';
+        toggleTeamsBtn.title = 'Expand';
+    } else {
+        toggleTeamsBtn.textContent = 'keyboard_arrow_up';
+        toggleTeamsBtn.title = 'Collapse';
+    }
     
     // Save collapsed state
     updateState({ isTeamsCollapsed });
@@ -420,7 +458,7 @@ function renderTeams() {
         deleteAllTeamsBtn.style.display = count > 0 ? 'inline-flex' : 'none';
     }
     if (toggleTeamsBtn) {
-        toggleTeamsBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+        toggleTeamsBtn.style.display = count >= 1 ? 'inline-flex' : 'none';
     }
     
     // Clear existing rows
@@ -433,12 +471,13 @@ function renderTeams() {
         return;
     }
     
-    // Reset collapse state if we have 3 or fewer teams
-    if (timerState.teams.length <= 3) {
-        isTeamsCollapsed = false;
-    }
-    
     table.style.display = 'table';
+    noTeams.style.display = 'none';
+    
+    // Apply collapsed state from saved preferences
+    if (isTeamsCollapsed) {
+        table.style.display = 'none';
+    }
     noTeams.style.display = 'none';
     
     // Filter teams if collapsed (show all for now, can add filtering later if needed)
@@ -476,6 +515,7 @@ function renderTeams() {
         
         // Actions column
         const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions-column';
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'destructive icon-only material-symbols-rounded';
         deleteBtn.title = 'Delete Team';
@@ -728,8 +768,11 @@ function syncChecklistUI() {
         checklistDisplay.checked = timerState.checklist.display || false;
         checklistCustomText.checked = timerState.checklist.customText || false;
         checklistMatchTimer.checked = timerState.checklist.matchTimer || false;
+        checklistExpandCollapse.checked = timerState.checklist.expandCollapse || false;
+        checklistSoundOption.checked = timerState.checklist.soundOption || false;
     }
     updateChecklistCount();
+    updateChecklistRainbow();
 }
 
 function updateChecklistCount() {
@@ -738,9 +781,44 @@ function updateChecklistCount() {
     const total = Object.keys(checklist).length;
     
     if (completed === total) {
-        checklistCount.textContent = `🎉 ${completed}/${total} complete 🎉`;
+        checklistCount.textContent = `🎉 ${completed}/${total} complete! 🎉`;
     } else {
         checklistCount.textContent = `${completed}/${total} complete`;
+    }
+}
+
+function updateChecklistRainbow() {
+    // Get all checklist items in order
+    const checklistItems = [
+        { checkbox: checklistEventName, id: 'checklistEventName' },
+        { checkbox: checklistSponsors, id: 'checklistSponsors' },
+        { checkbox: checklistUploadSchedule, id: 'checklistUploadSchedule' },
+        { checkbox: checklistTeams, id: 'checklistTeams' },
+        { checkbox: checklistMatches, id: 'checklistMatches' },
+        { checkbox: checklistDisplay, id: 'checklistDisplay' },
+        { checkbox: checklistMatchTimer, id: 'checklistMatchTimer' },
+        { checkbox: checklistSoundOption, id: 'checklistSoundOption' },
+        { checkbox: checklistCustomText, id: 'checklistCustomText' },
+        { checkbox: checklistExpandCollapse, id: 'checklistExpandCollapse' }
+    ];
+    
+    // Remove rainbow class from all buttons and set to tertiary
+    document.querySelectorAll('.checklist-button').forEach(button => {
+        button.classList.remove('rainbow');
+        button.classList.add('tertiary');
+    });
+    
+    // Find the first unchecked item
+    const firstUnchecked = checklistItems.find(item => !item.checkbox.checked);
+    
+    // If found, add rainbow class to its button
+    if (firstUnchecked) {
+        const label = firstUnchecked.checkbox.closest('label');
+        const button = label.querySelector('.checklist-button');
+        if (button) {
+            button.classList.remove('tertiary');
+            button.classList.add('rainbow');
+        }
     }
 }
 
@@ -748,21 +826,31 @@ function toggleChecklistCollapse() {
     const isCollapsed = !timerState.isChecklistCollapsed;
     updateState({ isChecklistCollapsed: isCollapsed });
     
-    toggleChecklistBtn.innerHTML = isCollapsed 
-        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+    if (isCollapsed) {
+        toggleChecklistBtn.textContent = 'keyboard_arrow_down';
+        toggleChecklistBtn.title = 'Expand';
+    } else {
+        toggleChecklistBtn.textContent = 'keyboard_arrow_up';
+        toggleChecklistBtn.title = 'Collapse';
+    }
     
     if (isCollapsed) {
         checklistContainer.style.display = 'none';
+        checklistDescription.style.display = 'none';
     } else {
         checklistContainer.style.display = 'flex';
+        checklistDescription.style.display = 'block';
     }
+    
+    // Auto-check expand/collapse checklist item
+    updateChecklistItem('expandCollapse', true);
 }
 
 // Update sound option when radio changes
 function updateSoundOption() {
     const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'none';
     updateState({ soundOption: selectedOption });
+    updateChecklistItem('soundOption', true);
     console.log('Sound option updated to:', selectedOption);
 }
 
@@ -948,9 +1036,13 @@ function deleteAllMatches() {
 // Toggle schedule collapse state
 function toggleScheduleCollapse() {
     isScheduleCollapsed = !isScheduleCollapsed;
-    toggleScheduleBtn.innerHTML = isScheduleCollapsed 
-        ? '<span class="material-symbols-rounded" translate="no">keyboard_arrow_down</span>Expand' 
-        : '<span class="material-symbols-rounded" translate="no">keyboard_arrow_up</span>Collapse';
+    if (isScheduleCollapsed) {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_down';
+        toggleScheduleBtn.title = 'Expand';
+    } else {
+        toggleScheduleBtn.textContent = 'keyboard_arrow_up';
+        toggleScheduleBtn.title = 'Collapse';
+    }
     
     // Save collapsed state
     updateState({ isScheduleCollapsed });
@@ -984,7 +1076,7 @@ function renderMatchSchedule() {
         deleteAllMatchesBtn.style.display = (count > 0 && !isScheduleCollapsed) ? 'inline-flex' : 'none';
     }
     if (toggleScheduleBtn) {
-        toggleScheduleBtn.style.display = count > 3 ? 'inline-flex' : 'none';
+        toggleScheduleBtn.style.display = count >= 3 ? 'inline-flex' : 'none';
     }
     
     // Update match control buttons
@@ -1018,8 +1110,8 @@ function renderMatchSchedule() {
         });
         container.appendChild(input);
         
-        // Add remove button to the last table header
-        if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1) {
+        // Add remove button to the last table header (hide when collapsed)
+        if (index === timerState.tableNames.length - 1 && timerState.tableNames.length > 1 && !isScheduleCollapsed) {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'destructive icon-only material-symbols-rounded';
             removeBtn.title = 'Remove Table';
@@ -1033,19 +1125,22 @@ function renderMatchSchedule() {
         headerRow.appendChild(th);
     });
 
-    // Actions column header with Add Table button (only if not at max)
-    const actionsHeader = document.createElement('th');
-    if (timerState.tableNames.length < 4) {
-        const addTableBtn = document.createElement('button');
-        addTableBtn.className = 'secondary icon-only material-symbols-rounded';
-        addTableBtn.style.width = '100%';
-        addTableBtn.title = 'Add Table';
-        addTableBtn.setAttribute('translate', 'no');
-        addTableBtn.textContent = 'add';
-        addTableBtn.addEventListener('click', addTable);
-        actionsHeader.appendChild(addTableBtn);
+    // Actions column header with Add Table button (only if not at max and not collapsed)
+    if (!isScheduleCollapsed) {
+        const actionsHeader = document.createElement('th');
+        actionsHeader.className = 'actions-column';
+        if (timerState.tableNames.length < 4) {
+            const addTableBtn = document.createElement('button');
+            addTableBtn.className = 'secondary icon-only material-symbols-rounded';
+            addTableBtn.style.width = '100%';
+            addTableBtn.title = 'Add Table';
+            addTableBtn.setAttribute('translate', 'no');
+            addTableBtn.textContent = 'add';
+            addTableBtn.addEventListener('click', addTable);
+            actionsHeader.appendChild(addTableBtn);
+        }
+        headerRow.appendChild(actionsHeader);
     }
-    headerRow.appendChild(actionsHeader);
 
     if (matchScheduleHead) {
         matchScheduleHead.innerHTML = '';
@@ -1060,11 +1155,6 @@ function renderMatchSchedule() {
         noMatches.style.display = 'block';
         isScheduleCollapsed = false; // Reset collapse state
         return;
-    }
-    
-    // Reset collapse state if we have 3 or fewer matches
-    if (timerState.matches.length <= 3) {
-        isScheduleCollapsed = false;
     }
     
     table.style.display = 'table';
@@ -1132,20 +1222,23 @@ function renderMatchSchedule() {
             row.appendChild(teamCell);
         }
         
-        // Actions column
-        const actionsCell = document.createElement('td');
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'destructive icon-only material-symbols-rounded';
-        deleteBtn.title = 'Delete Match';
-        deleteBtn.setAttribute('translate', 'no');
-        deleteBtn.textContent = 'delete';
-        deleteBtn.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
-                deleteMatch(match.matchNumber);
-            }
-        });
-        actionsCell.appendChild(deleteBtn);
-        row.appendChild(actionsCell);
+        // Actions column (hide when collapsed)
+        if (!isScheduleCollapsed) {
+            const actionsCell = document.createElement('td');
+            actionsCell.className = 'actions-column';
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'destructive icon-only material-symbols-rounded';
+            deleteBtn.title = 'Delete Match';
+            deleteBtn.setAttribute('translate', 'no');
+            deleteBtn.textContent = 'delete';
+            deleteBtn.addEventListener('click', () => {
+                if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
+                    deleteMatch(match.matchNumber);
+                }
+            });
+            actionsCell.appendChild(deleteBtn);
+            row.appendChild(actionsCell);
+        }
         
         tbody.appendChild(row);
     });
@@ -1356,23 +1449,47 @@ document.querySelectorAll('.checklist-button').forEach(button => {
         const targetElement = document.getElementById(targetId);
         
         if (targetElement) {
-            // Scroll to element
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Add pulse effect
-            targetElement.classList.add('pulse-highlight');
-            
-            // Remove pulse effect after animation completes
-            setTimeout(() => {
-                targetElement.classList.remove('pulse-highlight');
-            }, 6000); // 3 pulses × 2s
-            
-            // Focus the element if it's an input
-            if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'BUTTON') {
-                setTimeout(() => {
-                    targetElement.focus();
-                }, 500);
+            // Expand sections if needed before scrolling
+            // Check if target is in match schedule section
+            if (['uploadScheduleBtn', 'addMatchBtn', 'matchScheduleConfig'].includes(targetId)) {
+                if (isScheduleCollapsed) {
+                    toggleScheduleCollapse();
+                }
             }
+            // Check if target is in teams section
+            if (['addTeamBtn', 'teamsConfig'].includes(targetId)) {
+                if (isTeamsCollapsed) {
+                    toggleTeamsCollapse();
+                }
+            }
+            // Check if target is in checklist section
+            if (['toggleChecklistBtn'].includes(targetId)) {
+                if (timerState.isChecklistCollapsed) {
+                    toggleChecklistCollapse();
+                }
+            }
+            // Sound options is always visible, no need to expand anything
+            
+            // Wait a moment for the section to expand before scrolling
+            setTimeout(() => {
+                // Scroll to element
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Add pulse effect
+                targetElement.classList.add('pulse-highlight');
+                
+                // Remove pulse effect after animation completes
+                setTimeout(() => {
+                    targetElement.classList.remove('pulse-highlight');
+                }, 6000); // 3 pulses × 2s
+                
+                // Focus the element if it's an input
+                if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'BUTTON') {
+                    setTimeout(() => {
+                        targetElement.focus();
+                    }, 500);
+                }
+            }, 100); // Small delay to allow section to expand
         }
     });
 });
@@ -1399,11 +1516,11 @@ function toggleLogoLibrary() {
     
     if (isVisible) {
         logoLibrary.style.display = 'none';
-        selectFromLibraryBtn.textContent = 'Select from Library';
+        selectFromLibraryBtn.textContent = 'Open Logo Library';
     } else {
         renderLogoLibrary();
         logoLibrary.style.display = 'grid';
-        selectFromLibraryBtn.textContent = 'Hide Library';
+        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Logo Library';
     }
 }
 
@@ -1411,7 +1528,7 @@ function renderLogoLibrary() {
     logoLibrary.innerHTML = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
-            <button class="secondary" onclick="addLogoFromLibrary(${index})"><span class="material-symbols-rounded" translate="no">add</span>Add</button>
+            <button class="secondary" onclick="addLogoFromLibrary(${index})">Add</button>
         </div>
     `).join('');
 }

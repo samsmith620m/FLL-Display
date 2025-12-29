@@ -262,25 +262,6 @@ button.toggle {
     }
 }
 
-input[type="text"], textarea, select {
-    width: 100%;
-    height: 44px;
-    padding: 0 var(--flld-spacing-sm);
-
-    font-family: var(--flld-font-family-base);
-
-    background-color: var(--flld-color-white);
-    border: 1px solid var(--flld-color-gray-75);
-    border-radius: var(--flld-spacing-xs);
-
-    font-size: var(--flld-font-size-md);
-
-    &:focus {
-        outline: 2px solid var(--flld-color-black);
-        outline-offset: 2px;
-    }
-}
-
 #checklistContainer {
     display: flex;
     flex-direction: column;
@@ -290,45 +271,62 @@ input[type="text"], textarea, select {
     display: flex;
     align-items: center;
     font-weight: var(--flld-font-weight-regular);
-    gap: var(--flld-spacing-xs);
+    gap: var(--flld-spacing-sm);
     pointer-events: none;
 }
 
 .checklist-button {
     min-height: 32px;
     padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
-    font-size: var(--flld-font-size-sm);
     pointer-events: auto;
 }
 
 input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--flld-color-unearthed-red-70);
+    width: 20px;
+    height: 20px;
     animation: color-cycle-accentColor 8s ease-in-out infinite;
     cursor: default;
-    margin-right: var(--flld-spacing-sm);
 }
 
 .radio-label {
     display: flex;
+    gap: var(--flld-spacing-sm);
     align-items: center;
     cursor: pointer;
-    font-weight: var(--flld-font-weight-regular);
+    font-weight: var(--flld-font-weight-semibold);
 }
 
 input[type="radio"] {
-    width: 16px;
-    height: 16px;
+    --radioSize: 20px;
+    width: var(--radioSize);
+    height: var(--radioSize);
     accent-color: var(--flld-color-gray-10);
     cursor: pointer;
-    margin-right: var(--flld-spacing-sm);
 }
 
 #checklistContainer {
     display: flex;
     flex-direction: column;
     gap: var(--flld-spacing-xs);
+}
+
+input[type="text"], textarea, select {
+    width: 100%;
+    height: 44px;
+    padding: 0 var(--flld-spacing-sm);
+
+    font-family: var(--flld-font-family-base);
+
+    background-color: var(--flld-color-white);
+    border: 1px solid var(--flld-color-gray-75);
+    border-radius: var(--flld-border-radius-md);
+
+    font-size: var(--flld-font-size-md);
+
+    &:focus {
+        outline: 2px solid var(--flld-color-black);
+        outline-offset: 2px;
+    }
 }
 
 select {
@@ -384,4 +382,28 @@ textarea {
         font-size: var(--flld-font-size-sm);
         color: var(--flld-color-text-secondary);
     }
+}
+
+.modal {
+    display: grid;
+    max-width: calc(1fr-var(--flld-spacing-xl));
+    background-color: var(--flld-color-white);
+
+    .header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
+
+    .body {
+        display: grid;
+    }
+
+    .footer {
+        display: flex;
+        align-items: flex-end;
+    }
+}
+
+.overlay {
+    background-color: color-mix(in oklab, var(--flld-color-gray-10), transparent 60%);
 }

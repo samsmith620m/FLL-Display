@@ -169,6 +169,7 @@
     --flld-color-surface-2: var(--flld-color-gray-95);
 
     /* Semantic Colors - Messaging */
+    --flld-color-messaging-informational-tint: var(--flld-color-blue-tint);
     --flld-color-messaging-informational: var(--flld-color-blue-base);
     --flld-color-messaging-informational-shade: var(--flld-color-blue-shade);
 

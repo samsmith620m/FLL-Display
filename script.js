@@ -75,7 +75,7 @@ const TIMER_DURATION = 150; // Timer duration in seconds (150 = 2:30 for officia
 // ============================================================
 
 const defaultState = {
-    displayType: 'text',
+    displayType: 'match-timer',
     eventName: '',
     customText: '',
     soundOption: 'none', // 'none' or 'ftc'
@@ -97,10 +97,10 @@ const defaultState = {
     isTeamsCollapsed: false,
     // Setup checklist state
     checklist: {
-        eventName: false,
         uploadSchedule: false,
         teams: false,
         matches: false,
+        eventName: false,
         sponsors: false,
         display: false,
         customText: false,
@@ -788,14 +788,14 @@ function updateChecklistCount() {
 function updateChecklistRainbow() {
     // Get all checklist items in order
     const checklistItems = [
-        { checkbox: checklistEventName, id: 'checklistEventName' },
-        { checkbox: checklistSponsors, id: 'checklistSponsors' },
         { checkbox: checklistUploadSchedule, id: 'checklistUploadSchedule' },
         { checkbox: checklistTeams, id: 'checklistTeams' },
         { checkbox: checklistMatches, id: 'checklistMatches' },
+        { checkbox: checklistEventName, id: 'checklistEventName' },
+        { checkbox: checklistSponsors, id: 'checklistSponsors' },
         { checkbox: checklistDisplay, id: 'checklistDisplay' },
-        { checkbox: checklistMatchTimer, id: 'checklistMatchTimer' },
         { checkbox: checklistSoundOption, id: 'checklistSoundOption' },
+        { checkbox: checklistMatchTimer, id: 'checklistMatchTimer' },
         { checkbox: checklistCustomText, id: 'checklistCustomText' },
         { checkbox: checklistExpandCollapse, id: 'checklistExpandCollapse' }
     ];
@@ -1083,7 +1083,7 @@ function renderMatchSchedule() {
     // Build header dynamically from tableNames
     const headerRow = document.createElement('tr');
     const matchNumHeader = document.createElement('th');
-    matchNumHeader.textContent = 'Match #';
+    matchNumHeader.textContent = 'Match Number';
     headerRow.appendChild(matchNumHeader);
 
     // Add editable table name headers
@@ -1253,10 +1253,11 @@ function renderMatchSchedule() {
 // We only import rows where Type starts with 'Official Match' (keeping source spelling) and treat rows sharing the same Start Time as one match.
 function parseCSV(text) {
     const lines = text.split(/\r?\n/).filter(l => l.trim().length);
-    if (lines.length < 2) return [];
+    if (lines.length < 2) return { rows: [], eventName: null };
     const header = lines[0].split(',');
     // Basic index mapping (defensive in case order changes)
     const idx = {
+        eventName: header.findIndex(h => h.toLowerCase().includes('event name')),
         type: header.findIndex(h => h.toLowerCase().includes('type')),
         start: header.findIndex(h => h.toLowerCase().includes('start time')),
         table: header.findIndex(h => h.toLowerCase().includes('room') || h.toLowerCase().includes('table')),
@@ -1264,11 +1265,18 @@ function parseCSV(text) {
         teamName: header.findIndex(h => h.toLowerCase().includes('team name'))
     };
     const rows = [];
+    let eventName = null;
     for (let i = 1; i < lines.length; i++) {
         const raw = lines[i];
         // Skip empty or ceremony rows quickly
         if (!raw.trim()) continue;
         const cols = raw.split(',');
+        
+        // Extract event name from first data row if available
+        if (!eventName && idx.eventName >= 0) {
+            eventName = cols[idx.eventName]?.trim() || null;
+        }
+        
         const typeVal = cols[idx.type]?.trim();
         if (!typeVal || !/^official match/i.test(typeVal)) continue; // only official matches
         const start = cols[idx.start]?.trim();
@@ -1278,7 +1286,7 @@ function parseCSV(text) {
         if (!start || !table || !team) continue;
         rows.push({ start, table, team, teamName });
     }
-    return rows;
+    return { rows, eventName };
 }
 
 // Extract unique teams from parsed CSV rows
@@ -1374,53 +1382,318 @@ function buildMatchesFromRows(rows) {
     return matches;
 }
 
+// Smart column mapping for CSV import
+let csvData = null; // Store parsed CSV data
+let columnMapping = {}; // Store current column mappings
+
+function smartGuessColumns(headers) {
+    const mapping = {
+        eventName: -1,
+        matchType: -1,
+        startTime: -1,
+        table: -1,
+        teamNumber: -1,
+        teamName: -1
+    };
+    
+    // Expected column names from the example CSV
+    const expectedColumns = {
+        'Event Name': 'eventName',
+        'Type': 'matchType',
+        'Start Time': 'startTime',
+        'Room / Table Location': 'table',
+        'Team Number': 'teamNumber',
+        'Team Name': 'teamName'
+    };
+    
+    // Only map if column names exactly match the expected names
+    headers.forEach((header, index) => {
+        const trimmedHeader = header.trim();
+        if (expectedColumns[trimmedHeader]) {
+            mapping[expectedColumns[trimmedHeader]] = index;
+        }
+    });
+    
+    return mapping;
+}
+
+function showColumnMappingModal(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+    if (lines.length < 2) {
+        alert('CSV file is empty or invalid.');
+        return;
+    }
+    
+    const headers = lines[0].split(',').map(h => h.trim());
+    const dataRows = lines.slice(1, Math.min(4, lines.length)).map(line => line.split(',').map(c => c.trim()));
+    
+    // Store CSV data for later processing
+    csvData = { headers, lines: lines.slice(1) };
+    
+    // Smart guess column mappings
+    columnMapping = smartGuessColumns(headers);
+    
+    // Build mapping fields
+    const mappingFields = document.getElementById('columnMappingFields');
+    mappingFields.innerHTML = '';
+    
+    const fieldLabels = {
+        eventName: 'Event Name',
+        matchType: 'Match Type',
+        startTime: 'Start Time',
+        table: 'Table Location',
+        teamNumber: 'Team Number',
+        teamName: 'Team Name'
+    };
+    
+    Object.entries(fieldLabels).forEach(([key, label]) => {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.style.display = 'grid';
+        fieldDiv.style.gridTemplateColumns = '150px 1fr';
+        fieldDiv.style.alignItems = 'center';
+        fieldDiv.style.gap = 'var(--flld-spacing-sm)';
+        
+        const labelEl = document.createElement('label');
+        labelEl.textContent = label + ':';
+        labelEl.style.fontWeight = 'var(--flld-font-weight-semibold)';
+        
+        const select = document.createElement('select');
+        select.id = `mapping-${key}`;
+        select.className = 'team-input';
+        
+        // Add placeholder option
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '-1';
+        placeholderOption.textContent = 'Select a column';
+        placeholderOption.disabled = true;
+        placeholderOption.selected = columnMapping[key] < 0;
+        placeholderOption.hidden = true;
+        select.appendChild(placeholderOption);
+        
+        // Add column options
+        headers.forEach((header, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = header;
+            if (columnMapping[key] === index) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        
+        select.addEventListener('change', (e) => {
+            columnMapping[key] = parseInt(e.target.value);
+            updateMappingPreview();
+        });
+        
+        fieldDiv.appendChild(labelEl);
+        fieldDiv.appendChild(select);
+        mappingFields.appendChild(fieldDiv);
+    });
+    
+    // Build preview table
+    updateMappingPreview();
+    
+    // Show modal
+    uploadScheduleModal.style.display = 'none';
+    document.getElementById('columnMappingModal').style.display = 'flex';
+}
+
+function updateMappingPreview() {
+    const previewTable = document.getElementById('mappingPreviewTable');
+    const headers = csvData.headers;
+    const dataRows = csvData.lines.slice(0, 3).map(line => line.split(',').map(c => c.trim()));
+    
+    // Build preview with mapped columns only
+    let html = '<thead><tr>';
+    const fieldLabels = ['Event Name', 'Type', 'Start Time', 'Table', 'Team Number', 'Team Name'];
+    const mappingKeys = ['eventName', 'matchType', 'startTime', 'table', 'teamNumber', 'teamName'];
+    
+    mappingKeys.forEach((key, i) => {
+        if (columnMapping[key] >= 0) {
+            html += `<th>${fieldLabels[i]}</th>`;
+        }
+    });
+    html += '</tr></thead><tbody>';
+    
+    dataRows.forEach(row => {
+        html += '<tr>';
+        mappingKeys.forEach(key => {
+            if (columnMapping[key] >= 0) {
+                html += `<td>${row[columnMapping[key]] || ''}</td>`;
+            }
+        });
+        html += '</tr>';
+    });
+    html += '</tbody>';
+    
+    previewTable.innerHTML = html;
+}
+
+function processCSVWithMapping() {
+    if (!csvData) return;
+    
+    const rows = [];
+    let eventName = null;
+    
+    csvData.lines.forEach((line, i) => {
+        const cols = line.split(',').map(c => c.trim());
+        
+        // Extract event name from first row if mapped
+        if (!eventName && columnMapping.eventName >= 0) {
+            eventName = cols[columnMapping.eventName] || null;
+        }
+        
+        // Skip if required fields are missing
+        if (columnMapping.matchType < 0 || columnMapping.startTime < 0 || 
+            columnMapping.table < 0 || columnMapping.teamNumber < 0) {
+            return;
+        }
+        
+        const matchType = cols[columnMapping.matchType]?.trim() || '';
+        // Check if it's a match row (contains a number in the match type field)
+        if (!/\d/.test(matchType)) return;
+        
+        const start = cols[columnMapping.startTime]?.trim();
+        const table = cols[columnMapping.table]?.trim();
+        const team = cols[columnMapping.teamNumber]?.trim();
+        const teamName = columnMapping.teamName >= 0 ? (cols[columnMapping.teamName]?.trim() || '') : '';
+        
+        if (!start || !table || !team) return;
+        
+        rows.push({ start, table, team, teamName });
+    });
+    
+    if (!rows.length) {
+        alert('No matches found in CSV with current mapping.');
+        return;
+    }
+    
+    const matches = buildMatchesFromRows(rows);
+    const extractedTeams = extractTeamsFromRows(rows);
+    
+    // Merge with existing teams
+    const existingTeamNumbers = new Set(timerState.teams.map(t => t.teamNumber));
+    const newTeams = extractedTeams.filter(t => !existingTeamNumbers.has(t.teamNumber));
+    const allTeams = [...timerState.teams, ...newTeams];
+    
+    const stateUpdate = { 
+        matches, 
+        teams: allTeams,
+        currentMatchNumber: matches.length ? 1 : 1 
+    };
+    
+    if (eventName && (!timerState.eventName || timerState.eventName.trim() === '')) {
+        stateUpdate.eventName = eventName;
+        eventNameInput.value = eventName;
+        updateChecklistItem('eventName', true);
+    }
+    
+    updateState(stateUpdate);
+    updateChecklistItem('uploadSchedule', true);
+    renderMatchSchedule();
+    renderTeams();
+    
+    const teamsMessage = newTeams.length > 0 
+        ? ` ${newTeams.length} new team(s) added.`
+        : ' No new teams (all teams already exist).';
+    const eventNameMessage = (eventName && stateUpdate.eventName) ? ` Event name set to "${eventName}".` : '';
+    alert(`Imported ${matches.length} matches.${teamsMessage}${eventNameMessage}`);
+    
+    // Close modal and clean up
+    document.getElementById('columnMappingModal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+    csvData = null;
+    columnMapping = {};
+}
+
 function handleScheduleFile(file) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
             const text = e.target.result;
-            const rows = parseCSV(text);
-            if (!rows.length) {
-                alert('No official matches found in CSV.');
-                return;
-            }
-            const matches = buildMatchesFromRows(rows);
-            
-            // Extract unique teams from CSV
-            const extractedTeams = extractTeamsFromRows(rows);
-            
-            // Merge with existing teams, avoiding duplicates
-            const existingTeamNumbers = new Set(timerState.teams.map(t => t.teamNumber));
-            const newTeams = extractedTeams.filter(t => !existingTeamNumbers.has(t.teamNumber));
-            const allTeams = [...timerState.teams, ...newTeams];
-            
-            updateState({ 
-                matches, 
-                teams: allTeams,
-                currentMatchNumber: matches.length ? 1 : 1 
-            });
-            updateChecklistItem('uploadSchedule', true);
-            renderMatchSchedule();
-            renderTeams();
-            
-            const teamsMessage = newTeams.length > 0 
-                ? ` ${newTeams.length} new team(s) added.`
-                : ' No new teams (all teams already exist).';
-            alert(`Imported ${matches.length} matches.${teamsMessage}`);
+            showColumnMappingModal(text);
         } catch (err) {
-            console.error('Error importing schedule', err);
-            alert('Failed to import schedule.');
+            console.error('Error reading schedule file', err);
+            alert('Failed to read schedule file.');
         }
     };
     reader.readAsText(file);
 }
 
+// Column mapping modal
+const columnMappingModal = document.getElementById('columnMappingModal');
+const closeMappingModalBtn = document.getElementById('closeMappingModalBtn');
+const cancelMappingBtn = document.getElementById('cancelMappingBtn');
+const confirmMappingBtn = document.getElementById('confirmMappingBtn');
+
+closeMappingModalBtn.addEventListener('click', () => {
+    columnMappingModal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    csvData = null;
+    columnMapping = {};
+});
+
+cancelMappingBtn.addEventListener('click', () => {
+    columnMappingModal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    csvData = null;
+    columnMapping = {};
+});
+
+confirmMappingBtn.addEventListener('click', () => {
+    processCSVWithMapping();
+});
+
+columnMappingModal.addEventListener('click', (e) => {
+    if (e.target === columnMappingModal) {
+        columnMappingModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        csvData = null;
+        columnMapping = {};
+    }
+});
+
+// Upload schedule modal
+const uploadScheduleModal = document.getElementById('uploadScheduleModal');
+const closeScheduleModalBtn = document.getElementById('closeScheduleModalBtn');
+const selectScheduleFileBtn = document.getElementById('selectScheduleFileBtn');
+
 if (uploadScheduleBtn && uploadScheduleInput) {
-    uploadScheduleBtn.addEventListener('click', () => uploadScheduleInput.click());
+    // Open modal when clicking Upload Schedule button
+    uploadScheduleBtn.addEventListener('click', () => {
+        uploadScheduleModal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+    });
+    
+    // Close modal when clicking X button
+    closeScheduleModalBtn.addEventListener('click', () => {
+        uploadScheduleModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    });
+    
+    // Close modal when clicking outside the modal
+    uploadScheduleModal.addEventListener('click', (e) => {
+        if (e.target === uploadScheduleModal) {
+            uploadScheduleModal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+    });
+    
+    // Select file when clicking Select File button
+    selectScheduleFileBtn.addEventListener('click', () => {
+        uploadScheduleInput.click();
+    });
+    
+    // Handle file selection
     uploadScheduleInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        handleScheduleFile(file);
+        if (file) {
+            handleScheduleFile(file);
+            uploadScheduleModal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
         // reset input so same file can be chosen again if needed
         e.target.value = '';
     });
@@ -1472,15 +1745,21 @@ document.querySelectorAll('.checklist-button').forEach(button => {
             
             // Wait a moment for the section to expand before scrolling
             setTimeout(() => {
+                // For radio buttons, pulse the container instead of the radio itself
+                let elementToPulse = targetElement;
+                if (targetElement.type === 'radio') {
+                    elementToPulse = targetElement.closest('.radio-option-container');
+                }
+                
                 // Scroll to element
                 targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
                 // Add pulse effect
-                targetElement.classList.add('pulse-highlight');
+                elementToPulse.classList.add('pulse-highlight');
                 
                 // Remove pulse effect after animation completes
                 setTimeout(() => {
-                    targetElement.classList.remove('pulse-highlight');
+                    elementToPulse.classList.remove('pulse-highlight');
                 }, 6000); // 3 pulses × 2s
                 
                 // Focus the element if it's an input
@@ -1734,5 +2013,38 @@ const aboutBtn = document.getElementById('aboutBtn');
 if (aboutBtn) {
     aboutBtn.addEventListener('click', () => {
         document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+// Translate Help Modal
+const translateHelpBtn = document.getElementById('translateHelpBtn');
+const translateHelpModal = document.getElementById('translateHelpModal');
+const closeTranslateHelpBtn = document.getElementById('closeTranslateHelpBtn');
+const closeTranslateHelpBtn2 = document.getElementById('closeTranslateHelpBtn2');
+
+if (translateHelpBtn && translateHelpModal) {
+    translateHelpBtn.addEventListener('click', () => {
+        translateHelpModal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+    });
+
+    const closeTranslateModal = () => {
+        translateHelpModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    };
+
+    if (closeTranslateHelpBtn) {
+        closeTranslateHelpBtn.addEventListener('click', closeTranslateModal);
+    }
+
+    if (closeTranslateHelpBtn2) {
+        closeTranslateHelpBtn2.addEventListener('click', closeTranslateModal);
+    }
+
+    // Close on overlay click
+    translateHelpModal.addEventListener('click', (e) => {
+        if (e.target === translateHelpModal) {
+            closeTranslateModal();
+        }
     });
 }

@@ -6,18 +6,22 @@
         <title>Control - FLLC Display</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <link rel="stylesheet" href="styles.css">
-        <!-- Material Symbols for info icon -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     </head>
 
     <body class="control-page">
-        <div class="alert banner" role="status" aria-live="polite">
-            <span class="material-symbols-rounded" aria-hidden="true" translate="no">info</span>
+        <div class="alert info banner" role="status" aria-live="polite">
+            <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
             Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
         </div>
         <header class="control-header">
             <h1>FLL Challenge Event Display</h1>
-            <button id="aboutBtn" class="secondary">About the Project</button>
+            <div class="button-group">
+                <button id="translateHelpBtn" class="secondary">
+                    <span class="material-symbols-rounded">translate</span>
+                    How to Translate
+                </button>
+                <button id="aboutBtn" class="secondary">About the Project</button>
+            </div>
         </header>
         
         <main class="control-content">
@@ -31,16 +35,6 @@
                 </div>
                 <p class="description" id="checklistDescription">To have the most successful event possible, complete these steps!</p>
                 <div id="checklistContainer">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="checklistEventName" tabindex="-1">
-                        <span>Enter your event name</span>
-                        <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="checklistSponsors" tabindex="-1">
-                        <span>Select/upload sponsor logos</span>
-                        <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
-                    </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistUploadSchedule" tabindex="-1">
                         <span>Upload an event schedule (optional)</span>
@@ -57,23 +51,33 @@
                         <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
                     </label>
                     <label class="checkbox-label">
+                        <input type="checkbox" id="checklistEventName" tabindex="-1">
+                        <span>Enter your event name</span>
+                        <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistSponsors" tabindex="-1">
+                        <span>Select/upload sponsor logos</span>
+                        <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
                         <input type="checkbox" id="checklistDisplay" tabindex="-1">
                         <span>Open the display window</span>
                         <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
-                        <span>Test the match timer display and run a match</span>
-                        <button class="checklist-button tertiary" data-target="displayTypeMatchTimer">Show me!</button>
-                    </label>
-                    <label class="checkbox-label">
                         <input type="checkbox" id="checklistSoundOption" tabindex="-1">
-                        <span>Try turning the match sounds on and run a match</span>
+                        <span>Try turning match sounds on</span>
                         <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
                     </label>
                     <label class="checkbox-label">
+                        <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
+                        <span>Test the Match Timer display and run a match</span>
+                        <button class="checklist-button tertiary" data-target="displayTypeMatchTimer">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
                         <input type="checkbox" id="checklistCustomText" tabindex="-1">
-                        <span>Type a message and test the custom text display</span>
+                        <span>Type a message and test the Message display</span>
                         <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
                     </label>
                     <label class="checkbox-label">
@@ -116,7 +120,7 @@
                         </div>
                     </div>
                     <div class="radio-option-container">
-                        <input type="radio" name="displayType" id="displayTypeText" value="text" checked>
+                        <input type="radio" name="displayType" id="displayTypeText" value="text">
                         <div class="radio-option-content">
                             <label class="radio-label" for="displayTypeText">Message</label>
                             <div style="display: flex; gap: var(--flld-spacing-sm)">
@@ -134,8 +138,8 @@
                     <div class="schedule-header-right">
                         <span id="matchCount">0 matches</span>
                         <div class="button-group">
-                            <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
-                            <button id="addMatchBtn" class="primary">Add Match</button>
+                            <button id="addMatchBtn" class="secondary">Add Match</button>
+                            <button id="uploadScheduleBtn" class="primary">Upload Schedule</button>
                             <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
                             <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
                         </div>
@@ -148,7 +152,7 @@
                     </tbody>
                 </table>
                 <div id="noMatchesMessage" class="no-data-area-neutral">
-                    No matches scheduled. Use "Upload Schedule (.csv)" to import matches, or click "Add Match" to create your first match.
+                    No matches scheduled. Use "Upload Schedule" to import matches, or click "Add Match" to create your first match.
                 </div>
                 <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
             </div>
@@ -159,7 +163,7 @@
                     <div class="schedule-header-right">
                         <span id="teamCount">0 teams</span>
                         <div class="button-group">
-                            <button id="addTeamBtn" class="primary">Add Team</button>
+                            <button id="addTeamBtn" class="secondary">Add Team</button>
                             <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
                             <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
                         </div>
@@ -260,6 +264,153 @@
                 </ul>
             </div>
         </footer>
+        
+        <!-- Upload Schedule Modal -->
+        <div id="uploadScheduleModal" class="overlay" style="display: none;">
+            <div class="modal">
+                <div class="header">
+                    <h2>Upload Match Schedule</h2>
+                    <button id="closeScheduleModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                </div>
+                <div class="body">
+                    <p>Uploading a schedule is the best way to get setup quickly and accurately.</p>
+                    <h3>Expected Format</h3>
+                    <p>The tool will filter for robot matches and group them by start time. The CSV should include these columns of information:</p>
+                    <table class="csv-example-table">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Type</th>
+                                <th>Start Time</th>
+                                <th>Room / Table Location</th>
+                                <th>Team Number</th>
+                                <th>Team Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 1</td>
+                                <td>9:00 AM</td>
+                                <td>Table 1A</td>
+                                <td>12345</td>
+                                <td>Team Alpha</td>
+                            </tr>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 1</td>
+                                <td>9:00 AM</td>
+                                <td>Table 1B</td>
+                                <td>67890</td>
+                                <td>Team Beta</td>
+                            </tr>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 2</td>
+                                <td>11:30 AM</td>
+                                <td>Table 1A</td>
+                                <td>12345</td>
+                                <td>Team Alpha</td>
+                            </tr>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 2</td>
+                                <td>11:30 AM</td>
+                                <td>Table 1B</td>
+                                <td>67890</td>
+                                <td>Team Beta</td>
+                            </tr>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 3</td>
+                                <td>2:15 PM</td>
+                                <td>Table 1A</td>
+                                <td>12345</td>
+                                <td>Team Alpha</td>
+                            </tr>
+                            <tr>
+                                <td>Example Tournament</td>
+                                <td>Official Match 3</td>
+                                <td>2:15 PM</td>
+                                <td>Table 1B</td>
+                                <td>67890</td>
+                                <td>Team Beta</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="alert info">
+                        <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
+                        If you don't know where to get the schedule file from, ask your event director or another leadership volunteer!
+                    </div>
+                    <p>If your schedule CSV doesn't work, you can always add matches and teams manually!</p>
+                </div>
+                <div class="footer">
+                    <button id="selectScheduleFileBtn" class="primary"><span class="material-symbols-rounded" translate="no">upload</span>Upload CSV File</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Column Mapping Modal -->
+        <div id="columnMappingModal" class="overlay" style="display: none;">
+            <div class="modal" style="max-width: 800px;">
+                <div class="header">
+                    <h2>Map Schedule CSV Columns</h2>
+                    <button id="closeMappingModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                </div>
+                <div class="body">
+                    <p>We've made our best guess at interpreting your schedule CSV. Please verify or adjust the column mapping below:</p>
+                    <div id="columnMappingFields" style="display: grid; gap: var(--flld-spacing-sm);">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <h3 style="margin-top: var(--flld-spacing-md);">Preview</h3>
+                    <div style="overflow-x: auto;">
+                        <table id="mappingPreviewTable" class="csv-example-table">
+                            <!-- Dynamically populated -->
+                        </table>
+                    </div>
+                </div>
+                <div class="footer">
+                    <button id="cancelMappingBtn" class="secondary">Cancel</button>
+                    <button id="confirmMappingBtn" class="primary">Import Data</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Translate Help Modal -->
+        <div id="translateHelpModal" class="overlay" style="display: none;">
+            <div class="modal">
+                <div class="header">
+                    <h2>How to Translate This Page</h2>
+                    <button id="closeTranslateHelpBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                </div>
+                <div class="body">
+                    <p>This application can be translated using your browser's built-in translation feature:</p>
+                    
+                    <h3>Google Chrome / Microsoft Edge</h3>
+                    <ul>
+                        <li>Right-click anywhere on the page and select <strong>"Translate to [Your Language]"</strong></li>
+                        <li>Or click the translate icon <span class="material-symbols-rounded" style="font-size: 1em; vertical-align: middle;">translate</span> in the address bar</li>
+                    </ul>
+                    
+                    <h3>Safari (Mac/iOS)</h3>
+                    <ul>
+                        <li>Click the <strong>aA</strong> icon in the address bar</li>
+                        <li>Select <strong>"Translate to [Your Language]"</strong></li>
+                    </ul>
+                    
+                    <h3>Firefox</h3>
+                    <ul>
+                        <li>Right-click anywhere on the page and select <strong>"Translate Page"</strong></li>
+                        <li>Or install the <strong>Firefox Translations</strong> add-on for automatic translation</li>
+                    </ul>
+                    
+                    <div class="alert neutral">
+                        <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
+                        Team names in the match schedule and display will not be translated to preserve their accuracy.
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <script src="script.js"></script>
     </body>

@@ -485,5 +485,58 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Fullscreen button with cursor-based visibility
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const fullscreenBtnText = fullscreenBtn?.querySelector('.fullscreen-btn-text');
+const fullscreenBtnIcon = fullscreenBtn?.querySelector('.material-symbols-rounded');
+let hideTimeout;
+
+if (fullscreenBtn) {
+    // Update button text/icon based on fullscreen state
+    function updateFullscreenButton() {
+        if (document.fullscreenElement) {
+            fullscreenBtnText.textContent = 'Exit Fullscreen';
+            fullscreenBtnIcon.textContent = 'fullscreen_exit';
+        } else {
+            fullscreenBtnText.textContent = 'Go Fullscreen!';
+            fullscreenBtnIcon.textContent = 'fullscreen';
+        }
+    }
+
+    // Show button on mouse move, hide after inactivity
+    function showButton() {
+        clearTimeout(hideTimeout);
+        fullscreenBtn.classList.remove('hide');
+        fullscreenBtn.classList.add('show');
+        
+        hideTimeout = setTimeout(() => {
+            fullscreenBtn.classList.remove('show');
+            fullscreenBtn.classList.add('hide');
+        }, 1000); // Hide after 2 seconds of inactivity
+    }
+
+    // Toggle fullscreen
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log('Fullscreen request failed:', err);
+            });
+        } else {
+            document.exitFullscreen().catch(err => {
+                console.log('Exit fullscreen failed:', err);
+            });
+        }
+    });
+
+    // Listen for mouse movement
+    document.addEventListener('mousemove', showButton);
+
+    // Update button when fullscreen state changes
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+
+    // Initial button state
+    updateFullscreenButton();
+}
+
 // Show connection status for debugging
 console.log('Display ready for real-time updates from control page');

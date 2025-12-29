@@ -163,3 +163,36 @@ body {
     justify-content: center;
     gap: var(--flld-spacing-sm);
 }
+
+#updateCustomTextBtn {
+    white-space: normal;
+    width: min-content !important;
+    min-width: min-content !important;
+    line-height: 1.5;
+}
+
+.radio-option-container {
+    border-radius: var(--flld-spacing-xs);
+    padding: var(--flld-spacing-sm) var(--flld-spacing-md) var(--flld-spacing-md) var(--flld-spacing-sm);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--flld-spacing-sm);
+    align-items: start;
+}
+
+.radio-option-container:has(input[type="radio"]:checked) {
+    background-color: var(--flld-color-gray-95);
+}
+
+.radio-option-container > input[type="radio"] {
+    margin-top: 2px; /* Centers radio button with label */
+}
+
+.radio-option-content {
+    display: grid;
+    gap: var(--flld-spacing-sm);
+}
+
+.radio-option-content .radio-label {
+    cursor: pointer;
+}

@@ -24,12 +24,11 @@ const checklistCustomText = document.getElementById('checklistCustomText');
 const checklistMatchTimer = document.getElementById('checklistMatchTimer');
 const checklistExpandCollapse = document.getElementById('checklistExpandCollapse');
 const checklistSoundOption = document.getElementById('checklistSoundOption');
-const displayTypeToggle = document.getElementById('displayTypeToggle');
+const displayTypeText = document.getElementById('displayTypeText');
+const displayTypeMatchTimer = document.getElementById('displayTypeMatchTimer');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
 const nextMatchBtn = document.getElementById('nextMatchBtn');
-const textDisplayConfig = document.getElementById('textDisplayConfig');
-const matchTimerConfig = document.getElementById('matchTimerConfig');
 const addMatchBtn = document.getElementById('addMatchBtn');
 const deleteAllMatchesBtn = document.getElementById('deleteAllMatchesBtn');
 const uploadScheduleBtn = document.getElementById('uploadScheduleBtn');
@@ -215,7 +214,7 @@ function resetConfiguration() {
         });
         
         // Set display type toggle
-        setDisplayTypeToggle(timerState.displayType);
+        setDisplayType(timerState.displayType);
         
         // Update UI based on display type
         updateMatchControlButtons();
@@ -281,8 +280,8 @@ function initializeUI() {
         input.checked = input.value === soundOption;
     });
     displayTextInput.value = timerState.customText || '';
-    // Set display type toggle
-    setDisplayTypeToggle(timerState.displayType);
+    // Set display type
+    setDisplayType(timerState.displayType);
     
     // Update UI based on display type
     updateMatchControlButtons();
@@ -535,17 +534,18 @@ function renderTeams() {
     syncChecklistUI();
 }
 
-// Helper functions for display type toggle
+// Helper functions for display type
 function getSelectedDisplayType() {
-    const activeBtn = displayTypeToggle.querySelector('.toggle.active');
-    return activeBtn ? activeBtn.dataset.value : 'text';
+    const selected = document.querySelector('input[name="displayType"]:checked');
+    return selected ? selected.value : 'text';
 }
 
-function setDisplayTypeToggle(displayType) {
-    const buttons = displayTypeToggle.querySelectorAll('.toggle');
-    buttons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === displayType);
-    });
+function setDisplayType(displayType) {
+    if (displayType === 'text') {
+        displayTypeText.checked = true;
+    } else if (displayType === 'match-timer') {
+        displayTypeMatchTimer.checked = true;
+    }
 }
 
 // Open display page in new window/tab or close existing display
@@ -648,13 +648,11 @@ function updateMatchControlButtons() {
     }
 
     // Prevent accidental display type change or closing display while a match is running
-    const textToggleBtn = displayTypeToggle?.querySelector('[data-value="text"]');
-    const matchTimerToggleBtn = displayTypeToggle?.querySelector('[data-value="match-timer"]');
-    if (textToggleBtn) {
-        textToggleBtn.disabled = isRunning;
+    if (displayTypeText) {
+        displayTypeText.disabled = isRunning;
     }
-    if (matchTimerToggleBtn) {
-        matchTimerToggleBtn.disabled = isRunning;
+    if (displayTypeMatchTimer) {
+        displayTypeMatchTimer.disabled = isRunning;
     }
     if (openDisplayBtn) {
         openDisplayBtn.disabled = isRunning;
@@ -1707,13 +1705,11 @@ function renderSponsorPreview() {
     });
 }
 
-// Handle display type toggle buttons
-displayTypeToggle.addEventListener('click', (e) => {
-    if (e.target.classList.contains('toggle')) {
-        const currentDisplayType = e.target.dataset.value;
-        
-        // Update button states
-        setDisplayTypeToggle(currentDisplayType);
+// Handle display type radio buttons
+const displayTypeRadios = document.querySelectorAll('input[name="displayType"]');
+displayTypeRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        const currentDisplayType = getSelectedDisplayType();
         
         updateState({ 
             displayType: currentDisplayType,
@@ -1724,7 +1720,7 @@ displayTypeToggle.addEventListener('click', (e) => {
             })
         });
         updateMatchControlButtons();
-    }
+    });
 });
 
 // Initialize when page loads
@@ -1732,3 +1728,11 @@ loadState();
 initializeUI();
 renderSponsorPreview();
 console.log('Control page initialized with persistent configuration');
+
+// About button - scroll to footer
+const aboutBtn = document.getElementById('aboutBtn');
+if (aboutBtn) {
+    aboutBtn.addEventListener('click', () => {
+        document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}

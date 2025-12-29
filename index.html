@@ -1,263 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control - FLLC Display</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="styles.css">
-    <!-- Material Symbols for info icon -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Control - FLLC Display</title>
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="styles.css">
+        <!-- Material Symbols for info icon -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
 
-<body class="control-page">
-    <div class="alert banner" role="status" aria-live="polite">
-        <span class="material-symbols-rounded" aria-hidden="true" translate="no">info</span>
-        Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
-    </div>
-    <header class="control-header">
-        <h1>FLL Challenge Event Display</h1>
-    </header>
-    
-    <main class="control-content">
-        <div class="card" id="setupChecklistCard">
-            <div class="card-header">
-                <h2>Setup Checklist</h2>
-                <div class="button-group">
-                    <span id="checklistCount"></span>
-                    <button id="toggleChecklistBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
-                </div>
-            </div>
-            <p class="description" id="checklistDescription">To have the most successful event possible, complete these steps!</p>
-            <div id="checklistContainer">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistEventName" tabindex="-1">
-                    <span>Enter your event name</span>
-                    <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistSponsors" tabindex="-1">
-                    <span>Select/upload sponsor logos</span>
-                    <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistUploadSchedule" tabindex="-1">
-                    <span>Upload an event schedule (optional)</span>
-                    <button class="checklist-button tertiary" data-target="uploadScheduleBtn">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistTeams" tabindex="-1">
-                    <span>OR manually enter teams</span>
-                    <button class="checklist-button tertiary" data-target="teamsConfig">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistMatches" tabindex="-1">
-                    <span>AND manually enter matches</span>
-                    <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistDisplay" tabindex="-1">
-                    <span>Open the display window</span>
-                    <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
-                    <span>Test the match timer display and run a match</span>
-                    <button class="checklist-button tertiary" data-target="matchTimerToggle">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistSoundOption" tabindex="-1">
-                    <span>Try turning the match sounds on and run a match</span>
-                    <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistCustomText" tabindex="-1">
-                    <span>Type a message and test the custom text display</span>
-                    <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="checklistExpandCollapse" tabindex="-1">
-                    <span>Get comfortable with the collapse/expand buttons</span>
-                    <button class="checklist-button tertiary" data-target="toggleChecklistBtn">Show me!</button>
-                </label>
-            </div>
+    <body class="control-page">
+        <div class="alert banner" role="status" aria-live="polite">
+            <span class="material-symbols-rounded" aria-hidden="true" translate="no">info</span>
+            Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
         </div>
-        <div class="card">
-            <div class="card-header">
-                <h2>Display Controls</h2>
-                <button id="openDisplayBtn" class="primary">
-                    Open Display
-                </button>
-            </div>
-            <div class="form-control">
-                <p class="label">Current Display Type</p>
-                <div class="toggle-button-group" id="displayTypeToggle">
-                    <button type="button" class="toggle start active" data-value="text">Custom Text</button>
-                    <button type="button" id="matchTimerToggle" class="toggle end" data-value="match-timer">Match Timer</button>
-                </div>
-            </div>
-            <div id="textDisplayConfig" class="form-control">
-                <label for="displayText">Custom Text</label>
-                <p class="description">Optional custom text shown below the event name on the text display.</p>
-                <textarea id="displayText" placeholder="Enter custom text (optional)" rows="3"></textarea>
-                <button id="updateCustomTextBtn" class="primary" disabled>Update Display</button>
-            </div>
-            <div id="matchTimerConfig" class="form-control">
-                <p class="label">Match Controls</p>
-                <div class="button-group">
-                    <button id="prevMatchBtn" class="secondary" disabled>
-                        <span class="button-main-text">Previous</span>
-                        <span class="button-sub-text" id="prevMatchSub">Match --</span>
-                    </button>
-                    <button id="currentMatchBtn" class="primary" disabled>
-                        <span class="button-main-text">Start</span>
-                        <span class="button-sub-text" id="currentMatchSub">Match --</span>
-                    </button>
-                    <button id="nextMatchBtn" class="secondary" disabled>
-                        <span class="button-main-text">Next</span>
-                        <span class="button-sub-text" id="nextMatchSub">Match --</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" id="matchScheduleConfig">
-            <div class="card-header">
-                <h2>Match Schedule</h2>
-                <div class="schedule-header-right">
-                    <span id="matchCount">0 matches</span>
+        <header class="control-header">
+            <h1>FLL Challenge Event Display</h1>
+            <button id="aboutBtn" class="secondary">About the Project</button>
+        </header>
+        
+        <main class="control-content">
+            <div class="card" id="setupChecklistCard">
+                <div class="card-header">
+                    <h2>Setup Checklist</h2>
                     <div class="button-group">
-                        <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
-                        <button id="addMatchBtn" class="primary">Add Match</button>
-                        <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
-                        <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                        <span id="checklistCount"></span>
+                        <button id="toggleChecklistBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                    </div>
+                </div>
+                <p class="description" id="checklistDescription">To have the most successful event possible, complete these steps!</p>
+                <div id="checklistContainer">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistEventName" tabindex="-1">
+                        <span>Enter your event name</span>
+                        <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistSponsors" tabindex="-1">
+                        <span>Select/upload sponsor logos</span>
+                        <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistUploadSchedule" tabindex="-1">
+                        <span>Upload an event schedule (optional)</span>
+                        <button class="checklist-button tertiary" data-target="uploadScheduleBtn">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistTeams" tabindex="-1">
+                        <span>OR manually enter teams</span>
+                        <button class="checklist-button tertiary" data-target="teamsConfig">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistMatches" tabindex="-1">
+                        <span>AND manually enter matches</span>
+                        <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistDisplay" tabindex="-1">
+                        <span>Open the display window</span>
+                        <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
+                        <span>Test the match timer display and run a match</span>
+                        <button class="checklist-button tertiary" data-target="displayTypeMatchTimer">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistSoundOption" tabindex="-1">
+                        <span>Try turning the match sounds on and run a match</span>
+                        <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistCustomText" tabindex="-1">
+                        <span>Type a message and test the custom text display</span>
+                        <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checklistExpandCollapse" tabindex="-1">
+                        <span>Get comfortable with the collapse/expand buttons</span>
+                        <button class="checklist-button tertiary" data-target="toggleChecklistBtn">Show me!</button>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Display Controls</h2>
+                    <button id="openDisplayBtn" class="primary">
+                        Open Display
+                    </button>
+                </div>
+                <div class="form-control">
+                <h3>Currently on Display</h3>
+                    <div class="radio-option-container">
+                        <input type="radio" name="displayType" id="displayTypeMatchTimer" value="match-timer">
+                        <div class="radio-option-content">
+                            <label class="radio-label" for="displayTypeMatchTimer">
+                                Match Timer
+                            </label>
+                            <div class="button-group">
+                                <button id="prevMatchBtn" class="secondary" disabled>
+                                    <span class="button-main-text">Previous</span>
+                                    <span class="button-sub-text" id="prevMatchSub">Match --</span>
+                                </button>
+                                <button id="currentMatchBtn" class="primary" disabled>
+                                    <span class="button-main-text">Start</span>
+                                    <span class="button-sub-text" id="currentMatchSub">Match --</span>
+                                </button>
+                                <button id="nextMatchBtn" class="secondary" disabled>
+                                    <span class="button-main-text">Next</span>
+                                    <span class="button-sub-text" id="nextMatchSub">Match --</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="radio-option-container">
+                        <input type="radio" name="displayType" id="displayTypeText" value="text" checked>
+                        <div class="radio-option-content">
+                            <label class="radio-label" for="displayTypeText">Message</label>
+                            <div style="display: flex; gap: var(--flld-spacing-sm)">
+                                <textarea id="displayText" placeholder="Enter message" rows="3"></textarea>
+                                <button id="updateCustomTextBtn" class="primary" disabled>Apply Changes</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <table id="matchScheduleTable" class="match-table">
-                <thead id="matchScheduleHead"></thead>
-                <tbody id="matchScheduleBody">
-                    <!-- Match rows will be added here dynamically -->
-                </tbody>
-            </table>
-            <div id="noMatchesMessage" class="no-data-area-neutral">
-                No matches scheduled. Use "Upload Schedule (.csv)" to import matches, or click "Add Match" to create your first match.
-            </div>
-            <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
-        </div>
 
-        <div class="card" id="teamsConfig">
-            <div class="card-header">
-                <h2>Teams</h2>
-                <div class="schedule-header-right">
-                    <span id="teamCount">0 teams</span>
-                    <div class="button-group">
-                        <button id="addTeamBtn" class="primary">Add Team</button>
-                        <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
-                        <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+            <div class="card" id="matchScheduleConfig">
+                <div class="card-header">
+                    <h2>Match Schedule</h2>
+                    <div class="schedule-header-right">
+                        <span id="matchCount">0 matches</span>
+                        <div class="button-group">
+                            <button id="uploadScheduleBtn" class="secondary">Upload Schedule (.csv)</button>
+                            <button id="addMatchBtn" class="primary">Add Match</button>
+                            <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                            <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <table id="teamsTable" class="match-table">
-                <thead id="teamsHead">
-                    <tr>
-                        <th>Team Number</th>
-                        <th>Team Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="teamsBody">
-                    <!-- Team rows will be added here dynamically -->
-                </tbody>
-            </table>
-            <div id="noTeamsMessage" class="no-data-area-neutral">
-                No teams added. Upload the match schedule or click "Add Team" to create your first team.
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>Event Configuration</h2>
-                <button id="resetConfigBtn" class="destructive">
-                    <span class="material-symbols-rounded" translate="no">reset_settings</span>Reset Configuration
-                </button>
-            </div>
-            <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
-            <div class="form-control" id="soundOptions">
-                <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
-                    <label for="soundOptions">Sound Profile</label>
-                    <div class="badge rainbow">Try it out!</div>
+                <table id="matchScheduleTable" class="match-table">
+                    <thead id="matchScheduleHead"></thead>
+                    <tbody id="matchScheduleBody">
+                        <!-- Match rows will be added here dynamically -->
+                    </tbody>
+                </table>
+                <div id="noMatchesMessage" class="no-data-area-neutral">
+                    No matches scheduled. Use "Upload Schedule (.csv)" to import matches, or click "Add Match" to create your first match.
                 </div>
-                <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which matches the other <i>FIRST</i> programs!</p>
-                <div>
+                <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
+            </div>
+
+            <div class="card" id="teamsConfig">
+                <div class="card-header">
+                    <h2>Teams</h2>
+                    <div class="schedule-header-right">
+                        <span id="teamCount">0 teams</span>
+                        <div class="button-group">
+                            <button id="addTeamBtn" class="primary">Add Team</button>
+                            <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
+                            <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                        </div>
+                    </div>
+                </div>
+                <table id="teamsTable" class="match-table">
+                    <thead id="teamsHead">
+                        <tr>
+                            <th>Team Number</th>
+                            <th>Team Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamsBody">
+                        <!-- Team rows will be added here dynamically -->
+                    </tbody>
+                </table>
+                <div id="noTeamsMessage" class="no-data-area-neutral">
+                    No teams added. Upload the match schedule or click "Add Team" to create your first team.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Event Configuration</h2>
+                    <button id="resetConfigBtn" class="destructive">
+                        <span class="material-symbols-rounded" translate="no">reset_settings</span>Reset Configuration
+                    </button>
+                </div>
+                <p>Your configuration is automatically saved in your browser and will persist across page refreshes. Use the "Reset Configuration" button to clear all settings.</p>
+                <div class="form-control" id="soundOptions">
+                    <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
+                        <label for="soundOptions">Sound Profile</label>
+                        <div class="badge rainbow">Try it out!</div>
+                    </div>
+                    <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which matches the other <i>FIRST</i> programs!</p>
                     <label class="radio-label">
                         <input type="radio" name="soundOption" value="none" checked>
                         No sound
                     </label>
-                </div>
-                <div>
                     <label class="radio-label">
                         <input type="radio" name="soundOption" value="ftc">
                         <span><i>FIRST</i> Tech Challenge / <i>FIRST</i> Robotics Competition</span>
                     </label>
                 </div>
-            </div>
-            <div class="form-control">
-                <label for="eventName">Event Name</label>
-                <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
-                <p class="helper-text">This name will be shown on the Custom Text and Match Timer display screens.</p>
-            </div>
-            <div class="form-control" id="sponsorLogosSection">
-                <div class="button-group">
-                    <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
-                        <label for="sponsorLogos">Sponsor Logos</label>
-                        <p class="description">These logos will appear on the display in the order you choose.</p>
-                    </div>
-                    <button id="uploadSponsorsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">upload</span>Upload Logo</button>
-                    <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
+                <div class="form-control">
+                    <label for="eventName">Event Name</label>
+                    <p class="description">This name will be shown on the display.</p>
+                    <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
                 </div>
-                <div id="sponsorPreview"></div>
-                <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
-                <div id="logoLibrary" style="display: none;"></div>
-                <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
+                <div class="form-control" id="sponsorLogosSection">
+                    <div class="button-group">
+                        <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
+                            <label for="sponsorLogos">Sponsor Logos</label>
+                            <p class="description">These logos will appear on the display in the order you choose.</p>
+                        </div>
+                        <button id="uploadSponsorsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">upload</span>Upload Logo</button>
+                        <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
+                    </div>
+                    <div id="sponsorPreview"></div>
+                    <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
+                    <div id="logoLibrary" style="display: none;"></div>
+                    <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
+                </div>
             </div>
-        </div>
-    </main>
-    
-    <footer class="control-footer">
-        <p class="footer-greeting">
-            Hello! 👋
-        </p>
-        <p class="footer-message">
-            <span style="font-style: italic;">FIRST</span> Lego League Challenge Event Display was created to enhance the student, audience, and volunteer experience at events all around the world. It is maintained by Sam Smith, a UX Designer at John Deere, and <span style="font-style: italic;">FIRST</span> Alumni and volunteer from the Quad Cities. Please reach out with any feedback, appreciation, or questions you have. Now, go change some lives! 🤖
-        </p>
-        <div class="footer-avatar">
-            <img src="media/sam_announcing.png" alt="Sam Smith" class="avatar">
-            <span class="avatar-name">Sam Smith</span>
-        </div>
-        <div class="footer-links">
-            <a href="https://github.com/samsmith620m/FLL-Timer" target="_blank" rel="noopener noreferrer">GitHub</a>
-            |
-            <a href="mailto:samsmith620m@gmail.com">samsmith620m@gmail.com</a>
-        </div>
-        <div class="footer-contributors">
-            <p>Thank you, contributors!</p>
-            <ul>
-                <li>Moriah Z. (FRC 3928)</li>
-                <li>Matt R. (John Deere)</li>
-            </ul>
-        </div>
-        <div class="footer-supporters">
-            <p>Thank you, supporters!</p>
-            <ul>
-                <li>Yamille P. (FLL Iowa)</li>
-                <li>Nicholas S. (FLL Iowa)</li>
-                <li>LeeAnn H. (FLL Iowa)</li>
-                <li>Keegan R. (John Deere)</li>
-            </ul>
-        </div>
-    </footer>
-    
-    <script src="script.js"></script>
-</body>
+        </main>
+        
+        <footer class="control-footer" id="about">
+            <p class="footer-greeting">
+                Hello! 👋
+            </p>
+            <p class="footer-message">
+                <span style="font-style: italic;">FIRST</span> Lego League Challenge Event Display was created to enhance the student, audience, and volunteer experience at events all around the world. It is maintained by Sam Smith, a UX Designer at John Deere, and <span style="font-style: italic;">FIRST</span> Alumni and volunteer from the Quad Cities. Please reach out with any feedback, appreciation, or questions you have. Now, go change some lives! 🤖
+            </p>
+            <div class="footer-avatar">
+                <img src="media/sam_announcing.png" alt="Sam Smith" class="avatar">
+                <span class="avatar-name">Sam Smith</span>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/samsmith620m/FLL-Timer" target="_blank" rel="noopener noreferrer">GitHub</a>
+                |
+                <a href="mailto:samsmith620m@gmail.com">samsmith620m@gmail.com</a>
+            </div>
+            <div class="footer-contributors">
+                <p>Thank you, contributors!</p>
+                <ul>
+                    <li>Moriah Z. (FRC 3928)</li>
+                    <li>Matt R. (John Deere)</li>
+                </ul>
+            </div>
+            <div class="footer-supporters">
+                <p>Thank you, supporters!</p>
+                <ul>
+                    <li>Yamille P. (FLL Iowa)</li>
+                    <li>Nicholas S. (FLL Iowa)</li>
+                    <li>LeeAnn H. (FLL Iowa)</li>
+                    <li>Keegan R. (John Deere)</li>
+                </ul>
+            </div>
+        </footer>
+        
+        <script src="script.js"></script>
+    </body>
 </html>

@@ -1192,18 +1192,14 @@ function renderMatchSchedule() {
             const teamCell = document.createElement('td');
             const teamSelect = document.createElement('select');
             teamSelect.className = 'team-input';
-            teamSelect.setAttribute('translate', 'no');
             
-            // Add placeholder option (disabled and hidden)
-            const placeholderOption = document.createElement('option');
-            placeholderOption.value = '';
-            placeholderOption.textContent = 'Select a team';
-            placeholderOption.disabled = true;
-            placeholderOption.selected = true;
-            placeholderOption.hidden = true;
-            teamSelect.appendChild(placeholderOption);
+            // Add empty/no team option (default)
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '--- No Team ---';
+            teamSelect.appendChild(emptyOption);
             
-            // Add option for each team
+            // Add option for each team (with translate="no" on each option)
             timerState.teams.forEach(team => {
                 const option = document.createElement('option');
                 option.value = team.teamNumber;

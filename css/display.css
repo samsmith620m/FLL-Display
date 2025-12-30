@@ -462,49 +462,7 @@ html.display {
         transform: translateX(-100%);
     }
 }
-/* Fullscreen Button */
-.fullscreen-btn {
-    position: fixed;
-    bottom: var(--flld-spacing-lg);
-    right: var(--flld-spacing-lg);
-    z-index: 9999;
-    
-    display: flex;
-    align-items: center;
-    gap: var(--flld-spacing-xs);
-    
-    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
-    background-color: var(--flld-color-gray-10);
-    color: var(--flld-color-white);
-    border: none;
-    border-radius: var(--flld-spacing-sm);
-    font-family: var(--flld-font-family-base);
-    font-size: var(--flld-font-size-md);
-    font-weight: var(--flld-font-weight-semibold);
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    
-    opacity: 0;
-    pointer-events: none;
-    transition: background-color 0.2s ease;
-    
-    &.show {
-        animation: fadeIn 0.3s ease forwards;
-        pointer-events: auto;
-    }
-    
-    &.hide {
-        animation: fadeOut 0.3s ease forwards;
-    }
-    
-    &:hover {
-        background-color: var(--flld-color-gray-25);
-    }
-    
-    .material-symbols-rounded {
-        font-size: 24px;
-    }
-}
+
 /* Sponsor Logo Preview */
 #sponsorPreview {
     display: flex;
@@ -576,25 +534,12 @@ html.display {
 }
 
 /* Fullscreen Button */
-.fullscreen-btn {
+#fullscreenBtn {
     position: fixed;
     bottom: var(--flld-spacing-lg);
     right: var(--flld-spacing-lg);
     z-index: 9999;
-    
-    display: flex;
-    align-items: center;
-    gap: var(--flld-spacing-xs);
-    
-    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
-    background-color: var(--flld-color-gray-10);
-    color: var(--flld-color-white);
-    border: none;
-    border-radius: var(--flld-spacing-sm);
-    font-family: var(--flld-font-family-base);
-    font-size: var(--flld-font-size-md);
-    font-weight: var(--flld-font-weight-semibold);
-    cursor: pointer;
+
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     
     opacity: 0;
@@ -608,13 +553,5 @@ html.display {
     
     &.hide {
         animation: fadeOut 0.3s ease forwards;
-    }
-    
-    &:hover {
-        background-color: var(--flld-color-gray-25);
-    }
-    
-    .material-symbols-rounded {
-        font-size: 24px;
     }
 }

@@ -487,7 +487,7 @@ document.addEventListener('keydown', (e) => {
 
 // Fullscreen button with cursor-based visibility
 const fullscreenBtn = document.getElementById('fullscreenBtn');
-const fullscreenBtnText = fullscreenBtn?.querySelector('.fullscreen-btn-text');
+const fullscreenBtnText = document.getElementById('fullscreenBtnText');
 const fullscreenBtnIcon = fullscreenBtn?.querySelector('.material-symbols-rounded');
 let hideTimeout;
 

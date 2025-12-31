@@ -274,9 +274,12 @@ function ensureTeamCards() {
         card.innerHTML = `
             <div class="team-info">
                 <div class="team-number display-small">Team ${i+1}</div>
-                <div class="team-name"></div>
+                <div class="team-name" translate="no"></div>
+                <div class="cheering-message" style="display: none;">
+                    <em><span translate="no">🎉</span>&nbsp;<span class="cheering-prefix">Good luck,</span><br/><span class="cheering-team-name" translate="no"></span>!</em>
+                </div>
             </div>
-            <div class="table-name heading-large">${tableName}</div>`;
+            <div class="table-name heading-large" translate="no">${tableName}</div>`;
         timerDisplay.insertBefore(card, timerContainer);
     });
 
@@ -285,6 +288,7 @@ function ensureTeamCards() {
     const timerAreas = tableNames.map(() => 'timer').join(' ');
     const brandAreas = tableNames.map(() => 'brand-bar').join(' ');
     timerDisplay.style.gridTemplate = `"${teamAreas}" auto "${timerAreas}" 1fr "${brandAreas}" auto`;
+    timerDisplay.style.gridTemplateColumns = `repeat(${tableNames.length}, auto)`;
 }
 
 function updateMatchDisplay() {
@@ -312,16 +316,29 @@ function updateMatchDisplay() {
     const cards = timerDisplay.querySelectorAll('.team-card');
     const teams = currentState.teams || [];
     
+    // Define cheering order for each slot (0-indexed)
+    const cheeringOrder = [
+        [1, 2, 3], // Slot 0 cheers for slots 1, 2, 3
+        [0, 3, 2], // Slot 1 cheers for slots 0, 3, 2
+        [3, 0, 1], // Slot 2 cheers for slots 3, 0, 1
+        [2, 1, 0]  // Slot 3 cheers for slots 2, 1, 0
+    ];
+    
     cards.forEach(card => {
         const slot = parseInt(card.dataset.slot, 10);
         const numEl = card.querySelector('.team-number');
         const nameEl = card.querySelector('.team-name');
+        const teamInfoEl = card.querySelector('.team-info');
+        const cheeringMessageEl = card.querySelector('.cheering-message');
         
         if (currentMatch && currentMatch.teams) {
             const teamNumber = currentMatch.teams[slot];
             if (teamNumber) {
+                // Slot has a team - remove cheering class and hide cheering message
+                teamInfoEl.classList.remove('cheering');
+                if (cheeringMessageEl) cheeringMessageEl.style.display = 'none';
                 numEl.innerHTML = teamNumber;
-                numEl.style.fontStyle = 'normal';
+                numEl.style.display = 'block';
                 
                 // Find and display team name
                 const teamData = teams.find(t => t.teamNumber === teamNumber);
@@ -333,18 +350,52 @@ function updateMatchDisplay() {
                     nameEl.style.display = 'none';
                 }
             } else {
-                numEl.innerHTML = '<em> — </em>';
-                numEl.style.fontStyle = 'italic';
-                nameEl.textContent = '';
-                nameEl.style.display = 'none';
+                // Slot is empty - check if should be cheering
+                const cheeringForSlot = cheeringOrder[slot]?.find(cheerSlot => 
+                    currentMatch.teams[cheerSlot] && currentMatch.teams[cheerSlot] !== ''
+                );
+                
+                if (cheeringForSlot !== undefined) {
+                    teamInfoEl.classList.add('cheering');
+                    
+                    // Find the team name they're cheering for
+                    const cheeringTeamNumber = currentMatch.teams[cheeringForSlot];
+                    const cheeringTeamData = teams.find(t => t.teamNumber === cheeringTeamNumber);
+                    const cheeringTeamName = cheeringTeamData?.teamName || `Team ${cheeringTeamNumber}`;
+                    
+                    // Show cheering message with team name, hide regular team name
+                    const cheeringTeamNameEl = card.querySelector('.cheering-team-name');
+                    if (cheeringMessageEl && cheeringTeamNameEl) {
+                        cheeringTeamNameEl.textContent = cheeringTeamName;
+                        cheeringMessageEl.style.display = 'block';
+                    }
+                    
+                    numEl.innerHTML = '';
+                    numEl.style.display = 'none';
+                    nameEl.style.display = 'none';
+                } else {
+                    teamInfoEl.classList.remove('cheering');
+                    if (cheeringMessageEl) cheeringMessageEl.style.display = 'none';
+                    numEl.style.display = 'block';
+                    nameEl.innerHTML = '<em> — </em>';
+                    nameEl.style.display = 'block';
+                }
             }
         } else {
+            // No match data - remove cheering
+            teamInfoEl.classList.remove('cheering');
             numEl.innerHTML = '<em> — </em>';
-            numEl.style.fontStyle = 'italic';
+            numEl.style.display = 'block';
             nameEl.textContent = '';
             nameEl.style.display = 'none';
         }
     });
+    
+    // Dynamically adjust grid columns based on which cards are cheering
+    const gridColumns = Array.from(cards).map(card => 
+        card.querySelector('.team-info.cheering') ? 'auto' : '1fr'
+    ).join(' ');
+    timerDisplay.style.gridTemplateColumns = gridColumns;
 }
 
 // Update marquee with season logos and custom sponsor logos
@@ -487,18 +538,20 @@ document.addEventListener('keydown', (e) => {
 
 // Fullscreen button with cursor-based visibility
 const fullscreenBtn = document.getElementById('fullscreenBtn');
-const fullscreenBtnText = fullscreenBtn?.querySelector('.fullscreen-btn-text');
+const fullscreenBtnText = document.getElementById('fullscreenBtnText');
 const fullscreenBtnIcon = fullscreenBtn?.querySelector('.material-symbols-rounded');
+const fullscreenTextEnter = document.getElementById('fullscreenTextEnter');
+const fullscreenTextExit = document.getElementById('fullscreenTextExit');
 let hideTimeout;
 
 if (fullscreenBtn) {
     // Update button text/icon based on fullscreen state
     function updateFullscreenButton() {
         if (document.fullscreenElement) {
-            fullscreenBtnText.textContent = 'Exit Fullscreen';
+            fullscreenBtnText.textContent = fullscreenTextExit?.textContent || 'Exit Fullscreen';
             fullscreenBtnIcon.textContent = 'fullscreen_exit';
         } else {
-            fullscreenBtnText.textContent = 'Go Fullscreen!';
+            fullscreenBtnText.textContent = fullscreenTextEnter?.textContent || 'Go Fullscreen!';
             fullscreenBtnIcon.textContent = 'fullscreen';
         }
     }

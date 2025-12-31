@@ -47,6 +47,18 @@
 :root{
     --white-bg-base: var(--flld-color-surface-1); /* fallback */
     --white-bg-fancy: rgb(from var(--flld-color-surface-1) r g b / 65%); /* 80% alpha in modern browsers */
+
+    --team-1-color: var(--flld-color-unearthed-red-70);
+    --team-1-color-shade: var(--flld-color-unearthed-red-40);
+
+    --team-2-color: var(--flld-color-unearthed-green-70);
+    --team-2-color-shade: var(--flld-color-unearthed-green-40);
+
+    --team-3-color: var(--flld-color-unearthed-yellow-70);
+    --team-3-color-shade: var(--flld-color-unearthed-yellow-40);
+
+    --team-4-color: var(--flld-color-unearthed-teal-70);
+    --team-4-color-shade: var(--flld-color-unearthed-teal-40);
 }
 
 html.display {
@@ -162,7 +174,7 @@ html.display {
     grid-template:
         "team1 team2 team3 team4" auto
         "timer timer timer timer" 1fr
-        "brand-bar brand-bar brand-bar brand-bar" auto / 1fr;
+        "brand-bar brand-bar brand-bar brand-bar" auto;
     padding: 0 6vh;
 
     color: var(--flld-color-text-inverse);
@@ -179,48 +191,75 @@ html.display {
     border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
     grid-area: auto;
     color: var(--flld-color-text-primary);
+    display: flex;
+    flex-direction: column;
+
+    &:has(.team-info.cheering) {
+        width: fit-content;
+        justify-self: center;
+    }
 
     &:nth-child(1){
-        --team-color: var(--flld-color-unearthed-red-70);
         .team-info {
-            background: var(--team-color);
+            background-color: var(--team-1-color);
             background-image: url('../media/unearthed-assets/background_flag.svg');
             background-size: 110%;
             animation: pan-background 16s ease-in-out infinite;
+            
+            &.cheering {
+                border-color: var(--team-1-color-shade);
+                background-image: none;
+                background-color: transparent;
+            }
         }
-        .table-name { color: var(--flld-color-unearthed-red-40); }
+        .table-name { color: var(--team-1-color-shade); }
     }
 
     &:nth-child(2){
-        --team-color: var(--flld-color-unearthed-green-base);
         .team-info {
-            background: var(--team-color);
+            background-color: var(--team-2-color);
             background-image: url('../media/unearthed-assets/background_cross.svg');
             background-size: 110%;
             animation: pan-background 18s ease-in-out infinite;
+            
+            &.cheering {
+                border-color: var(--team-2-color-shade);
+                background-image: none;
+                background-color: transparent;
+            }
         }
-        .table-name { color: var(--flld-color-unearthed-green-40); }
+        .table-name { color: var(--team-2-color-shade); }
     }
     
     &:nth-child(3){
-        --team-color: var(--flld-color-unearthed-yellow-base);
         .team-info {
-            background: var(--team-color);
+            background-color: var(--team-3-color);
             background-image: url('../media/unearthed-assets/background_binoculars.svg');
             background-size: 110%;
             animation: pan-background 12s ease-in-out infinite;
+            
+            &.cheering {
+                border-color: var(--team-3-color-shade);
+                background-image: none;
+                background-color: transparent;
+            }
         }
-        .table-name { color: var(--flld-color-unearthed-yellow-40); }
+        .table-name { color: var(--team-3-color-shade); }
     }
     &:nth-child(4){
-        --team-color: var(--flld-color-unearthed-teal-70);
         .team-info {
-            background: var(--team-color);
+            background-color: var(--team-4-color);
             background-image: url('../media/unearthed-assets/background_eclipse.svg');
             background-size: 110%;
             animation: pan-background 14s ease-in-out infinite;
+            
+            &.cheering {
+                border-color: var(--team-4-color-shade);
+                background-image: none;
+                background-color: transparent;
+            }
         }
-        .table-name { color: var(--flld-color-unearthed-teal-40); }
+        .table-name { color: var(--team-4-color-shade); }
     }
 }
 
@@ -236,6 +275,13 @@ html.display {
     /* Viewport Height Update */
     padding: 2vh;
     background-position: center;
+    
+    &.cheering {
+        border-width: 0px .75vh .75vh .75vh;
+        border-style: solid;
+        flex-grow: 1;
+        width: min-content;
+    }
 
     .team-number {
         font-size: 6vh;
@@ -249,6 +295,14 @@ html.display {
         white-space: nowrap;
         overflow: hidden;
         width: min-content;
+    }
+    
+    .cheering-message {
+        font-size: 3vh;
+        font-weight: 600;
+        text-align: center;
+        width: min-content;
+        white-space: nowrap;
     }
 }
 
@@ -309,8 +363,8 @@ html.display {
     border-radius: var(--flld-border-radius-xl);
 
     /* Viewport Height Update */
-    padding: 3vh 8vh 3vh;
-    gap: 3vh;
+    padding: 5vh 8vh 3vh;
+    gap: 1vh;
 
     .match-count {
         font-size: 4vh;
@@ -462,49 +516,7 @@ html.display {
         transform: translateX(-100%);
     }
 }
-/* Fullscreen Button */
-.fullscreen-btn {
-    position: fixed;
-    bottom: var(--flld-spacing-lg);
-    right: var(--flld-spacing-lg);
-    z-index: 9999;
-    
-    display: flex;
-    align-items: center;
-    gap: var(--flld-spacing-xs);
-    
-    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
-    background-color: var(--flld-color-gray-10);
-    color: var(--flld-color-white);
-    border: none;
-    border-radius: var(--flld-spacing-sm);
-    font-family: var(--flld-font-family-base);
-    font-size: var(--flld-font-size-md);
-    font-weight: var(--flld-font-weight-semibold);
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    
-    opacity: 0;
-    pointer-events: none;
-    transition: background-color 0.2s ease;
-    
-    &.show {
-        animation: fadeIn 0.3s ease forwards;
-        pointer-events: auto;
-    }
-    
-    &.hide {
-        animation: fadeOut 0.3s ease forwards;
-    }
-    
-    &:hover {
-        background-color: var(--flld-color-gray-25);
-    }
-    
-    .material-symbols-rounded {
-        font-size: 24px;
-    }
-}
+
 /* Sponsor Logo Preview */
 #sponsorPreview {
     display: flex;
@@ -576,25 +588,12 @@ html.display {
 }
 
 /* Fullscreen Button */
-.fullscreen-btn {
+#fullscreenBtn {
     position: fixed;
     bottom: var(--flld-spacing-lg);
     right: var(--flld-spacing-lg);
     z-index: 9999;
-    
-    display: flex;
-    align-items: center;
-    gap: var(--flld-spacing-xs);
-    
-    padding: var(--flld-spacing-sm) var(--flld-spacing-md);
-    background-color: var(--flld-color-gray-10);
-    color: var(--flld-color-white);
-    border: none;
-    border-radius: var(--flld-spacing-sm);
-    font-family: var(--flld-font-family-base);
-    font-size: var(--flld-font-size-md);
-    font-weight: var(--flld-font-weight-semibold);
-    cursor: pointer;
+
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     
     opacity: 0;
@@ -608,13 +607,5 @@ html.display {
     
     &.hide {
         animation: fadeOut 0.3s ease forwards;
-    }
-    
-    &:hover {
-        background-color: var(--flld-color-gray-25);
-    }
-    
-    .material-symbols-rounded {
-        font-size: 24px;
     }
 }

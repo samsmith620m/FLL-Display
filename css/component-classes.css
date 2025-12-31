@@ -121,20 +121,27 @@
 }
 
 .badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flld-spacing-xs);
     padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
     border-radius: var(--flld-border-radius-sm);
     font-size: var(--flld-font-size-sm);
     font-weight: var(--flld-font-weight-semibold);
-    background-color: var(--flld-color-unearthed-red-40);
     color: var(--flld-color-white);
+
+    &.warning {
+        background-color: var(--flld-color-messaging-warning-shade);
+        color: var(--flld-color-text-primary);
+    }
 
     &.rainbow {
         animation: color-cycle-badgeBackgroundColor 8s ease-in-out infinite;
     }
 }
 
-button {
+button,
+a.button {
     min-height: 44px;
     min-width: max-content;
     width: max-content;
@@ -147,6 +154,7 @@ button {
     display: flex;
     align-items: center;
     cursor: pointer;
+    text-decoration: none;
 
     &:focus-visible {
         outline: 2px solid var(--flld-color-black);

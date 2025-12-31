@@ -55,6 +55,10 @@
     --flld-color-green-base: #00A837;
     --flld-color-green-shade: #2D6B32;
 
+    --flld-color-yellow-tint: #FFF59D;
+    --flld-color-yellow-base: #FFEB3B;
+    --flld-color-yellow-shade: #F9A825;
+
     --flld-color-red-tint: #FF9F97;
     --flld-color-red-base: #FF534E;
     --flld-color-red-shade: #B02C2C;
@@ -176,7 +180,7 @@
     --flld-color-messaging-success: var(--flld-color-green-base);
     --flld-color-messaging-success-shade: var(--flld-color-green-shade);
 
-    --flld-color-messaging-warning: var(--flld-color-unearthed-yellow-75);
+    --flld-color-messaging-warning: var(--flld-color-yellow-base);
     --flld-color-messaging-warning-shade: var(--flld-color-yellow-shade);
     
     --flld-color-messaging-critical: var(--flld-color-red-base);

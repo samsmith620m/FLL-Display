@@ -47,6 +47,14 @@ body {
         color: var(--flld-color-gray-10);
         font-size: var(--flld-font-size-xl);
         font-weight: var(--flld-font-weight-bold);
+        display: flex;
+        align-items: center;
+        gap: var(--flld-spacing-sm);
+    }
+    
+    .header-logo {
+        height: 32px;
+        width: 32px;
     }
 }
 

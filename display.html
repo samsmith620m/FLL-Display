@@ -29,10 +29,10 @@
                         >
                     </div>
                 </div>
-                <h1 id="eventName">Your event name here!</h1>
+                <h1 id="eventName" translate="no">Your event name here!</h1>
             </div>
 
-            <h2 id="customText">Enter some custom text you want here</h2>
+            <h2 id="customText" translate="no">Enter some custom text you want here</h2>
 
             <div id="brandBar">
                 <div class="marquee">
@@ -50,37 +50,37 @@
             <div class="team-card">
                 <div class="team-info">
                     <div class="team-number display-small">Team Number</div>
-                    <div class="team-name">Team Name</div>
+                    <div class="team-name" translate="no">Team Name</div>
                 </div>
-                <div class="table-name heading-large">Table Name</div>
+                <div class="table-name heading-large" translate="no">Table Name</div>
             </div>
             <div class="team-card">
                 <div class="team-info">
                     <div class="team-number display-small">Team Number</div>
-                    <div class="team-name">Team Name</div>
+                    <div class="team-name" translate="no">Team Name</div>
                 </div>
-                <div class="table-name heading-large">Table Name</div>
+                <div class="table-name heading-large" translate="no">Table Name</div>
             </div>
             <div class="team-card">
                 <div class="team-info">
                     <div class="team-number display-small">Team Number</div>
-                    <div class="team-name">Team Name</div>
+                    <div class="team-name" translate="no">Team Name</div>
                 </div>
-                <div class="table-name heading-large">Table Name</div>
+                <div class="table-name heading-large" translate="no">Table Name</div>
             </div>
             <div class="team-card">
                 <div class="team-info">
                     <div class="team-number display-small">Team Number</div>
-                    <div class="team-name">Team Name</div>
+                    <div class="team-name" translate="no">Team Name</div>
                 </div>
-                <div class="table-name heading-large">Table Name</div>
+                <div class="table-name heading-large" translate="no">Table Name</div>
             </div>
             <div class="timer-container">
-                <div class="timer-time">2:30</div>
+                <div class="timer-time" translate="no">2:30</div>
                 <div class="match-count heading-large">
-                    <span id="displayEventName"></span>
+                    <span id="displayEventName" translate="no"></span>
                     <span class="match-divider"></span>
-                    <span>Match <span id="displayMatchNumber">--</span></span>
+                    <span>Match&nbsp;<span id="displayMatchNumber" translate="no">--</span></span>
                 </div>
             </div>
             <div id="brandBar">
@@ -96,10 +96,14 @@
     </div>
     
     <!-- Fullscreen Button -->
-    <button id="fullscreenBtn" class="fullscreen-btn" aria-label="Toggle fullscreen">
-        <span class="material-symbols-rounded">fullscreen</span>
-        <span class="fullscreen-btn-text">Go Fullscreen!</span>
+    <button id="fullscreenBtn" class="primary" aria-label="Toggle fullscreen">
+        <span class="material-symbols-rounded" translate="no">fullscreen</span>
+        <span id="fullscreenBtnText">Go Fullscreen!</span>
     </button>
+    
+    <!-- Hidden translatable text for fullscreen button -->
+    <span id="fullscreenTextEnter" style="display: none;">Go Fullscreen!</span>
+    <span id="fullscreenTextExit" style="display: none;">Exit Fullscreen</span>
     
     <script src="display.js"></script>
 </body>

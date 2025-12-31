@@ -15,8 +15,8 @@
 
 .match-table th:first-child,
 .match-table td:first-child {
-    width: 0;
-    white-space: nowrap;
+    width: 111px;
+    white-space: normal;
 }
 
 .match-table tr:last-child td {
@@ -81,10 +81,29 @@
 
 #teamsTable th:nth-child(1),
 #teamsTable td:nth-child(1) {
-    width: 32px;
+    min-width: min-content;
+    width: 0;
+    white-space: nowrap;
 }
 
 #teamsTable th:nth-child(2),
 #teamsTable td:nth-child(2) {
     width: 1fr;
+    position: relative;
+    
+    div.badge {
+        position: absolute;
+        right: calc(var(--flld-spacing-md) - 2px);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--flld-color-text-primary);
+        cursor: help;
+        pointer-events: auto;
+        z-index: 1;
+    }
+    
+    /* Add padding to input when warning icon is present */
+    &:has(div.badge) .team-input {
+        padding-right: 160px;
+    }
 }

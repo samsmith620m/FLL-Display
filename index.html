@@ -14,10 +14,18 @@
             Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
         </div>
         <header class="control-header">
-            <h1>FLL Challenge Event Display</h1>
+            <h1>
+                <img src="logo.svg" alt="" class="header-logo">
+                FLL Challenge Event Display
+            </h1>
             <div class="button-group">
+                <a href="https://forms.gle/KvmpRCGaCPRQFHeU8" target="_blank" rel="noopener noreferrer" class="button tertiary">
+                    <span class="material-symbols-rounded" translate="no">chat</span>
+                    Give Feedback
+                    <span class="material-symbols-rounded" translate="no">open_in_new</span>
+                </a>
                 <button id="translateHelpBtn" class="secondary">
-                    <span class="material-symbols-rounded">translate</span>
+                    <span class="material-symbols-rounded" translate="no">translate</span>
                     How to Translate
                 </button>
                 <button id="aboutBtn" class="secondary">About the Project</button>
@@ -30,7 +38,7 @@
                     <h2>Setup Checklist</h2>
                     <div class="button-group">
                         <span id="checklistCount"></span>
-                        <button id="toggleChecklistBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                        <button id="toggleChecklistBtn" class="secondary icon-only material-symbols-rounded" title="Collapse"><span translate="no">keyboard_arrow_up</span></button>
                     </div>
                 </div>
                 <p class="description" id="checklistDescription">To have the most successful event possible, complete these steps!</p>
@@ -141,7 +149,7 @@
                             <button id="addMatchBtn" class="secondary">Add Match</button>
                             <button id="uploadScheduleBtn" class="primary">Upload Schedule</button>
                             <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
-                            <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                            <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse"><span translate="no">keyboard_arrow_up</span></button>
                         </div>
                     </div>
                 </div>
@@ -161,11 +169,15 @@
                 <div class="card-header">
                     <h2>Teams</h2>
                     <div class="schedule-header-right">
+                        <div id="longTeamNameWarning" class="badge warning" style="display: none;">
+                            <span class="material-symbols-rounded" translate="no">warning</span>
+                            <span id="longTeamNameCount">0</span> <span id="longTeamNameText">teams with long names</span>
+                        </div>
                         <span id="teamCount">0 teams</span>
                         <div class="button-group">
                             <button id="addTeamBtn" class="secondary">Add Team</button>
                             <button id="deleteAllTeamsBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
-                            <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse" translate="no">keyboard_arrow_up</button>
+                            <button id="toggleTeamsBtn" class="secondary icon-only material-symbols-rounded" title="Collapse"><span translate="no">keyboard_arrow_up</span></button>
                         </div>
                     </div>
                 </div>
@@ -270,7 +282,7 @@
             <div class="modal">
                 <div class="header">
                     <h2>Upload Match Schedule</h2>
-                    <button id="closeScheduleModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                    <button id="closeScheduleModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close"><span translate="no">close</span></button>
                 </div>
                 <div class="body">
                     <p>Uploading a schedule is the best way to get setup quickly and accurately!</p>
@@ -355,7 +367,7 @@
             <div class="modal" style="max-width: 800px;">
                 <div class="header">
                     <h2>Map Schedule CSV Columns</h2>
-                    <button id="closeMappingModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                    <button id="closeMappingModalBtn" class="tertiary icon-only material-symbols-rounded" title="Close"><span translate="no">close</span></button>
                 </div>
                 <div class="body">
                     <p>Your file has been successfully uploaded! Please verify or adjust the column mapping below:</p>
@@ -381,7 +393,7 @@
             <div class="modal">
                 <div class="header">
                     <h2>How to Translate This Page</h2>
-                    <button id="closeTranslateHelpBtn" class="tertiary icon-only material-symbols-rounded" title="Close" translate="no">close</button>
+                    <button id="closeTranslateHelpBtn" class="tertiary icon-only material-symbols-rounded" title="Close"><span translate="no">close</span></button>
                 </div>
                 <div class="body">
                     <p>This application can be translated using your browser's built-in translation feature:</p>

@@ -1766,6 +1766,30 @@ if (uploadScheduleBtn && uploadScheduleInput) {
         }
     });
     
+    // Download template CSV
+    const downloadScheduleTemplateBtn = document.getElementById('downloadScheduleTemplateBtn');
+    if (downloadScheduleTemplateBtn) {
+        downloadScheduleTemplateBtn.addEventListener('click', () => {
+            const rows = [
+                ['Event Name', 'Type', 'Start Time', 'Room / Table Location', 'Team Number', 'Team Name'],
+                ['Example Tournament', 'Official Match 1', '9:00 AM', 'Table 1A', '12345', 'Team Alpha'],
+                ['Example Tournament', 'Official Match 1', '9:00 AM', 'Table 1B', '67890', 'Team Beta'],
+                ['Example Tournament', 'Official Match 2', '11:30 AM', 'Table 1A', '12345', 'Team Alpha'],
+                ['Example Tournament', 'Official Match 2', '11:30 AM', 'Table 1B', '67890', 'Team Beta'],
+                ['Example Tournament', 'Official Match 3', '2:15 PM', 'Table 1A', '12345', 'Team Alpha'],
+                ['Example Tournament', 'Official Match 3', '2:15 PM', 'Table 1B', '67890', 'Team Beta'],
+            ];
+            const csv = rows.map(r => r.join(',')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schedule_template.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    }
+
     // Select file when clicking Select File button
     selectScheduleFileBtn.addEventListener('click', () => {
         uploadScheduleInput.click();

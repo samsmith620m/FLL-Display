@@ -202,3 +202,9 @@ body {
 .radio-option-content .radio-label {
     cursor: pointer;
 }
+
+.timer-mode-options {
+    display: flex;
+    gap: var(--flld-spacing-md);
+    flex-wrap: wrap;
+}

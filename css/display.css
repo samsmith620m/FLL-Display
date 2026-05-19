@@ -363,8 +363,8 @@ html.display {
     border-radius: var(--flld-border-radius-xl);
 
     /* Viewport Height Update */
-    padding: 5vh 8vh 3vh;
-    gap: 1vh;
+    padding: 4vh 8vh 4vh;
+    gap: 2vh;
 
     .match-count {
         font-size: 4vh;

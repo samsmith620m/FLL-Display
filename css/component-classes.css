@@ -179,10 +179,11 @@ a.button {
     &.secondary {
         background-color: var(--flld-color-white);
         color: var(--flld-color-gray-10);
-        border: 2px solid var(--flld-color-gray-10);
+        outline: 2px solid var(--flld-color-gray-10);
+        outline-offset: -2px;
+        border: none;
 
         &:hover:not(:disabled) {
-            border-color: var(--flld-color-gray-10);
             background-color: var(--flld-color-gray-95);
         }
     }
@@ -199,9 +200,11 @@ a.button {
     }
 
     &.destructive {
-        border: 2px solid var(--flld-color-messaging-critical-shade);
+        outline: 2px solid var(--flld-color-messaging-critical-shade);
+        outline-offset: -2px;
         color: var(--flld-color-messaging-critical-shade);
         background-color: var(--flld-color-white);
+        border: none;
 
         &:hover:not(:disabled) {
             background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%)

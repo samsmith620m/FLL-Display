@@ -26,6 +26,8 @@ const checklistExpandCollapse = document.getElementById('checklistExpandCollapse
 const checklistSoundOption = document.getElementById('checklistSoundOption');
 const displayTypeText = document.getElementById('displayTypeText');
 const displayTypeMatchTimer = document.getElementById('displayTypeMatchTimer');
+const timerModeTeams = document.getElementById('timerModeTeams');
+const timerModeSimple = document.getElementById('timerModeSimple');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
 const nextMatchBtn = document.getElementById('nextMatchBtn');
@@ -87,6 +89,7 @@ const defaultState = {
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
     tableNames: ['Table 1A', 'Table 1B'], // Array of table names, supports 1-4 tables
+    timerMode: 'teams', // 'teams' | 'simple'
     // Timer settings
     timerState: 'stopped', // stopped, running, paused
     timerStartTime: null,
@@ -215,7 +218,8 @@ function resetConfiguration() {
         
         // Set display type toggle
         setDisplayType(timerState.displayType);
-        
+        setTimerMode(timerState.timerMode || 'teams');
+
         // Update UI based on display type
         updateMatchControlButtons();
         
@@ -282,7 +286,8 @@ function initializeUI() {
     displayTextInput.value = timerState.customText || '';
     // Set display type
     setDisplayType(timerState.displayType);
-    
+    setTimerMode(timerState.timerMode || 'teams');
+
     // Update UI based on display type
     updateMatchControlButtons();
     
@@ -613,6 +618,23 @@ function setDisplayType(displayType) {
     }
 }
 
+function setTimerMode(mode) {
+    if (timerModeTeams) timerModeTeams.checked = (mode === 'teams');
+    if (timerModeSimple) timerModeSimple.checked = (mode === 'simple');
+    applyTimerModeUI(mode);
+}
+
+function applyTimerModeUI(mode) {
+    const isSimple = mode === 'simple';
+    if (prevMatchBtn) prevMatchBtn.style.display = isSimple ? 'none' : '';
+    if (nextMatchBtn) nextMatchBtn.style.display = isSimple ? 'none' : '';
+    // Increase padding on Start button in simple mode
+    if (currentMatchBtn) {
+        currentMatchBtn.style.paddingLeft = isSimple ? '2rem' : '';
+        currentMatchBtn.style.paddingRight = isSimple ? '2rem' : '';
+    }
+}
+
 // Open display page in new window/tab or close existing display
 function openDisplay() {
     if (displayWindow && !displayWindow.closed) {
@@ -666,31 +688,34 @@ function updateOpenDisplayButton() {
 function updateMatchControlButtons() {
     const hasMatches = timerState.matches.length > 0;
     const isMatchTimer = timerState.displayType === 'match-timer';
+    const isSimple = timerState.timerMode === 'simple';
     const currentMatch = timerState.currentMatchNumber;
     const isRunning = timerState.timerState === 'running';
     const isFinished = timerState.timerState === 'finished';
-    
+
     // Update match numbers in subtext
-    if (hasMatches) {
+    if (isSimple) {
+        currentMatchSub.textContent = formatTimer(timerState.timerCurrentTime);
+    } else if (hasMatches) {
         const prevMatch = currentMatch - 1;
         const nextMatch = currentMatch + 1;
-        
+
         prevMatchSub.textContent = prevMatch >= 1 ? `Match ${prevMatch}` : '--';
-    currentMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
+        currentMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
         nextMatchSub.textContent = nextMatch <= timerState.matches.length ? `Match ${nextMatch}` : '--';
     } else {
         prevMatchSub.textContent = 'Match --';
-    currentMatchSub.textContent = 'Match --';
+        currentMatchSub.textContent = 'Match --';
         nextMatchSub.textContent = 'Match --';
     }
-    
+
     // Enable/disable match navigation based on available matches and timer state
     // Disable navigation while match is running
     prevMatchBtn.disabled = !hasMatches || currentMatch <= 1 || isRunning;
     nextMatchBtn.disabled = !hasMatches || currentMatch >= timerState.matches.length || isRunning;
-    
+
     // Start/Abort button logic
-    if (!isMatchTimer || !hasMatches) {
+    if (!isMatchTimer || (!hasMatches && !isSimple)) {
         currentMatchBtn.disabled = true;
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
@@ -719,6 +744,8 @@ function updateMatchControlButtons() {
     if (displayTypeMatchTimer) {
         displayTypeMatchTimer.disabled = isRunning;
     }
+    if (timerModeTeams) timerModeTeams.disabled = isRunning;
+    if (timerModeSimple) timerModeSimple.disabled = isRunning;
     if (openDisplayBtn) {
         openDisplayBtn.disabled = isRunning;
     }
@@ -2047,8 +2074,8 @@ const displayTypeRadios = document.querySelectorAll('input[name="displayType"]')
 displayTypeRadios.forEach(radio => {
     radio.addEventListener('change', () => {
         const currentDisplayType = getSelectedDisplayType();
-        
-        updateState({ 
+
+        updateState({
             displayType: currentDisplayType,
             // Reset timer when switching to timer display
             ...(currentDisplayType === 'match-timer' && {
@@ -2056,6 +2083,16 @@ displayTypeRadios.forEach(radio => {
                 timerState: 'stopped'
             })
         });
+        updateMatchControlButtons();
+    });
+});
+
+// Handle timer mode radio buttons
+document.querySelectorAll('input[name="timerMode"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+        const mode = document.querySelector('input[name="timerMode"]:checked').value;
+        updateState({ timerMode: mode });
+        applyTimerModeUI(mode);
         updateMatchControlButtons();
     });
 });

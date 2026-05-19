@@ -257,7 +257,7 @@ function ensureTeamCards() {
     if (!timerDisplay) return;
     const tableNames = currentState.tableNames || ['1A', '1B'];
     const tableCount = tableNames.length;
-    
+
     // Remove existing team-card elements
     const existing = timerDisplay.querySelectorAll('.team-card');
     existing.forEach(el => el.remove());
@@ -265,6 +265,21 @@ function ensureTeamCards() {
     // Insert before timer-container
     const timerContainer = timerDisplay.querySelector('.timer-container');
     if (!timerContainer) return;
+
+    // Simple mode: no cards, timer spans full width
+    if (currentState.timerMode === 'simple') {
+        timerDisplay.style.gridTemplate = '"timer" 1fr "brand-bar" auto';
+        timerDisplay.style.gridTemplateColumns = '1fr';
+        timerDisplay.style.paddingTop = '4vh';
+        const timerContainer = timerDisplay.querySelector('.timer-container');
+        if (timerContainer) 
+            timerContainer.style.gap = '12vh'
+            timerContainer.style.paddingTop = '7vh';
+            timerContainer.style.paddingBottom = '0vh';
+        const timerTime = timerDisplay.querySelector('.timer-time');
+        if (timerTime) timerTime.style.fontSize = '79vh';
+        return;
+    }
 
     const teamColors = ['team-color-a', 'team-color-b', 'team-color-c', 'team-color-d'];
     tableNames.forEach((tableName, i) => {
@@ -289,25 +304,36 @@ function ensureTeamCards() {
     const brandAreas = tableNames.map(() => 'brand-bar').join(' ');
     timerDisplay.style.gridTemplate = `"${teamAreas}" auto "${timerAreas}" 1fr "${brandAreas}" auto`;
     timerDisplay.style.gridTemplateColumns = `repeat(${tableNames.length}, auto)`;
+    timerDisplay.style.paddingTop = '0';
+    if (timerContainer) 
+        timerContainer.style.gap = '2vh';
+        timerContainer.style.paddingTop = '4vh';
+        timerContainer.style.paddingBottom = '4vh';
+    const timerTime = timerDisplay.querySelector('.timer-time');
+    if (timerTime) timerTime.style.fontSize = '59vh';
 }
 
 function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
     const divider = document.querySelector('.match-divider');
-    
+    const isSimple = currentState.timerMode === 'simple';
+
     if (displayEventName) {
         displayEventName.textContent = currentState.eventName || '';
-        // Show/hide divider based on whether event name exists
         if (divider) {
-            divider.style.display = currentState.eventName ? 'block' : 'none';
+            divider.style.display = (!isSimple && currentState.eventName) ? 'block' : 'none';
         }
     }
+
+    const matchNumberSpan = displayMatchNumber ? displayMatchNumber.parentElement : null;
+    if (matchNumberSpan) matchNumberSpan.style.display = isSimple ? 'none' : '';
     if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
     if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
 
-    // Only recreate team cards if table names changed
-    const tableNamesString = JSON.stringify(currentState.tableNames || ['1A', '1B']);
+    // Only recreate team cards if table names or timer mode changed
+    const tableNamesString = JSON.stringify(currentState.tableNames || ['1A', '1B'])
+        + '|' + (currentState.timerMode || 'teams');
     if (previousTableNames !== tableNamesString) {
         ensureTeamCards();
         previousTableNames = tableNamesString;

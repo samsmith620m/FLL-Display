@@ -191,75 +191,71 @@ function saveState() {
     }
 }
 
-// Reset all configuration to defaults
-function resetConfiguration() {
-    const confirmReset = confirm('Are you sure you want to reset all configuration? This will clear all your event settings and cannot be undone.');
-    
-    if (confirmReset) {
-        // Stop any running timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        timerState = { ...defaultState };
-        saveState();
-        updateState(timerState);
-        
-        // Update UI to reflect reset
-        eventNameInput.value = '';
-        displayTextInput.value = '';
-        updateCustomTextBtn.disabled = true;
-        
-        // Reset sound option to default
-        soundOptionInputs.forEach(input => {
-            input.checked = input.value === 'ftc';
-        });
-        
-        // Set display type toggle
-        setDisplayType(timerState.displayType);
-        setTimerMode(timerState.timerMode || 'scheduled');
-
-        // Update UI based on display type
-        updateMatchControlButtons();
-        
-        // Reset teams display
-        isTeamsCollapsed = false;
-        renderTeams();
-        
-        // Reset match schedule display
-        isScheduleCollapsed = false;
-        renderMatchSchedule();
-        
-        // Ensure action buttons are visible after reset
-        if (addTeamBtn) addTeamBtn.style.display = 'inline-flex';
-        if (deleteAllTeamsBtn) deleteAllTeamsBtn.style.display = 'none';
-        if (uploadScheduleBtn) uploadScheduleBtn.style.display = 'inline-flex';
-        if (addMatchBtn) addMatchBtn.style.display = 'inline-flex';
-        if (deleteAllMatchesBtn) deleteAllMatchesBtn.style.display = 'none';
-        if (teamsTable) teamsTable.style.display = 'none'; // Will be shown by renderTeams if needed
-        if (toggleTeamsBtn) {
-            toggleTeamsBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
-            toggleTeamsBtn.title = 'Collapse';
-        }
-        if (toggleScheduleBtn) {
-            toggleScheduleBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
-            toggleScheduleBtn.title = 'Collapse';
-        }
-        
-        // Reset sponsor logos display
-        renderSponsorPreview();
-        
-        // Reset checklist and ensure it's expanded
-        syncChecklistUI();
-        checklistContainer.style.display = 'flex';
-        checklistDescription.style.display = 'block';
-        toggleChecklistBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
-        toggleChecklistBtn.title = 'Collapse';
-        
-        console.log('Configuration reset to defaults');
-        alert('Configuration has been reset.');
+// Reset configuration handler for modal
+function performResetConfiguration() {
+    // Stop any running timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
     }
+
+    timerState = { ...defaultState };
+    saveState();
+    updateState(timerState);
+
+    // Update UI to reflect reset
+    eventNameInput.value = '';
+    displayTextInput.value = '';
+    updateCustomTextBtn.disabled = true;
+
+    // Reset sound option to default
+    soundOptionInputs.forEach(input => {
+        input.checked = input.value === 'ftc';
+    });
+
+    // Set display type toggle
+    setDisplayType(timerState.displayType);
+    setTimerMode(timerState.timerMode || 'scheduled');
+
+    // Update UI based on display type
+    updateMatchControlButtons();
+
+    // Reset teams display
+    isTeamsCollapsed = false;
+    renderTeams();
+
+    // Reset match schedule display
+    isScheduleCollapsed = false;
+    renderMatchSchedule();
+
+    // Ensure action buttons are visible after reset
+    if (addTeamBtn) addTeamBtn.style.display = 'inline-flex';
+    if (deleteAllTeamsBtn) deleteAllTeamsBtn.style.display = 'none';
+    if (uploadScheduleBtn) uploadScheduleBtn.style.display = 'inline-flex';
+    if (addMatchBtn) addMatchBtn.style.display = 'inline-flex';
+    if (deleteAllMatchesBtn) deleteAllMatchesBtn.style.display = 'none';
+    if (teamsTable) teamsTable.style.display = 'none'; // Will be shown by renderTeams if needed
+    if (toggleTeamsBtn) {
+        toggleTeamsBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
+        toggleTeamsBtn.title = 'Collapse';
+    }
+    if (toggleScheduleBtn) {
+        toggleScheduleBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
+        toggleScheduleBtn.title = 'Collapse';
+    }
+
+    // Reset sponsor logos display
+    renderSponsorPreview();
+
+    // Reset checklist and ensure it's expanded
+    syncChecklistUI();
+    checklistContainer.style.display = 'flex';
+    checklistDescription.style.display = 'block';
+    toggleChecklistBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
+    toggleChecklistBtn.title = 'Collapse';
+
+    console.log('Configuration reset to defaults');
+    alert('Configuration has been reset.');
 }
 
 // Update state and notify display
@@ -360,14 +356,16 @@ function removeTable() {
         alert('At least 1 table is required');
         return;
     }
-    
-    if (!confirm(`Remove table "${timerState.tableNames[timerState.tableNames.length - 1]}"? Team data for this table will be preserved but hidden.`)) {
-        return;
-    }
-    
+
+    const tableName = timerState.tableNames[timerState.tableNames.length - 1];
+    removeTableText.textContent = `Remove table "${tableName}"? Team data for this table will be preserved but hidden.`;
+
+    pendingTableRemovalCallback = performRemoveTable;
+    showConfirmationModal(removeTableModal);
+}
+
+function performRemoveTable() {
     const updatedTableNames = timerState.tableNames.slice(0, -1);
-    
-    // Keep team data but it will be hidden
     updateState({ tableNames: updatedTableNames });
     renderMatchSchedule();
 }
@@ -391,21 +389,25 @@ function addTeam() {
 }
 
 function deleteTeam(index) {
-    if (!confirm('Are you sure you want to delete this team?')) {
-        return;
-    }
-    
-    const updatedTeams = timerState.teams.filter((_, i) => i !== index);
-    updateState({ teams: updatedTeams });
+    const team = timerState.teams[index];
+    const teamDisplay = team.teamName ? `${team.teamNumber} - ${team.teamName}` : team.teamNumber;
+    deleteSingleTeamText.textContent = `Are you sure you want to delete team ${teamDisplay}?`;
+
+    pendingSingleTeamDeletionCallback = () => {
+        const updatedTeams = timerState.teams.filter((_, i) => i !== index);
+        updateState({ teams: updatedTeams });
+        renderTeams();
+    };
+    showConfirmationModal(deleteSingleTeamModal);
+}
+
+function performDeleteAllTeams() {
+    updateState({ teams: [] });
     renderTeams();
 }
 
 function deleteAllTeams() {
-    if (confirm('Are you sure you want to delete all teams? This action cannot be undone.')) {
-        updateState({ teams: [] });
-        renderTeams();
-        console.log('All teams deleted');
-    }
+    showConfirmationModal(deleteAllTeamsModal);
 }
 
 function updateTeamNumber(index, value) {
@@ -1112,15 +1114,16 @@ function updateMatchTeam(matchNumber, teamIndex, teamValue) {
     console.log('Team updated:', { matchNumber, teamIndex, teamValue });
 }
 
+function performDeleteAllMatches() {
+    updateState({
+        matches: [],
+        currentMatchNumber: 1
+    });
+    renderMatchSchedule();
+}
+
 function deleteAllMatches() {
-    if (confirm('Are you sure you want to delete all matches? This action cannot be undone.')) {
-        updateState({ 
-            matches: [],
-            currentMatchNumber: 1
-        });
-        renderMatchSchedule();
-        console.log('All matches deleted');
-    }
+    showConfirmationModal(deleteAllMatchesModal);
 }
 
 // Toggle schedule collapse state
@@ -1317,9 +1320,11 @@ function renderMatchSchedule() {
             deleteBtn.title = 'Delete Match';
             deleteBtn.innerHTML = '<span translate="no">delete</span>';
             deleteBtn.addEventListener('click', () => {
-                if (confirm(`Are you sure you want to delete Match ${match.matchNumber}?`)) {
+                deleteSingleMatchText.textContent = `Are you sure you want to delete Match ${match.matchNumber}?`;
+                pendingSingleMatchDeletionCallback = () => {
                     deleteMatch(match.matchNumber);
-                }
+                };
+                showConfirmationModal(deleteSingleMatchModal);
             });
             actionsCell.appendChild(deleteBtn);
             row.appendChild(actionsCell);
@@ -1813,7 +1818,6 @@ openDisplayBtn.addEventListener('click', openDisplay);
 toggleTeamsBtn.addEventListener('click', toggleTeamsCollapse);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 toggleChecklistBtn.addEventListener('click', toggleChecklistCollapse);
-resetConfigBtn.addEventListener('click', resetConfiguration);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
@@ -1969,12 +1973,10 @@ sponsorLogosInput.addEventListener('change', async (e) => {
     sponsorLogosInput.value = '';
 });
 
-clearSponsorsBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to remove all sponsor logos?')) {
-        updateState({ sponsorLogos: [] });
-        renderSponsorPreview();
-    }
-});
+function performClearSponsors() {
+    updateState({ sponsorLogos: [] });
+    renderSponsorPreview();
+}
 
 // Drag and drop handlers
 let draggedIndex = null;
@@ -2135,6 +2137,17 @@ if (aboutBtn) {
     });
 }
 
+// Helper function to show/close confirmation modals
+function showConfirmationModal(modalElement) {
+    modalElement.style.display = 'flex';
+    document.body.classList.add('modal-open');
+}
+
+function closeConfirmationModal(modalElement) {
+    modalElement.style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
 // Translate Help Modal
 const translateHelpBtn = document.getElementById('translateHelpBtn');
 const translateHelpModal = document.getElementById('translateHelpModal');
@@ -2167,3 +2180,180 @@ if (translateHelpBtn && translateHelpModal) {
         }
     });
 }
+
+// Reset Configuration Modal
+const resetConfigModal = document.getElementById('resetConfigModal');
+const resetConfigCancelBtn = document.getElementById('resetConfigCancelBtn');
+const resetConfigConfirmBtn = document.getElementById('resetConfigConfirmBtn');
+
+resetConfigBtn.addEventListener('click', () => {
+    showConfirmationModal(resetConfigModal);
+});
+
+resetConfigCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(resetConfigModal);
+});
+
+resetConfigConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(resetConfigModal);
+    performResetConfiguration();
+});
+
+resetConfigModal.addEventListener('click', (e) => {
+    if (e.target === resetConfigModal) {
+        closeConfirmationModal(resetConfigModal);
+    }
+});
+
+// Remove Table Modal
+const removeTableModal = document.getElementById('removeTableModal');
+const removeTableText = document.getElementById('removeTableText');
+const removeTableCancelBtn = document.getElementById('removeTableCancelBtn');
+const removeTableConfirmBtn = document.getElementById('removeTableConfirmBtn');
+let pendingTableRemovalCallback = null;
+
+removeTableCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(removeTableModal);
+    pendingTableRemovalCallback = null;
+});
+
+removeTableConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(removeTableModal);
+    if (pendingTableRemovalCallback) {
+        pendingTableRemovalCallback();
+        pendingTableRemovalCallback = null;
+    }
+});
+
+removeTableModal.addEventListener('click', (e) => {
+    if (e.target === removeTableModal) {
+        closeConfirmationModal(removeTableModal);
+        pendingTableRemovalCallback = null;
+    }
+});
+
+// Delete Single Team Modal
+const deleteSingleTeamModal = document.getElementById('deleteSingleTeamModal');
+const deleteSingleTeamText = document.getElementById('deleteSingleTeamText');
+const deleteSingleTeamCancelBtn = document.getElementById('deleteSingleTeamCancelBtn');
+const deleteSingleTeamConfirmBtn = document.getElementById('deleteSingleTeamConfirmBtn');
+let pendingSingleTeamDeletionCallback = null;
+
+deleteSingleTeamCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteSingleTeamModal);
+    pendingSingleTeamDeletionCallback = null;
+});
+
+deleteSingleTeamConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteSingleTeamModal);
+    if (pendingSingleTeamDeletionCallback) {
+        pendingSingleTeamDeletionCallback();
+        pendingSingleTeamDeletionCallback = null;
+    }
+});
+
+deleteSingleTeamModal.addEventListener('click', (e) => {
+    if (e.target === deleteSingleTeamModal) {
+        closeConfirmationModal(deleteSingleTeamModal);
+        pendingSingleTeamDeletionCallback = null;
+    }
+});
+
+// Delete All Teams Modal
+const deleteAllTeamsModal = document.getElementById('deleteAllTeamsModal');
+const deleteAllTeamsCancelBtn = document.getElementById('deleteAllTeamsCancelBtn');
+const deleteAllTeamsConfirmBtn = document.getElementById('deleteAllTeamsConfirmBtn');
+
+deleteAllTeamsBtn.addEventListener('click', () => {
+    showConfirmationModal(deleteAllTeamsModal);
+});
+
+deleteAllTeamsCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteAllTeamsModal);
+});
+
+deleteAllTeamsConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteAllTeamsModal);
+    performDeleteAllTeams();
+});
+
+deleteAllTeamsModal.addEventListener('click', (e) => {
+    if (e.target === deleteAllTeamsModal) {
+        closeConfirmationModal(deleteAllTeamsModal);
+    }
+});
+
+// Delete All Matches Modal
+const deleteAllMatchesModal = document.getElementById('deleteAllMatchesModal');
+const deleteAllMatchesCancelBtn = document.getElementById('deleteAllMatchesCancelBtn');
+const deleteAllMatchesConfirmBtn = document.getElementById('deleteAllMatchesConfirmBtn');
+
+deleteAllMatchesBtn.addEventListener('click', () => {
+    showConfirmationModal(deleteAllMatchesModal);
+});
+
+deleteAllMatchesCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteAllMatchesModal);
+});
+
+deleteAllMatchesConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteAllMatchesModal);
+    performDeleteAllMatches();
+});
+
+deleteAllMatchesModal.addEventListener('click', (e) => {
+    if (e.target === deleteAllMatchesModal) {
+        closeConfirmationModal(deleteAllMatchesModal);
+    }
+});
+
+// Delete Single Match Modal
+const deleteSingleMatchModal = document.getElementById('deleteSingleMatchModal');
+const deleteSingleMatchText = document.getElementById('deleteSingleMatchText');
+const deleteSingleMatchCancelBtn = document.getElementById('deleteSingleMatchCancelBtn');
+const deleteSingleMatchConfirmBtn = document.getElementById('deleteSingleMatchConfirmBtn');
+let pendingSingleMatchDeletionCallback = null;
+
+deleteSingleMatchCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteSingleMatchModal);
+    pendingSingleMatchDeletionCallback = null;
+});
+
+deleteSingleMatchConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(deleteSingleMatchModal);
+    if (pendingSingleMatchDeletionCallback) {
+        pendingSingleMatchDeletionCallback();
+        pendingSingleMatchDeletionCallback = null;
+    }
+});
+
+deleteSingleMatchModal.addEventListener('click', (e) => {
+    if (e.target === deleteSingleMatchModal) {
+        closeConfirmationModal(deleteSingleMatchModal);
+        pendingSingleMatchDeletionCallback = null;
+    }
+});
+
+// Clear Sponsor Logos Modal
+const clearSponsorsModal = document.getElementById('clearSponsorsModal');
+const clearSponsorsCancelBtn = document.getElementById('clearSponsorsCancelBtn');
+const clearSponsorsConfirmBtn = document.getElementById('clearSponsorsConfirmBtn');
+
+clearSponsorsBtn.addEventListener('click', () => {
+    showConfirmationModal(clearSponsorsModal);
+});
+
+clearSponsorsCancelBtn.addEventListener('click', () => {
+    closeConfirmationModal(clearSponsorsModal);
+});
+
+clearSponsorsConfirmBtn.addEventListener('click', () => {
+    closeConfirmationModal(clearSponsorsModal);
+    performClearSponsors();
+});
+
+clearSponsorsModal.addEventListener('click', (e) => {
+    if (e.target === clearSponsorsModal) {
+        closeConfirmationModal(clearSponsorsModal);
+    }
+});

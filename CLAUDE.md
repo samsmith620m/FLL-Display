@@ -26,3 +26,4 @@ If your changes affect any system described in `ARCHITECTURE.md`, update the rel
 - **`tableNames.length` drives team card count** (2 or 4 cards). It also determines the number of columns in the match schedule table and the length of each match's `teams` array.
 - **CSS for the display page is in `css/display.css`**; control page layout is in `css/control.css`. Don't mix them.
 - **`TIMER_DURATION` is defined in both `script.js` and `display.js`** and must match.
+- **Always validate JS syntax after editing code.** When replacing code blocks in script.js, ensure braces are properly balanced. Use `node -c script.js` to check for syntax errors before considering edits complete.

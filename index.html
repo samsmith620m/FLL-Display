@@ -408,25 +408,25 @@
                 </div>
                 <div class="body">
                     <p>This application can be translated using your browser's built-in translation feature:</p>
-                    
+
                     <h3>Google Chrome / Microsoft Edge</h3>
                     <ul>
                         <li>Right-click anywhere on the page and select <strong>"Translate to [Your Language]"</strong></li>
                         <li>Or click the translate icon <span class="material-symbols-rounded" style="margin-left: 8px; font-size: 1em; vertical-align: middle;" translate="no">translate</span> in the address bar</li>
                     </ul>
-                    
+
                     <h3>Safari (Mac/iOS)</h3>
                     <ul>
                         <li>Click the <strong>aA</strong> icon in the address bar</li>
                         <li>Select <strong>"Translate to [Your Language]"</strong></li>
                     </ul>
-                    
+
                     <h3>Firefox</h3>
                     <ul>
                         <li>Right-click anywhere on the page and select <strong>"Translate Page"</strong></li>
                         <li>Or install the <strong>Firefox Translations</strong> add-on for automatic translation</li>
                     </ul>
-                    
+
                     <div class="alert neutral">
                         <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
                         Team names in the match schedule and display will not be translated to preserve their accuracy.
@@ -434,7 +434,121 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- Confirmation Modals -->
+
+        <!-- Reset Configuration Modal -->
+        <div id="resetConfigModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Reset Configuration?</h2>
+                </div>
+                <div class="body">
+                    <p>Are you sure you want to reset all configuration? This will clear all your event settings and cannot be undone.</p>
+                </div>
+                <div class="footer">
+                    <button id="resetConfigCancelBtn" class="secondary">Cancel</button>
+                    <button id="resetConfigConfirmBtn" class="destructive">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remove Table Modal -->
+        <div id="removeTableModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Remove Table?</h2>
+                </div>
+                <div class="body">
+                    <p id="removeTableText">Remove table? Team data for this table will be preserved but hidden.</p>
+                </div>
+                <div class="footer">
+                    <button id="removeTableCancelBtn" class="secondary">Cancel</button>
+                    <button id="removeTableConfirmBtn" class="destructive">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Single Team Modal -->
+        <div id="deleteSingleTeamModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Delete Team?</h2>
+                </div>
+                <div class="body">
+                    <p id="deleteSingleTeamText">Are you sure you want to delete this team?</p>
+                </div>
+                <div class="footer">
+                    <button id="deleteSingleTeamCancelBtn" class="secondary">Cancel</button>
+                    <button id="deleteSingleTeamConfirmBtn" class="destructive">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete All Teams Modal -->
+        <div id="deleteAllTeamsModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Delete All Teams?</h2>
+                </div>
+                <div class="body">
+                    <p>Are you sure you want to delete all teams? This action cannot be undone.</p>
+                </div>
+                <div class="footer">
+                    <button id="deleteAllTeamsCancelBtn" class="secondary">Cancel</button>
+                    <button id="deleteAllTeamsConfirmBtn" class="destructive">Delete All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete All Matches Modal -->
+        <div id="deleteAllMatchesModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Delete All Matches?</h2>
+                </div>
+                <div class="body">
+                    <p>Are you sure you want to delete all matches? This action cannot be undone.</p>
+                </div>
+                <div class="footer">
+                    <button id="deleteAllMatchesCancelBtn" class="secondary">Cancel</button>
+                    <button id="deleteAllMatchesConfirmBtn" class="destructive">Delete All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Single Match Modal -->
+        <div id="deleteSingleMatchModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Delete Match?</h2>
+                </div>
+                <div class="body">
+                    <p id="deleteSingleMatchText">Are you sure you want to delete this match?</p>
+                </div>
+                <div class="footer">
+                    <button id="deleteSingleMatchCancelBtn" class="secondary">Cancel</button>
+                    <button id="deleteSingleMatchConfirmBtn" class="destructive">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clear Sponsor Logos Modal -->
+        <div id="clearSponsorsModal" class="overlay" style="display: none;">
+            <div class="modal small">
+                <div class="header">
+                    <h2>Remove All Logos?</h2>
+                </div>
+                <div class="body">
+                    <p>Are you sure you want to remove all sponsor logos?</p>
+                </div>
+                <div class="footer">
+                    <button id="clearSponsorsCancelBtn" class="secondary">Cancel</button>
+                    <button id="clearSponsorsConfirmBtn" class="destructive">Remove All</button>
+                </div>
+            </div>
+        </div>
+
         <script src="script.js"></script>
     </body>
 </html>

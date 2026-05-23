@@ -1,4 +1,4 @@
-// FLL Timer Display Page
+// FLL Timer Display Page — Before editing, read ARCHITECTURE.md for interdependencies
 console.log('FLL Timer Display loaded');
 
 // DOM elements
@@ -266,8 +266,8 @@ function ensureTeamCards() {
     const timerContainer = timerDisplay.querySelector('.timer-container');
     if (!timerContainer) return;
 
-    // Simple mode: no cards, timer spans full width
-    if (currentState.timerMode === 'simple') {
+    // Timer only mode: no cards, timer spans full width
+    if (currentState.timerMode === 'timeronly') {
         timerDisplay.style.gridTemplate = '"timer" 1fr "brand-bar" auto';
         timerDisplay.style.gridTemplateColumns = '1fr';
         timerDisplay.style.paddingTop = '4vh';
@@ -317,7 +317,7 @@ function updateMatchDisplay() {
     const currentMatchNumber = currentState.currentMatchNumber || 1;
     const matches = currentState.matches || [];
     const divider = document.querySelector('.match-divider');
-    const isSimple = currentState.timerMode === 'simple';
+    const isSimple = currentState.timerMode === 'timeronly';
 
     if (displayEventName) {
         displayEventName.textContent = currentState.eventName || '';
@@ -333,7 +333,7 @@ function updateMatchDisplay() {
 
     // Only recreate team cards if table names or timer mode changed
     const tableNamesString = JSON.stringify(currentState.tableNames || ['1A', '1B'])
-        + '|' + (currentState.timerMode || 'teams');
+        + '|' + (currentState.timerMode || 'scheduled');
     if (previousTableNames !== tableNamesString) {
         ensureTeamCards();
         previousTableNames = tableNamesString;
@@ -615,6 +615,41 @@ if (fullscreenBtn) {
 
     // Initial button state
     updateFullscreenButton();
+}
+
+// Fullscreen Prompt Modal - triggers on page load to enable autoplay audio
+const fullscreenPromptModal = document.getElementById('fullscreenPromptModal');
+const fullscreenPromptYes = document.getElementById('fullscreenPromptYes');
+const fullscreenPromptNo = document.getElementById('fullscreenPromptNo');
+
+if (fullscreenPromptModal && fullscreenPromptYes && fullscreenPromptNo) {
+    function closeFullscreenPromptModal() {
+        fullscreenPromptModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    // Go Fullscreen button
+    fullscreenPromptYes.addEventListener('click', () => {
+        closeFullscreenPromptModal();
+        // Request fullscreen
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log('Fullscreen request failed:', err);
+            });
+        }
+    });
+
+    // Not yet button
+    fullscreenPromptNo.addEventListener('click', () => {
+        closeFullscreenPromptModal();
+    });
+
+    // Close modal when clicking outside (on the overlay)
+    fullscreenPromptModal.addEventListener('click', (e) => {
+        if (e.target === fullscreenPromptModal) {
+            closeFullscreenPromptModal();
+        }
+    });
 }
 
 // Show connection status for debugging

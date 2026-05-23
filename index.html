@@ -1,3 +1,4 @@
+<!-- Before editing: read ARCHITECTURE.md for interdependencies. This app has two communicating pages and shared state. -->
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -75,7 +76,7 @@
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistSoundOption" tabindex="-1">
-                        <span>Try turning match sounds on</span>
+                        <span>Disable match sounds if preferred</span>
                         <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
                     </label>
                     <label class="checkbox-label">
@@ -113,12 +114,12 @@
                             </label>
                             <div class="timer-mode-options">
                                 <label class="radio-label">
-                                    <input type="radio" name="timerMode" id="timerModeTeams" value="teams" checked>
-                                    With Teams
+                                    <input type="radio" name="timerMode" id="timerModeScheduled" value="scheduled" checked>
+                                    Scheduled Matches
                                 </label>
                                 <label class="radio-label">
-                                    <input type="radio" name="timerMode" id="timerModeSimple" value="simple">
-                                    Without Teams
+                                    <input type="radio" name="timerMode" id="timerModeTimerOnly" value="timeronly">
+                                    Timer Only
                                 </label>
                             </div>
                             <div class="button-group">
@@ -219,15 +220,14 @@
                 <div class="form-control" id="soundOptions">
                     <div style="display: flex; gap: var(--flld-spacing-xs); align-items: center;">
                         <label for="soundOptions">Sound Profile</label>
-                        <div class="badge rainbow">Try it out!</div>
                     </div>
-                    <p class="description">By default, the timer plays no sound. However, you may enable sounds for match start, last 20 seconds, and match end, which matches the other <i>FIRST</i> programs!</p>
+                    <p class="description">The timer plays sounds for match start, last 20 seconds, and match end, matching other <i>FIRST</i> programs. You can disable this if you prefer.</p>
                     <label class="radio-label">
-                        <input type="radio" name="soundOption" value="none" checked>
+                        <input type="radio" name="soundOption" value="none">
                         No sound
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="soundOption" value="ftc">
+                        <input type="radio" name="soundOption" value="ftc" checked>
                         <span><i>FIRST</i> Tech Challenge / <i>FIRST</i> Robotics Competition</span>
                     </label>
                 </div>

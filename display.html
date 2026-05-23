@@ -1,3 +1,4 @@
+<!-- Before editing: read ARCHITECTURE.md for interdependencies. This app has two communicating pages and shared state. -->
 <!DOCTYPE html>
 <html class="display" lang="en">
 <head>
@@ -94,7 +95,23 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Fullscreen Prompt Modal -->
+    <div id="fullscreenPromptModal" class="overlay" style="display: flex;">
+        <div class="modal narrow">
+            <div class="header">
+                <h2>Go Fullscreen!</h2>
+            </div>
+            <div class="body">
+                <p>We recommend fullscreen for the best display experience.</p>
+            </div>
+            <div class="footer">
+                <button id="fullscreenPromptNo" class="secondary">Not Yet</button>
+                <button id="fullscreenPromptYes" class="primary"><span class="material-symbols-rounded" translate="no">fullscreen</span>Go Fullscreen!</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Fullscreen Button -->
     <button id="fullscreenBtn" class="primary" aria-label="Toggle fullscreen">
         <span class="material-symbols-rounded" translate="no">fullscreen</span>

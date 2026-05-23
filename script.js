@@ -1,4 +1,4 @@
-// FLL Timer Control Page
+// FLL Timer Control Page — Before editing, read ARCHITECTURE.md for interdependencies
 console.log('FLL Timer Control loaded');
 
 // DOM elements
@@ -26,8 +26,8 @@ const checklistExpandCollapse = document.getElementById('checklistExpandCollapse
 const checklistSoundOption = document.getElementById('checklistSoundOption');
 const displayTypeText = document.getElementById('displayTypeText');
 const displayTypeMatchTimer = document.getElementById('displayTypeMatchTimer');
-const timerModeTeams = document.getElementById('timerModeTeams');
-const timerModeSimple = document.getElementById('timerModeSimple');
+const timerModeScheduled = document.getElementById('timerModeScheduled');
+const timerModeTimerOnly = document.getElementById('timerModeTimerOnly');
 const currentMatchBtn = document.getElementById('currentMatchBtn');
 const prevMatchBtn = document.getElementById('prevMatchBtn');
 const nextMatchBtn = document.getElementById('nextMatchBtn');
@@ -80,7 +80,7 @@ const defaultState = {
     displayType: 'match-timer',
     eventName: '',
     customText: '',
-    soundOption: 'none', // 'none' or 'ftc'
+    soundOption: 'ftc', // 'none' or 'ftc'
     // Event configuration
     sponsorLogos: [], // Array of base64 encoded images
     // Teams
@@ -89,7 +89,7 @@ const defaultState = {
     matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
     currentMatchNumber: 1, // Currently displayed/active match
     tableNames: ['Table 1A', 'Table 1B'], // Array of table names, supports 1-4 tables
-    timerMode: 'teams', // 'teams' | 'simple'
+    timerMode: 'scheduled', // 'scheduled' | 'timeronly'
     // Timer settings
     timerState: 'stopped', // stopped, running, paused
     timerStartTime: null,
@@ -213,12 +213,12 @@ function resetConfiguration() {
         
         // Reset sound option to default
         soundOptionInputs.forEach(input => {
-            input.checked = input.value === 'none';
+            input.checked = input.value === 'ftc';
         });
         
         // Set display type toggle
         setDisplayType(timerState.displayType);
-        setTimerMode(timerState.timerMode || 'teams');
+        setTimerMode(timerState.timerMode || 'scheduled');
 
         // Update UI based on display type
         updateMatchControlButtons();
@@ -279,14 +279,14 @@ function initializeUI() {
     eventNameInput.value = timerState.eventName || '';
     
     // Restore sound option
-    const soundOption = timerState.soundOption || 'none';
+    const soundOption = timerState.soundOption || 'ftc';
     soundOptionInputs.forEach(input => {
         input.checked = input.value === soundOption;
     });
     displayTextInput.value = timerState.customText || '';
     // Set display type
     setDisplayType(timerState.displayType);
-    setTimerMode(timerState.timerMode || 'teams');
+    setTimerMode(timerState.timerMode || 'scheduled');
 
     // Update UI based on display type
     updateMatchControlButtons();
@@ -619,19 +619,19 @@ function setDisplayType(displayType) {
 }
 
 function setTimerMode(mode) {
-    if (timerModeTeams) timerModeTeams.checked = (mode === 'teams');
-    if (timerModeSimple) timerModeSimple.checked = (mode === 'simple');
+    if (timerModeScheduled) timerModeScheduled.checked = (mode === 'scheduled');
+    if (timerModeTimerOnly) timerModeTimerOnly.checked = (mode === 'timeronly');
     applyTimerModeUI(mode);
 }
 
 function applyTimerModeUI(mode) {
-    const isSimple = mode === 'simple';
-    if (prevMatchBtn) prevMatchBtn.style.display = isSimple ? 'none' : '';
-    if (nextMatchBtn) nextMatchBtn.style.display = isSimple ? 'none' : '';
-    // Increase padding on Start button in simple mode
+    const isTimerOnly = mode === 'timeronly';
+    if (prevMatchBtn) prevMatchBtn.style.display = isTimerOnly ? 'none' : '';
+    if (nextMatchBtn) nextMatchBtn.style.display = isTimerOnly ? 'none' : '';
+    // Increase padding on Start button in timer only mode
     if (currentMatchBtn) {
-        currentMatchBtn.style.paddingLeft = isSimple ? '2rem' : '';
-        currentMatchBtn.style.paddingRight = isSimple ? '2rem' : '';
+        currentMatchBtn.style.paddingLeft = isTimerOnly ? '2rem' : '';
+        currentMatchBtn.style.paddingRight = isTimerOnly ? '2rem' : '';
     }
 }
 
@@ -688,7 +688,7 @@ function updateOpenDisplayButton() {
 function updateMatchControlButtons() {
     const hasMatches = timerState.matches.length > 0;
     const isMatchTimer = timerState.displayType === 'match-timer';
-    const isSimple = timerState.timerMode === 'simple';
+    const isSimple = timerState.timerMode === 'timeronly';
     const currentMatch = timerState.currentMatchNumber;
     const isRunning = timerState.timerState === 'running';
     const isFinished = timerState.timerState === 'finished';
@@ -744,8 +744,8 @@ function updateMatchControlButtons() {
     if (displayTypeMatchTimer) {
         displayTypeMatchTimer.disabled = isRunning;
     }
-    if (timerModeTeams) timerModeTeams.disabled = isRunning;
-    if (timerModeSimple) timerModeSimple.disabled = isRunning;
+    if (timerModeScheduled) timerModeScheduled.disabled = isRunning;
+    if (timerModeTimerOnly) timerModeTimerOnly.disabled = isRunning;
     if (openDisplayBtn) {
         openDisplayBtn.disabled = isRunning;
     }
@@ -938,7 +938,7 @@ function toggleChecklistCollapse() {
 
 // Update sound option when radio changes
 function updateSoundOption() {
-    const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'none';
+    const selectedOption = document.querySelector('input[name="soundOption"]:checked')?.value || 'ftc';
     updateState({ soundOption: selectedOption });
     updateChecklistItem('soundOption', true);
     console.log('Sound option updated to:', selectedOption);

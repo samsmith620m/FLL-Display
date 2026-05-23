@@ -442,14 +442,20 @@ textarea {
 }
 
 .modal {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--flld-spacing-md);
-    max-width: 900px;
-    width: 90%;
+    max-width: 798px;
+    max-height: calc(100vh - 32px);
+    width: calc(100vw - 32px);
     background-color: var(--flld-color-white);
     padding: var(--flld-spacing-lg);
     border-radius: var(--flld-border-radius-xl);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+    &.small {
+        max-width: 512px;
+    }
 
     .header {
         display: grid;
@@ -465,6 +471,9 @@ textarea {
     .body {
         display: grid;
         gap: var(--flld-spacing-md);
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
 
         table {
             border-radius: 0;

@@ -95,7 +95,7 @@
     border-radius: 8px;
 
     &.neutral {
-        background-color: var(--flld-color-gray-75);
+        background-color: var(--flld-color-gray-95);
     }
 
     &.info {

@@ -175,6 +175,20 @@ body {
     width: min-content !important;
     min-width: min-content !important;
     line-height: 1.5;
+
+    &:disabled {
+        background-color: var(--flld-color-white);
+        color: var(--flld-color-gray-10);
+        outline: 2px solid var(--flld-color-gray-10);
+        outline-offset: -2px;
+    }
+}
+
+#currentMatchBtn:disabled {
+    background-color: var(--flld-color-white);
+    color: var(--flld-color-gray-10);
+    outline: 2px solid var(--flld-color-gray-10);
+    outline-offset: -2px;
 }
 
 .radio-option-container {
@@ -186,7 +200,7 @@ body {
     align-items: start;
 }
 
-.radio-option-container:has(input[type="radio"]:checked) {
+.radio-option-container.checked {
     background-color: var(--flld-color-gray-95);
 }
 

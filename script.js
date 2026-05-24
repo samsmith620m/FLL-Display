@@ -111,7 +111,7 @@ const defaultState = {
         expandCollapse: false,
         soundOption: false
     },
-    isChecklistCollapsed: false,
+    isChecklistCollapsed: true,
     // More state properties will be added as we build features
 };
 
@@ -283,6 +283,16 @@ function initializeUI() {
     // Set display type
     setDisplayType(timerState.displayType);
     setTimerMode(timerState.timerMode || 'scheduled');
+
+    // Update radio container styling
+    document.querySelectorAll('input[name="displayType"]').forEach(radio => {
+        const container = radio.closest('.radio-option-container');
+        if (radio.checked) {
+            container.classList.add('checked');
+        } else {
+            container.classList.remove('checked');
+        }
+    });
 
     // Update UI based on display type
     updateMatchControlButtons();
@@ -719,6 +729,7 @@ function updateMatchControlButtons() {
     // Start/Abort button logic
     if (!isMatchTimer || (!hasMatches && !isSimple)) {
         currentMatchBtn.disabled = true;
+        currentMatchBtn.style.pointerEvents = '';
         currentMatchBtn.querySelector('.button-main-text').textContent = 'Start';
         currentMatchBtn.className = 'primary';
     } else if (isRunning) {
@@ -2110,6 +2121,16 @@ displayTypeRadios.forEach(radio => {
             })
         });
         updateMatchControlButtons();
+
+        // Update radio container styling
+        displayTypeRadios.forEach(r => {
+            const container = r.closest('.radio-option-container');
+            if (r.checked) {
+                container.classList.add('checked');
+            } else {
+                container.classList.remove('checked');
+            }
+        });
     });
 });
 

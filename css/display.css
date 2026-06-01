@@ -538,17 +538,55 @@ html.display {
     border-radius: var(--flld-border-radius-lg);
 }
 
+.logo-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    gap: var(--flld-spacing-md);
+    padding: var(--flld-spacing-md);
+    border: 1px solid var(--flld-color-border-base);
+    border-radius: var(--flld-border-radius-lg);
+}
+
 .library-logo-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--flld-spacing-md);
 }
 
+.logo-item-delete-btn {
+    position: absolute;
+    top: var(--flld-spacing-xs);
+    right: var(--flld-spacing-xs);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.library-logo-item:hover .logo-item-delete-btn {
+    opacity: 1;
+}
+
 .library-logo-item img {
     height: 96px;
     object-fit: contain;
     width: 100%;
+}
+
+.logo-upload-item {
+    cursor: pointer;
+    border: 2px dashed var(--flld-color-border-base);
+    border-radius: var(--flld-border-radius-lg);
+    justify-content: center;
+    font-weight: var(--flld-font-weight-semibold);
+    .material-symbols-rounded {
+        font-size: 32px;
+    }
+
+    &:hover {
+        background-color: var(--flld-color-surface-2);
+        border-color: var(--flld-color-border-strong);
+    }
 }
 
 .sponsor-preview-item {
@@ -561,23 +599,23 @@ html.display {
     background-color: var(--flld-color-white);
     cursor: move;
 
+    &:hover {
+        background-color: var(--flld-color-surface-2);
+    }
+
     button {
         border-radius: var(--flld-border-radius-full);
     }
-}
 
-.sponsor-preview-item:hover {
-    background-color: var(--flld-color-surface-2);
-}
+    img {
+        height: 48px;
+        border-radius: var(--flld-border-radius-sm);
+    }
 
-.sponsor-preview-item img {
-    height: 48px;
-    border-radius: var(--flld-border-radius-sm);
-}
-
-.sponsor-preview-item .drag-handle {
-    font-size: 32px;
-    cursor: move;
+    .drag-handle {
+        font-size: 32px;
+        cursor: move;
+    }
 }
 
 /* Custom sponsor logos in marquee */

@@ -28,7 +28,13 @@ const defaultDisplayState = {
     matches: [],
     currentMatchNumber: 1,
     tableNames: ['1A', '1B'],
-    sponsorLogos: []
+    sponsorLogos: [],
+    uploadedSponsorLogos: [],
+    customFllLogos: [],
+    selectedFllLogo: 'default',
+    customSeasonWordmarks: [],
+    selectedSeasonWordmark: 'default',
+    seasonWordmarkGap: 0,
 };
 
 // Current state
@@ -37,6 +43,32 @@ let currentState = { ...defaultDisplayState };
 // Track previous state to avoid unnecessary DOM recreation
 let previousTableNames = null;
 let previousSponsorLogos = null;
+
+const FLL_DEFAULT_LOGO_SRC = 'media/firstlegoleague-logo-all-formats/FIRSTLEGOLeague-IconHorizontal/FIRSTLego_iconHorz_RGB.png';
+const SEASON_DEFAULT_WORDMARK_SRC = 'media/unearthed-assets/first_age_fll_unearthed_wordmark_rgb_black.png';
+
+function getLogoSrc(customLogos, selectedValue, defaultSrc) {
+    if (selectedValue !== 'default' && customLogos?.[selectedValue]) {
+        return customLogos[selectedValue];
+    }
+    return defaultSrc;
+}
+
+function updateBrandingLogos(state) {
+    const fllImg = document.getElementById('logoFLL');
+    const wordmarkImg = document.getElementById('wordmarkUnearthed');
+    if (fllImg) fllImg.src = getLogoSrc(state.customFllLogos, state.selectedFllLogo, FLL_DEFAULT_LOGO_SRC);
+    if (wordmarkImg) {
+        wordmarkImg.src = getLogoSrc(state.customSeasonWordmarks, state.selectedSeasonWordmark, SEASON_DEFAULT_WORDMARK_SRC);
+        if (state.selectedSeasonWordmark !== 'default') {
+            wordmarkImg.style.marginLeft = `${state.seasonWordmarkGap ?? 0}vh`;
+            wordmarkImg.style.marginRight = '0';
+        } else {
+            wordmarkImg.style.marginLeft = '';
+            wordmarkImg.style.marginRight = '';
+        }
+    }
+}
 
 // Display timer interval for smooth countdown
 let displayTimerInterval = null;
@@ -120,6 +152,7 @@ function updateDisplay() {
     
     // Update marquee for both display types
     updateMarquee();
+    updateBrandingLogos(currentState);
 }
 
 // Track whether sounds have been played
@@ -428,41 +461,54 @@ function updateMatchDisplay() {
 function updateMarquee() {
     const marquees = document.querySelectorAll('.marquee');
     if (!marquees || marquees.length === 0) return;
-    
-    // Check if sponsor logos changed
-    const currentLogosString = JSON.stringify(currentState.sponsorLogos || []);
+
+    // Check if any marquee-relevant state changed
+    const currentLogosString = JSON.stringify([
+        currentState.sponsorLogos || [],
+        currentState.selectedFllLogo,
+        currentState.selectedSeasonWordmark,
+        currentState.customFllLogos || [],
+        currentState.customSeasonWordmarks || [],
+        currentState.seasonWordmarkGap ?? 0,
+    ]);
     const sponsorLogosChanged = previousSponsorLogos !== currentLogosString;
     if (!sponsorLogosChanged) {
-        return; // No need to update if logos haven't changed
+        return;
     }
     previousSponsorLogos = currentLogosString;
-    
+
+    const fllLogoSrc = getLogoSrc(currentState.customFllLogos, currentState.selectedFllLogo, FLL_DEFAULT_LOGO_SRC);
+    const seasonWordmarkSrc = getLogoSrc(currentState.customSeasonWordmarks, currentState.selectedSeasonWordmark, SEASON_DEFAULT_WORDMARK_SRC);
+
     // Update each marquee (text display and timer display)
     marquees.forEach(marquee => {
         const isTextDisplay = marquee.closest('#textDisplay') !== null;
         const className = isTextDisplay ? 'marquee-content-text' : 'marquee-content';
-        
+
         let content = '';
-        
+
         if (isTextDisplay) {
             // Text display: Only sponsor logos
-            content = (currentState.sponsorLogos || []).map((logo, index) => 
+            content = (currentState.sponsorLogos || []).map((logo, index) =>
                 `<img src="${logo}" alt="Sponsor ${index + 1}" class="custom-sponsor-logo">`
             ).join('');
         } else {
             // Match Timer display: Alternate between season logos and sponsor logos
-            const seasonLogo1 = `<img id="logoFLL" src="media/firstlegoleague-logo-all-formats/FIRSTLEGOLeague-IconHorizontal/FIRSTLego_iconHorz_RGB.png" alt="FIRST LEGO League Logo">`;
+            const seasonLogo1 = `<img id="logoFLL" src="${fllLogoSrc}" alt="FIRST LEGO League Logo">`;
+            const wordmarkMargin = currentState.selectedSeasonWordmark !== 'default'
+                ? `style="margin-left:${currentState.seasonWordmarkGap ?? 0}vh;margin-right:0"`
+                : '';
             const seasonLogo2 = `<div id="fllLogoAndWordmark">
-                <img id="logoUnearthed" src="media/unearthed-assets/first_age_fll_unearthed_logo_only_rgb_fullcolor.png" alt="FIRST LEGO League Unearthed Logo">
-                <img id="wordmarkUnearthed" src="media/unearthed-assets/first_age_fll_unearthed_wordmark_rgb_black.png" alt="FIRST LEGO League Unearthed Wordmark">
+                <img id="logoUnearthed" src="media/unearthed-assets/first_age_fll_unearthed_logo_only_rgb_fullcolor.png" alt="Season Logo">
+                <img id="wordmarkUnearthed" src="${seasonWordmarkSrc}" alt="Season Wordmark" ${wordmarkMargin}>
             </div>`;
-            
+
             const sponsorLogos = currentState.sponsorLogos || [];
-            
+
             // Build alternating pattern
             const items = [];
             const maxLength = Math.max(4, sponsorLogos.length);
-            
+
             for (let i = 0; i < maxLength; i++) {
                 // Alternate season logos
                 if (i % 2 === 0) {
@@ -470,13 +516,13 @@ function updateMarquee() {
                 } else {
                     items.push(seasonLogo2);
                 }
-                
+
                 // Add sponsor logo if available
                 if (i < sponsorLogos.length) {
                     items.push(`<img src="${sponsorLogos[i]}" alt="Sponsor ${i + 1}" class="custom-sponsor-logo">`);
                 }
             }
-            
+
             content = items.join('');
         }
         
@@ -507,12 +553,18 @@ window.addEventListener('storage', (event) => {
                 // Check what changed to optimize updates
                 const tableCountChanged = newState.tableCount !== currentState.tableCount;
                 const sponsorLogosChanged = JSON.stringify(newState.sponsorLogos) !== JSON.stringify(currentState.sponsorLogos);
-                
+                const logoSelectionChanged =
+                    newState.selectedFllLogo !== currentState.selectedFllLogo ||
+                    newState.selectedSeasonWordmark !== currentState.selectedSeasonWordmark ||
+                    newState.seasonWordmarkGap !== currentState.seasonWordmarkGap ||
+                    JSON.stringify(newState.customFllLogos) !== JSON.stringify(currentState.customFllLogos) ||
+                    JSON.stringify(newState.customSeasonWordmarks) !== JSON.stringify(currentState.customSeasonWordmarks);
+
                 currentState = newState;
-                
+
                 // Reset tracking if these changed
                 if (tableCountChanged) previousTableCount = null;
-                if (sponsorLogosChanged) previousSponsorLogos = null;
+                if (sponsorLogosChanged || logoSelectionChanged) previousSponsorLogos = null;
                 
                 updateDisplay();
                 console.log('State updated from control page');

@@ -209,6 +209,56 @@
                 </div>
             </div>
 
+            <div class="card" id="brandingCard">
+                <div class="card-header">
+                    <h2>Branding</h2>
+                    <button id="toggleBrandingBtn" class="secondary icon-only material-symbols-rounded" title="Collapse">
+                        <span translate="no">keyboard_arrow_up</span>
+                    </button>
+                </div>
+                <div id="brandingContainer">
+                    <div class="form-control">
+                        <label for="eventName">Event Name</label>
+                        <p class="description">This name will be shown on the display.</p>
+                        <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
+                    </div>
+                    <div class="form-control" id="sponsorLogosSection">
+                        <div class="button-group">
+                            <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
+                                <label for="sponsorLogos">Sponsor Logos</label>
+                                <p class="description">These logos will appear on the display in the order you choose.</p>
+                            </div>
+                            <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
+                        </div>
+                        <div id="sponsorPreview"></div>
+                        <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
+                        <div id="logoLibrary" style="display: none;"></div>
+                        <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
+                    </div>
+                    <div class="form-control">
+                        <label>FLL Logo</label>
+                        <p class="description">If needed, upload a custom FLL logo for your region.</p>
+                        <div id="fllLogoSelector" class="logo-selector-grid"></div>
+                        <input type="file" id="fllLogoInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="form-control">
+                        <label>Season Wordmark</label>
+                        <p class="description">If needed, upload a custom season wordmark for your region.</p>
+                        <div id="seasonWordmarkSelector" class="logo-selector-grid"></div>
+                        <input type="file" id="seasonWordmarkInput" accept="image/*" style="display: none;">
+                        <div id="seasonWordmarkSpacingControl" style="display: none;">
+                            <label for="seasonWordmarkGapInput" class="description">Wordmark Spacing</label>
+                            <p class="description">Adjust the space between the season icon and your custom wordmark on the display.</p>
+                            <div style="display: flex; width: clamp(300px, 999px, 50%); align-items: center; gap: var(--flld-spacing-sm);">
+                                <span class="description">Less</span>
+                                <input type="range" id="seasonWordmarkGapInput" min="-2.5" max="2.5" step="0.25" value="0" style="flex: 1;">
+                                <span class="description">More</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header">
                     <h2>Event Configuration</h2>
@@ -223,36 +273,17 @@
                     </div>
                     <p class="description">The timer plays sounds for match start, last 20 seconds, and match end, matching other <i>FIRST</i> programs. You can disable this if you prefer.</p>
                     <label class="radio-label">
-                        <input type="radio" name="soundOption" value="none">
-                        No sound
-                    </label>
-                    <label class="radio-label">
                         <input type="radio" name="soundOption" value="ftc" checked>
                         <span><i>FIRST</i> Tech Challenge / <i>FIRST</i> Robotics Competition</span>
                     </label>
-                </div>
-                <div class="form-control">
-                    <label for="eventName">Event Name</label>
-                    <p class="description">This name will be shown on the display.</p>
-                    <input type="text" id="eventName" placeholder="e.g., Iowa FIRST LEGO League Championship">
-                </div>
-                <div class="form-control" id="sponsorLogosSection">
-                    <div class="button-group">
-                        <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
-                            <label for="sponsorLogos">Sponsor Logos</label>
-                            <p class="description">These logos will appear on the display in the order you choose.</p>
-                        </div>
-                        <button id="uploadSponsorsBtn" class="secondary"><span class="material-symbols-rounded" translate="no">upload</span>Upload Logo</button>
-                        <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
-                    </div>
-                    <div id="sponsorPreview"></div>
-                    <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
-                    <div id="logoLibrary" style="display: none;"></div>
-                    <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
+                    <label class="radio-label">
+                        <input type="radio" name="soundOption" value="none">
+                        No sound
+                    </label>
                 </div>
             </div>
         </main>
-        
+
         <footer class="control-footer" id="about">
             <p class="footer-greeting">
                 Hello! 👋

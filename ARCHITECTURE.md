@@ -56,7 +56,14 @@ All persistent data lives in one object, `timerState` in `script.js`, serialized
   soundOption: 'ftc' | 'none',           // whether sounds play
 
   // Sponsor logos
-  sponsorLogos: string[],                // array of base64-encoded images
+  sponsorLogos: string[],                // active display list (base64-encoded images)
+  uploadedSponsorLogos: string[],        // uploaded logos stored in library (base64-encoded); user clicks "Add" to move to sponsorLogos
+
+  // Custom branding logos
+  customFllLogos: string[],              // uploaded FLL logos (base64-encoded)
+  selectedFllLogo: 'default' | number,   // index into customFllLogos, or 'default'
+  customSeasonWordmarks: string[],       // uploaded season wordmarks (base64-encoded)
+  selectedSeasonWordmark: 'default' | number, // index into customSeasonWordmarks, or 'default'
 
   // Teams
   teams: [{ teamNumber: string, teamName: string }],
@@ -78,6 +85,7 @@ All persistent data lives in one object, `timerState` in `script.js`, serialized
   // UI collapse state
   isScheduleCollapsed: boolean,
   isTeamsCollapsed: boolean,
+  isBrandingCollapsed: boolean,
   isChecklistCollapsed: boolean,
 
   // Setup checklist
@@ -265,11 +273,22 @@ Match dropdowns in the schedule table are populated from the `teams` array. If a
 
 ## 11. Sponsor Logo System
 
-- Logos are stored as **base64-encoded strings** in `timerState.sponsorLogos` (an array).
-- The control page renders a drag-and-drop grid (`renderSponsorPreview()`). Drag handles use `handleDragStart` / `handleDragOver` / `handleDrop` / `handleDragEnd`.
-- A built-in logo library (`availableLogos`, 7 entries) lets users add logos without uploading files. `addLogoFromLibrary()` fetches the image and converts it to base64.
-- The display page's `updateMarquee()` renders logos as `<img>` tags in a scrolling `<marquee>`-style CSS animation.
+- **Active list**: `timerState.sponsorLogos` — base64 strings shown in the marquee on the display page.
+- **Library**: `timerState.uploadedSponsorLogos` — base64 strings the user has uploaded but not yet added to the active list. Rendered in the logo library grid with a delete button and an "Add" button to move to `sponsorLogos`.
+- Built-in predefined logos (`availableLogos`, 7 entries) are also in the library. `addLogoFromLibrary()` fetches the image and converts it to base64 before appending to `sponsorLogos`.
+- `addUploadedSponsorLogo(index)` moves an entry from `uploadedSponsorLogos` to `sponsorLogos`.
+- `deleteUploadedSponsorLogo(index)` removes an entry from `uploadedSponsorLogos`.
+- The control page renders the active list as a drag-and-drop grid (`renderSponsorPreview()`). Drag handles use `handleDragStart` / `handleDragOver` / `handleDrop` / `handleDragEnd`.
+- The display page's `updateMarquee()` renders active logos as `<img>` tags in a scrolling CSS animation.
 - In `'text'` display mode, only sponsor logos show in the marquee. In `'match-timer'` mode, two FLL season logos are prepended before sponsor logos.
+
+## 11a. Custom Branding Logos
+
+- The **Branding** section (collapsible, `isBrandingCollapsed`) houses event name, FLL logo selector, season wordmark selector, and sponsor logos.
+- `customFllLogos` and `customSeasonWordmarks` are arrays of base64 strings; `selectedFllLogo` / `selectedSeasonWordmark` are either `'default'` or a numeric index.
+- `renderFllLogoSelector()` / `renderSeasonLogoSelector()` in `script.js` render the selector grid (styled like `.library-logo-item`). The selected item's button shows "Selected ✓" (primary); others show "Select" (secondary).
+- `selectFllLogo(value)` and `selectSeasonWordmark(value)` are global functions called by inline `onclick` handlers.
+- `display.js` exposes `getLogoSrc(customLogos, selectedValue, defaultSrc)`. `updateBrandingLogos()` updates `#logoFLL` and `#wordmarkUnearthed` img elements (`#logoUnearthed` is the static season icon, not user-replaceable); `updateMarquee()` uses `getLogoSrc()` for both.
 
 ---
 
@@ -328,7 +347,7 @@ Use this table when changing a feature to identify what else you need to touch.
 | `tableNames` | Match schedule table columns, team card count in `display.js`, `ensureTeamCards()` |
 | Match data structure | `renderMatchSchedule()`, `updateMatchDisplay()` in `display.js`, CSV import (`buildMatchesFromRows()`) |
 | Team data structure | `renderTeams()`, match dropdowns, `updateMatchDisplay()` in `display.js`, CSV import (`extractTeamsFromRows()`) |
-| Sponsor logos | `renderSponsorPreview()`, `renderLogoLibrary()`, `updateMarquee()` in `display.js` |
+| Sponsor logos | `renderSponsorPreview()`, `renderLogoLibrary()`, `addUploadedSponsorLogo()`, `deleteUploadedSponsorLogo()`, `updateMarquee()` in `display.js` |
 | Modals | `component-classes.css` for styling, close button handlers, `modal-open` body class |
 | CSV import columns | `smartGuessColumns()`, `buildMatchesFromRows()`, `extractTeamsFromRows()`, template download row headers |
 | Checklist items | `defaultState.checklist`, `autoCheckChecklistItems()`, checklist HTML in `index.html` |

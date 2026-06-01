@@ -519,12 +519,6 @@ html.display {
 
 /* Sponsor Logo Preview */
 #sponsorPreview {
-    display: flex;
-    gap: var(--flld-spacing-sm);
-    flex-wrap: wrap;
-    border: 2px dashed var(--flld-color-gray-70);
-    border-radius: var(--flld-border-radius-md);
-    background-color: var(--flld-color-gray-98);
     margin: var(--flld-spacing-xs) 0;
 }
 
@@ -567,6 +561,21 @@ html.display {
     opacity: 1;
 }
 
+.logo-item-drag-handle {
+    position: absolute;
+    top: var(--flld-spacing-xs);
+    left: var(--flld-spacing-xs);
+    opacity: 0;
+    transition: opacity 0.15s;
+    cursor: move;
+}
+
+.library-logo-item {
+    &:hover .logo-item-drag-handle {
+        opacity: 1;
+    }
+}
+
 .library-logo-item img {
     height: 96px;
     object-fit: contain;
@@ -590,32 +599,7 @@ html.display {
 }
 
 .sponsor-preview-item {
-    display: flex;
-    align-items: center;
-    border: 2px solid var(--flld-color-border-base);
-    border-radius: var(--flld-border-radius-full);
-    padding: var(--flld-spacing-md) var(--flld-spacing-md) var(--flld-spacing-md) var(--flld-spacing-sm);
-    gap: var(--flld-spacing-md);
-    background-color: var(--flld-color-white);
     cursor: move;
-
-    &:hover {
-        background-color: var(--flld-color-surface-2);
-    }
-
-    button {
-        border-radius: var(--flld-border-radius-full);
-    }
-
-    img {
-        height: 48px;
-        border-radius: var(--flld-border-radius-sm);
-    }
-
-    .drag-handle {
-        font-size: 32px;
-        cursor: move;
-    }
 }
 
 /* Custom sponsor logos in marquee */

@@ -158,7 +158,7 @@
                         <span id="matchCount">0 matches</span>
                         <div class="button-group">
                             <button id="addMatchBtn" class="secondary">Add Match</button>
-                            <button id="uploadScheduleBtn" class="primary">Upload Schedule</button>
+                            <button id="uploadScheduleBtn" class="primary"><span class="material-symbols-rounded" translate="no">upload</span>Upload</button>
                             <button id="deleteAllMatchesBtn" class="destructive" style="display: none;"><span class="material-symbols-rounded" translate="no">delete</span>Delete All</button>
                             <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse"><span translate="no">keyboard_arrow_up</span></button>
                         </div>
@@ -171,7 +171,7 @@
                     </tbody>
                 </table>
                 <div id="noMatchesMessage" class="no-data-area-neutral">
-                    No matches scheduled. Use "Upload Schedule" to import matches, or click "Add Match" to create your first match.
+                    No matches scheduled. Use "Upload Schedule" to import matches, or click "Add Match" to create your first match!
                 </div>
                 <input type="file" id="uploadScheduleInput" accept=".csv" style="display:none" />
             </div>
@@ -205,7 +205,7 @@
                     </tbody>
                 </table>
                 <div id="noTeamsMessage" class="no-data-area-neutral">
-                    No teams added. Upload the match schedule or click "Add Team" to create your first team.
+                    No teams added. Upload the match schedule or click "Add Team" to create your first team!
                 </div>
             </div>
 
@@ -226,12 +226,12 @@
                         <div class="button-group">
                             <div style="display: grid; width: 100%; gap: var(--flld-spacing-xs)">
                                 <label for="sponsorLogos">Sponsor Logos</label>
-                                <p class="description">These logos will appear on the display in the order you choose.</p>
+                                <p class="description">These logos will appear on the display marquee in the order you choose.</p>
                             </div>
                             <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
                         </div>
-                        <div id="sponsorPreview"></div>
-                        <button id="selectFromLibraryBtn" class="secondary">Open Logo Library</button>
+                        <div id="sponsorPreview" class="logo-selector-grid"></div>
+                        <button id="selectFromLibraryBtn" class="secondary">Open Sponsor Logo Library</button>
                         <div id="logoLibrary" style="display: none;"></div>
                         <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
                     </div>

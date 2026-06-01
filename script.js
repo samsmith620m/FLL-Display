@@ -1969,11 +1969,11 @@ function toggleLogoLibrary() {
     
     if (isVisible) {
         logoLibrary.style.display = 'none';
-        selectFromLibraryBtn.textContent = 'Open Logo Library';
+        selectFromLibraryBtn.textContent = 'Open Sponsor Logo Library';
     } else {
         renderLogoLibrary();
         logoLibrary.style.display = 'grid';
-        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Logo Library';
+        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Sponsor Logo Library';
     }
 }
 
@@ -1987,7 +1987,7 @@ function renderLogoLibrary() {
 
     const uploadedItems = (timerState.uploadedSponsorLogos || []).map((src, index) => `
         <div class="library-logo-item">
-            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="deleteUploadedSponsorLogo(${index})" title="Remove logo"><span translate="no">delete</span></button>
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="deleteUploadedSponsorLogo(${index})" title="Delete logo"><span translate="no">delete</span></button>
             <img src="${src}" alt="Uploaded logo ${index + 1}">
             <button class="secondary" onclick="addUploadedSponsorLogo(${index})">Add</button>
         </div>
@@ -2018,7 +2018,7 @@ function renderLogoSelector(containerEl, logos, defaultSrc, selectedValue, selec
 
     const customItems = (logos || []).map((src, index) => `
         <div class="library-logo-item">
-            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="${deleteFnName}(${index})" title="Remove logo"><span translate="no">delete</span></button>
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="${deleteFnName}(${index})" title="Delete logo"><span translate="no">delete</span></button>
             <img src="${src}" alt="Custom logo ${index + 1}">
             ${makeBtn(selectedValue === index, index)}
         </div>`).join('');
@@ -2257,15 +2257,17 @@ function renderSponsorPreview() {
     }
     
     if (!timerState.sponsorLogos || timerState.sponsorLogos.length === 0) {
-        sponsorPreview.innerHTML = '<div class="no-data-area-neutral">No sponsor logos added. Open the logo library below to choose from the library or upload your own.</div>';
+        sponsorPreview.classList.remove('logo-selector-grid');
+        sponsorPreview.innerHTML = '<div class="no-data-area-neutral">No sponsor logos added. Open the logo library to choose from pre-loaded logos or upload your own!</div>';
         return;
     }
-    
+
+    sponsorPreview.classList.add('logo-selector-grid');
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
-        <div class="sponsor-preview-item" draggable="true" data-index="${index}">
-            <div class="drag-handle material-symbols-rounded" title="Drag to reorder"><span translate="no">drag_indicator</span></div>
+        <div class="library-logo-item sponsor-preview-item" draggable="true" data-index="${index}">
+            <button class="secondary icon-only material-symbols-rounded logo-item-drag-handle" type="button" title="Drag to reorder"><span translate="no">drag_indicator</span></button>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo"><span translate="no">close</span></button>
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="removeSponsor(${index})" title="Remove logo"><span translate="no">close</span></button>
         </div>
     `).join('');
     

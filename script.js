@@ -51,12 +51,21 @@ const teamsTable = document.getElementById('teamsTable');
 const teamsBody = document.getElementById('teamsBody');
 const noTeamsMessage = document.getElementById('noTeamsMessage');
 const teamCount = document.getElementById('teamCount');
-const uploadSponsorsBtn = document.getElementById('uploadSponsorsBtn');
 const sponsorLogosInput = document.getElementById('sponsorLogosInput');
 const sponsorPreview = document.getElementById('sponsorPreview');
 const clearSponsorsBtn = document.getElementById('clearSponsorsBtn');
 const selectFromLibraryBtn = document.getElementById('selectFromLibraryBtn');
 const logoLibrary = document.getElementById('logoLibrary');
+
+// Branding section elements
+const toggleBrandingBtn = document.getElementById('toggleBrandingBtn');
+const brandingContainer = document.getElementById('brandingContainer');
+const fllLogoSelector = document.getElementById('fllLogoSelector');
+const fllLogoInput = document.getElementById('fllLogoInput');
+const seasonWordmarkSelector = document.getElementById('seasonWordmarkSelector');
+const seasonWordmarkInput = document.getElementById('seasonWordmarkInput');
+const seasonWordmarkSpacingControl = document.getElementById('seasonWordmarkSpacingControl');
+const seasonWordmarkGapInput = document.getElementById('seasonWordmarkGapInput');
 
 // Available sponsor logos in the library
 const availableLogos = [
@@ -82,7 +91,8 @@ const defaultState = {
     customText: '',
     soundOption: 'ftc', // 'none' or 'ftc'
     // Event configuration
-    sponsorLogos: [], // Array of base64 encoded images
+    sponsorLogos: [], // Array of base64 encoded images (active display list)
+    uploadedSponsorLogos: [], // Array of base64 encoded images in the library
     // Teams
     teams: [], // Array of team objects: { teamNumber: '1234', teamName: 'Team Name' }
     // Match schedule
@@ -95,9 +105,16 @@ const defaultState = {
     timerStartTime: null,
     timerEndTime: null,
     timerCurrentTime: TIMER_DURATION,
+    // Branding — custom logos
+    customFllLogos: [],
+    selectedFllLogo: 'default',
+    customSeasonWordmarks: [],
+    selectedSeasonWordmark: 'default',
+    seasonWordmarkGap: 0,
     // UI state
     isScheduleCollapsed: false,
     isTeamsCollapsed: false,
+    isBrandingCollapsed: false,
     // Setup checklist state
     checklist: {
         uploadSchedule: false,
@@ -247,6 +264,13 @@ function performResetConfiguration() {
     // Reset sponsor logos display
     renderSponsorPreview();
 
+    // Reset branding logo selectors
+    renderFllLogoSelector();
+    renderSeasonLogoSelector();
+    toggleBrandingBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
+    toggleBrandingBtn.title = 'Collapse';
+    brandingContainer.style.display = '';
+
     // Reset checklist and ensure it's expanded
     syncChecklistUI();
     checklistContainer.style.display = 'flex';
@@ -311,6 +335,15 @@ function initializeUI() {
         toggleChecklistBtn.title = 'Expand';
         checklistContainer.style.display = 'none';
         checklistDescription.style.display = 'none';
+    }
+
+    // Initialize branding logo selectors
+    renderFllLogoSelector();
+    renderSeasonLogoSelector();
+    if (timerState.isBrandingCollapsed) {
+        toggleBrandingBtn.innerHTML = '<span translate="no">keyboard_arrow_down</span>';
+        toggleBrandingBtn.title = 'Expand';
+        brandingContainer.style.display = 'none';
     }
     
     // Apply saved collapsed states
@@ -947,6 +980,21 @@ function toggleChecklistCollapse() {
     
     // Auto-check expand/collapse checklist item
     updateChecklistItem('expandCollapse', true);
+}
+
+function toggleBrandingCollapse() {
+    const isCollapsed = !timerState.isBrandingCollapsed;
+    updateState({ isBrandingCollapsed: isCollapsed });
+
+    if (isCollapsed) {
+        toggleBrandingBtn.innerHTML = '<span translate="no">keyboard_arrow_down</span>';
+        toggleBrandingBtn.title = 'Expand';
+        brandingContainer.style.display = 'none';
+    } else {
+        toggleBrandingBtn.innerHTML = '<span translate="no">keyboard_arrow_up</span>';
+        toggleBrandingBtn.title = 'Collapse';
+        brandingContainer.style.display = '';
+    }
 }
 
 // Update sound option when radio changes
@@ -1829,6 +1877,7 @@ openDisplayBtn.addEventListener('click', openDisplay);
 toggleTeamsBtn.addEventListener('click', toggleTeamsCollapse);
 toggleScheduleBtn.addEventListener('click', toggleScheduleCollapse);
 toggleChecklistBtn.addEventListener('click', toggleChecklistCollapse);
+toggleBrandingBtn.addEventListener('click', toggleBrandingCollapse);
 currentMatchBtn.addEventListener('click', startMatch);
 prevMatchBtn.addEventListener('click', previousMatch);
 nextMatchBtn.addEventListener('click', nextMatch);
@@ -1899,6 +1948,10 @@ document.querySelectorAll('.checklist-button').forEach(button => {
 
 // Track changes on input fields and update automatically
 eventNameInput.addEventListener('input', updateEventName);
+
+seasonWordmarkGapInput.addEventListener('input', () => {
+    updateState({ seasonWordmarkGap: parseFloat(seasonWordmarkGapInput.value) });
+});
 displayTextInput.addEventListener('input', checkCustomTextChanges);
 updateCustomTextBtn.addEventListener('click', saveCustomText);
 soundOptionInputs.forEach(input => {
@@ -1910,40 +1963,126 @@ selectFromLibraryBtn.addEventListener('click', () => {
     toggleLogoLibrary();
 });
 
-uploadSponsorsBtn.addEventListener('click', () => {
-    sponsorLogosInput.click();
-});
 
 function toggleLogoLibrary() {
     const isVisible = logoLibrary.style.display !== 'none';
     
     if (isVisible) {
         logoLibrary.style.display = 'none';
-        selectFromLibraryBtn.textContent = 'Open Logo Library';
+        selectFromLibraryBtn.textContent = 'Open Sponsor Logo Library';
     } else {
         renderLogoLibrary();
         logoLibrary.style.display = 'grid';
-        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Logo Library';
+        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Sponsor Logo Library';
     }
 }
 
 function renderLogoLibrary() {
-    logoLibrary.innerHTML = availableLogos.map((logo, index) => `
+    const predefinedItems = availableLogos.map((logo, index) => `
         <div class="library-logo-item" data-index="${index}">
             <img src="${logo.path}" alt="${logo.name}">
             <button class="secondary" onclick="addLogoFromLibrary(${index})">Add</button>
         </div>
     `).join('');
+
+    const uploadedItems = (timerState.uploadedSponsorLogos || []).map((src, index) => `
+        <div class="library-logo-item">
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="deleteUploadedSponsorLogo(${index})" title="Delete logo"><span translate="no">delete</span></button>
+            <img src="${src}" alt="Uploaded logo ${index + 1}">
+            <button class="secondary" onclick="addUploadedSponsorLogo(${index})">Add</button>
+        </div>
+    `).join('');
+
+    const uploadItem = `
+        <div class="library-logo-item logo-upload-item" onclick="document.getElementById('sponsorLogosInput').click()">
+            <span class="material-symbols-rounded" translate="no">upload</span>
+            <span>Upload</span>
+        </div>`;
+
+    logoLibrary.innerHTML = predefinedItems + uploadedItems + uploadItem;
+}
+
+const FLL_DEFAULT_LOGO_SRC = 'media/firstlegoleague-logo-all-formats/FIRSTLEGOLeague-IconHorizontal/FIRSTLego_iconHorz_RGB.png';
+const SEASON_DEFAULT_WORDMARK_SRC = 'media/unearthed-assets/first_age_fll_unearthed_wordmark_rgb_black.png';
+
+function renderLogoSelector(containerEl, logos, defaultSrc, selectedValue, selectFnName, uploadInputId, deleteFnName) {
+    const makeBtn = (isSelected, callArg) => isSelected
+        ? `<button class="primary" onclick="${selectFnName}(${callArg})"><span class="material-symbols-rounded" translate="no">check</span>Selected</button>`
+        : `<button class="secondary" onclick="${selectFnName}(${callArg})">Select</button>`;
+
+    const defaultItem = `
+        <div class="library-logo-item">
+            <img src="${defaultSrc}" alt="Default logo">
+            ${makeBtn(selectedValue === 'default', "'default'")}
+        </div>`;
+
+    const customItems = (logos || []).map((src, index) => `
+        <div class="library-logo-item">
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="${deleteFnName}(${index})" title="Delete logo"><span translate="no">delete</span></button>
+            <img src="${src}" alt="Custom logo ${index + 1}">
+            ${makeBtn(selectedValue === index, index)}
+        </div>`).join('');
+
+    const uploadItem = `
+        <div class="library-logo-item logo-upload-item" onclick="document.getElementById('${uploadInputId}').click()">
+            <span class="material-symbols-rounded" translate="no">upload</span>
+            <span>Upload</span>
+        </div>`;
+
+    containerEl.innerHTML = defaultItem + customItems + uploadItem;
+}
+
+function renderFllLogoSelector() {
+    renderLogoSelector(fllLogoSelector, timerState.customFllLogos, FLL_DEFAULT_LOGO_SRC, timerState.selectedFllLogo, 'selectFllLogo', 'fllLogoInput', 'deleteFllLogo');
+}
+
+function renderSeasonLogoSelector() {
+    renderLogoSelector(seasonWordmarkSelector, timerState.customSeasonWordmarks, SEASON_DEFAULT_WORDMARK_SRC, timerState.selectedSeasonWordmark, 'selectSeasonWordmark', 'seasonWordmarkInput', 'deleteSeasonWordmark');
+    const hasCustomSelected = timerState.selectedSeasonWordmark !== 'default';
+    seasonWordmarkSpacingControl.style.display = hasCustomSelected ? '' : 'none';
+    if (hasCustomSelected) {
+        seasonWordmarkGapInput.value = timerState.seasonWordmarkGap ?? 0;
+    }
+}
+
+function selectFllLogo(value) {
+    updateState({ selectedFllLogo: value });
+    renderFllLogoSelector();
+}
+
+function selectSeasonWordmark(value) {
+    const gap = value === 'default' ? 0 : (timerState.seasonWordmarkGap ?? 0);
+    updateState({ selectedSeasonWordmark: value, seasonWordmarkGap: gap });
+    renderSeasonLogoSelector();
+}
+
+function deleteFllLogo(index) {
+    const updated = timerState.customFllLogos.filter((_, i) => i !== index);
+    let selected = timerState.selectedFllLogo;
+    if (selected === index) selected = 'default';
+    else if (typeof selected === 'number' && selected > index) selected--;
+    updateState({ customFllLogos: updated, selectedFllLogo: selected });
+    renderFllLogoSelector();
+}
+
+function deleteSeasonWordmark(index) {
+    const updated = timerState.customSeasonWordmarks.filter((_, i) => i !== index);
+    let selected = timerState.selectedSeasonWordmark;
+    const gap = selected === index ? 0 : (timerState.seasonWordmarkGap ?? 0);
+    if (selected === index) selected = 'default';
+    else if (typeof selected === 'number' && selected > index) selected--;
+    updateState({ customSeasonWordmarks: updated, selectedSeasonWordmark: selected, seasonWordmarkGap: gap });
+    renderSeasonLogoSelector();
 }
 
 async function addLogoFromLibrary(index) {
     const logo = availableLogos[index];
-    
+
     try {
         // Fetch the image and convert to base64
         const response = await fetch(logo.path);
         const blob = await response.blob();
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             updateState({ sponsorLogos: [...timerState.sponsorLogos, e.target.result] });
@@ -1955,6 +2094,20 @@ async function addLogoFromLibrary(index) {
         console.error('Error loading logo from library:', error);
         alert('Error loading logo. Please try again.');
     }
+}
+
+function addUploadedSponsorLogo(index) {
+    const src = timerState.uploadedSponsorLogos[index];
+    if (!src) return;
+    updateState({ sponsorLogos: [...timerState.sponsorLogos, src] });
+    updateChecklistItem('sponsors', true);
+    renderSponsorPreview();
+}
+
+function deleteUploadedSponsorLogo(index) {
+    const updated = timerState.uploadedSponsorLogos.filter((_, i) => i !== index);
+    updateState({ uploadedSponsorLogos: updated });
+    renderLogoLibrary();
 }
 
 sponsorLogosInput.addEventListener('change', async (e) => {
@@ -1972,9 +2125,8 @@ sponsorLogosInput.addEventListener('change', async (e) => {
     
     try {
         const logos = await Promise.all(logoPromises);
-        updateState({ sponsorLogos: [...timerState.sponsorLogos, ...logos] });
-        updateChecklistItem('sponsors', true);
-        renderSponsorPreview();
+        updateState({ uploadedSponsorLogos: [...(timerState.uploadedSponsorLogos || []), ...logos] });
+        renderLogoLibrary();
     } catch (error) {
         console.error('Error loading sponsor logos:', error);
         alert('Error loading one or more images. Please try again.');
@@ -1982,6 +2134,27 @@ sponsorLogosInput.addEventListener('change', async (e) => {
     
     // Reset input so same file can be uploaded again
     sponsorLogosInput.value = '';
+});
+
+function handleLogoUpload(file, stateKey, selectorKey, renderFn) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const updated = [...(timerState[stateKey] || []), e.target.result];
+        const newIndex = updated.length - 1;
+        updateState({ [stateKey]: updated, [selectorKey]: newIndex });
+        renderFn();
+    };
+    reader.readAsDataURL(file);
+}
+
+fllLogoInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) handleLogoUpload(e.target.files[0], 'customFllLogos', 'selectedFllLogo', renderFllLogoSelector);
+    fllLogoInput.value = '';
+});
+
+seasonWordmarkInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) handleLogoUpload(e.target.files[0], 'customSeasonWordmarks', 'selectedSeasonWordmark', renderSeasonLogoSelector);
+    seasonWordmarkInput.value = '';
 });
 
 function performClearSponsors() {
@@ -2084,15 +2257,17 @@ function renderSponsorPreview() {
     }
     
     if (!timerState.sponsorLogos || timerState.sponsorLogos.length === 0) {
-        sponsorPreview.innerHTML = '<div class="no-data-area-neutral">No sponsor logos added. Select logos from the library or upload your own!</div>';
+        sponsorPreview.classList.remove('logo-selector-grid');
+        sponsorPreview.innerHTML = '<div class="no-data-area-neutral">No sponsor logos added. Open the logo library to choose from pre-loaded logos or upload your own!</div>';
         return;
     }
-    
+
+    sponsorPreview.classList.add('logo-selector-grid');
     sponsorPreview.innerHTML = timerState.sponsorLogos.map((logo, index) => `
-        <div class="sponsor-preview-item" draggable="true" data-index="${index}">
-            <div class="drag-handle material-symbols-rounded" title="Drag to reorder"><span translate="no">drag_indicator</span></div>
+        <div class="library-logo-item sponsor-preview-item" draggable="true" data-index="${index}">
+            <button class="secondary icon-only material-symbols-rounded logo-item-drag-handle" type="button" title="Drag to reorder"><span translate="no">drag_indicator</span></button>
             <img src="${logo}" alt="Sponsor ${index + 1}">
-            <button class="destructive icon-only material-symbols-rounded" onclick="removeSponsor(${index})" title="Remove logo"><span translate="no">close</span></button>
+            <button class="destructive icon-only material-symbols-rounded logo-item-delete-btn" onclick="removeSponsor(${index})" title="Remove logo"><span translate="no">close</span></button>
         </div>
     `).join('');
     

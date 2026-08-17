@@ -3,51 +3,42 @@
 /* Import Material Symbols Rounded with full variable font axes */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
-/* Checkbox color cycle animation */
-@keyframes color-cycle-accentColor {
+/* Shared color cycle animations */
+@keyframes color-cycle-light {
     0%, 100% {
-        accent-color: var(--flld-color-unearthed-red-50);
+        accent-color: var(--flld-color-first-canopy-terracotta-90);
+        background-color: var(--flld-color-first-canopy-terracotta-90);
     }
     25% {
-        accent-color: var(--flld-color-unearthed-green-50);
+        accent-color: var(--flld-color-bioglow-moss-91);
+        background-color: var(--flld-color-bioglow-moss-91);
     }
     50% {
-        accent-color: var(--flld-color-unearthed-yellow-50);
+        accent-color: var(--flld-color-first-canopy-olive-89);
+        background-color: var(--flld-color-first-canopy-olive-89);
     }
     75% {
-        accent-color: var(--flld-color-unearthed-teal-50);
+        accent-color: var(--flld-color-first-canopy-teal-91);
+        background-color: var(--flld-color-first-canopy-teal-91);
     }
 }
 
-/* Button color cycle animation */
-@keyframes color-cycle-buttonBackgroundColor {
+@keyframes color-cycle-medium {
     0%, 100% {
-        background-color: var(--flld-color-unearthed-red-90);
+        accent-color: var(--flld-color-first-canopy-terracotta-62);
+        background-color: var(--flld-color-first-canopy-terracotta-62);
     }
     25% {
-        background-color: var(--flld-color-unearthed-green-90);
+        accent-color: var(--flld-color-bioglow-moss-66);
+        background-color: var(--flld-color-bioglow-moss-66);
     }
     50% {
-        background-color: var(--flld-color-unearthed-yellow-90);
+        accent-color: var(--flld-color-first-canopy-olive-62);
+        background-color: var(--flld-color-first-canopy-olive-62);
     }
     75% {
-        background-color: var(--flld-color-unearthed-teal-90);
-    }
-}
-
-/* Badge color cycle animation */
-@keyframes color-cycle-badgeBackgroundColor {
-    0%, 100% {
-        background-color: var(--flld-color-unearthed-red-50);
-    }
-    25% {
-        background-color: var(--flld-color-unearthed-green-50);
-    }
-    50% {
-        background-color: var(--flld-color-unearthed-yellow-50);
-    }
-    75% {
-        background-color: var(--flld-color-unearthed-teal-50);
+        accent-color: var(--flld-color-first-canopy-teal-65);
+        background-color: var(--flld-color-first-canopy-teal-65);
     }
 }
 
@@ -136,7 +127,7 @@
     }
 
     &.rainbow {
-        animation: color-cycle-badgeBackgroundColor 8s ease-in-out infinite;
+        animation: color-cycle-medium 8s ease-in-out infinite;
     }
 }
 
@@ -212,7 +203,7 @@ a.button {
     }
 
     &.rainbow {
-        animation: color-cycle-buttonBackgroundColor 8s ease-in-out infinite;
+        animation: color-cycle-light 8s ease-in-out infinite;
         color: var(--flld-color-gray-10);
         border: none;
 
@@ -332,7 +323,7 @@ ul, ol {
 input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    animation: color-cycle-accentColor 8s ease-in-out infinite;
+    animation: color-cycle-medium 8s ease-in-out infinite;
     cursor: default;
 }
 

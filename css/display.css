@@ -75,7 +75,7 @@ html.display {
 .display-page {
     width: 100vw;
     height: 100vh;
-    background-image: url("../media/first-age-assets/FIRST-AGE-IG-blankpost.png");
+    background-image: url("../media/first-canopy-assets/first_canopy_social_ig_postblank.png");
     background-size: cover;
     background-position: center;
 }
@@ -153,16 +153,16 @@ html.display {
 
 @keyframes color-pulse {
     0%, 100% {
-        background-color: rgb(from var(--flld-color-unearthed-red-70) r g b / 50%);
+        background-color: rgb(from var(--flld-color-first-canopy-terracotta-81) r g b / 50%);
     }
     25% {
-        background-color: rgb(from var(--flld-color-unearthed-green-base) r g b / 50%);
+        background-color: rgb(from var(--flld-color-bioglow-moss-82) r g b / 50%);
     }
     50% {
-        background-color: rgb(from var(--flld-color-unearthed-yellow-base) r g b / 50%);
+        background-color: rgb(from var(--flld-color-bioglow-sunlight-83) r g b / 50%);
     }
     75% {
-        background-color: rgb(from var(--flld-color-unearthed-teal-70) r g b / 50%);
+        background-color: rgb(from var(--flld-color-first-canopy-teal-82) r g b / 50%);
     }
 }
 

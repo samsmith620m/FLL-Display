@@ -30,7 +30,7 @@ Communication between the two pages is **one-way**: the control page writes to `
 | `css/control.css` | Control page layout, checklist card, radio containers, collapse animations, sponsor grid |
 | `css/display.css` | Display page — team card layout/colors, timer styling, text display, marquee, animations, fullscreen button |
 | `sounds/start.wav` | Plays when timer enters `running` state |
-| `sounds/warning.wav` | Plays once when timer crosses ≤ 20 seconds |
+| `sounds/warning.wav` | Plays once when timer crosses ≤ 30 seconds |
 | `sounds/end.wav` | Plays once when timer reaches 0 |
 | `sounds/abort.wav` | Plays when timer is aborted (running → stopped) |
 | `sounds/match_result.wav` | Unused — available for future use |
@@ -169,7 +169,7 @@ The control page and display page each run their own countdown:
 | Sound | File | When | Guard |
 |-------|------|------|-------|
 | Start | `sounds/start.wav` | `timerState` transitions to `'running'` (previousTimerState ≠ 'running') | — |
-| Warning | `sounds/warning.wav` | `timerCurrentTime` ≤ 20 and currently running | `warningSoundPlayed` flag |
+| Warning | `sounds/warning.wav` | `timerCurrentTime` ≤ 30 and currently running | `warningSoundPlayed` flag |
 | End | `sounds/end.wav` | `timerCurrentTime` reaches 0 | `endSoundPlayed` flag |
 | Abort | `sounds/abort.wav` | `timerState` transitions from `'running'` to `'stopped'` | — |
 
@@ -207,7 +207,7 @@ Sub-mode of `'match-timer'`. Also selected via radio in `index.html`.
 
 | Class | Condition | Effect |
 |-------|-----------|--------|
-| `.warning` | `timerCurrentTime` ≤ 20 and running | Yellow timer text |
+| `.warning` | `timerCurrentTime` ≤ 30 and running | Yellow timer text |
 | `.critical` | `timerCurrentTime` ≤ 5 and running | Red timer text |
 | `.pulsate` | `timerState === 'finished'` | Pulsating animation on timer |
 
@@ -321,7 +321,7 @@ Items can also be manually toggled. `updateChecklistRainbow()` pulses a highligh
 
 **Key animation classes (all in `display.css`):**
 - `.pulsate` — applied to `#timerDisplay` when `timerState === 'finished'`
-- `.warning` — yellow timer text (≤ 20s)
+- `.warning` — yellow timer text (≤ 30s)
 - `.critical` — red timer text (≤ 5s)
 - `.cheering` — styling for empty-slot good-luck messages
 

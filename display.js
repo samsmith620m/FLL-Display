@@ -200,10 +200,10 @@ function startDisplayTimer() {
                 }
             } else if (remaining <= 5) {
                 timerTime.classList.add('critical');
-            } else if (remaining <= 20) {
+            } else if (remaining <= 30) {
                 timerTime.classList.add('warning');
                 
-                // Play warning sound once when crossing 20 second threshold
+                // Play warning sound once when crossing 30 second threshold
                 if (!warningSoundPlayed && currentState.soundOption === 'ftc') {
                     const warningSound = new Audio('sounds/warning.wav');
                     warningSound.play().catch(err => console.error('Error playing warning sound:', err));
@@ -211,8 +211,8 @@ function startDisplayTimer() {
                 }
             }
             
-            // Reset warning sound flag when timer is above 20 seconds
-            if (remaining > 20) {
+            // Reset warning sound flag when timer is above 30 seconds
+            if (remaining > 30) {
                 warningSoundPlayed = false;
             }
         }
@@ -256,7 +256,7 @@ function updateTimerDisplay() {
         // Initial styling
         if (time <= 5) {
             timerTime.classList.add('critical');
-        } else if (time <= 20) {
+        } else if (time <= 30) {
             timerTime.classList.add('warning');
         }
     } else {

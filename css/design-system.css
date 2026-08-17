@@ -67,12 +67,12 @@
     --flld-color-fll-discover-purple: #662D91;
     --flld-color-fll-explore-green: #00A651;
 
-    /* FIRST AGE Colors */
+    /* FIRST CANOPY Colors */
 
     --flld-color-first-age-gold: #F7CA5F;
     --flld-color-first-age-copper: #C38C26;
 
-    /* UNEARTHED Colors */
+    /* BIOGLOW Colors */
 
     --flld-color-unearthed-yellow-base: var(--flld-color-unearthed-yellow-75);
     --flld-color-unearthed-yellow-10: #241A00FF;
@@ -157,12 +157,6 @@
     --flld-line-height-base: 1.5;
 
     /* --- LEVEL 1 SEMANTICS --- */
-    /* Semantic Colors - Brand & Theme */
-    --flld-color-theme-primary: var(--flld-color-unearthed-teal-40);
-    --flld-color-theme-primary-shade: var(--flld-color-itd-blue-40);
-    --flld-color-theme-accent: var(--flld-color-itd-yellow-60);
-    --flld-color-theme-accent-shade: var(--flld-color-itd-yellow-40);
-
     /* Semantic Colors - Neutral */
     --flld-color-neutral-primary: var(--flld-color-gray-10);
     --flld-color-neutral-secondary: var(--flld-color-gray-25);
@@ -174,11 +168,8 @@
 
     /* Semantic Colors - Messaging */
     --flld-color-messaging-informational-tint: var(--flld-color-blue-tint);
-    --flld-color-messaging-informational: var(--flld-color-blue-base);
-    --flld-color-messaging-informational-shade: var(--flld-color-blue-shade);
 
     --flld-color-messaging-success: var(--flld-color-green-base);
-    --flld-color-messaging-success-shade: var(--flld-color-green-shade);
 
     --flld-color-messaging-warning: var(--flld-color-yellow-base);
     --flld-color-messaging-warning-shade: var(--flld-color-yellow-shade);
@@ -187,30 +178,13 @@
     --flld-color-messaging-critical-shade: var(--flld-color-red-shade);
 
     /* --- LEVEL 2 SEMANTICS --- */
-    /* Static Surface Colors */
-    --flld-color-static-surface-primary: var(--flld-color-white);
-    --flld-color-static-surface-secondary: var(--flld-color-gray-75);
-    --flld-color-static-surface-theme: var(--flld-color-theme-primary);
-
-    /* Interactive Surface Colors */
-    --flld-color-interactive-surface-theme-default: var(--flld-color-theme-primary);
-    --flld-color-interactive-surface-theme-active: var(--flld-color-theme-primary-shade);
-
-    --flld-color-interactive-surface-neutral-default: var(--flld-color-surface-1);
-    --flld-color-interactive-surface-neutral-active: var(--flld-color-surface-2);
-
     /* Border Colors */
-    --flld-color-border-theme-default: var(--flld-color-theme-primary);
-    --flld-color-border-theme-active: var(--flld-color-theme-primary-shade);
     --flld-color-border-base: var(--flld-color-neutral-tertiary);
-    --flld-color-border-interactive: var(--flld-color-neutral-secondary);
 
     /* Text Colors */
     --flld-color-text-primary: var(--flld-color-neutral-primary);
     --flld-color-text-secondary: var(--flld-color-neutral-secondary);
     --flld-color-text-inverse: var(--flld-color-white);
-    --flld-color-text-theme: var(--flld-color-theme-primary);
-    --flld-color-text-theme-active: var(--flld-color-theme-primary-shade);
 }
 
 /* --- DESIGN SYSTEM UTILITIES --- */

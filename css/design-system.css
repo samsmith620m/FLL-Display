@@ -69,8 +69,70 @@
 
     /* FIRST CANOPY Colors */
 
-    --flld-color-first-age-gold: #F7CA5F;
-    --flld-color-first-age-copper: #C38C26;
+    --flld-color-first-canopy-teal-base: var(--flld-color-first-canopy-teal-32);
+    --flld-color-first-canopy-teal-15: #000F19FF;
+    --flld-color-first-canopy-teal-23: #002331FF;
+    --flld-color-first-canopy-teal-32: #003947FF;
+    --flld-color-first-canopy-teal-40: #1D505EFF;
+    --flld-color-first-canopy-teal-49: #366776FF;
+    --flld-color-first-canopy-teal-61: #5B8D9DFF;
+    --flld-color-first-canopy-teal-65: #6899A9FF;
+    --flld-color-first-canopy-teal-74: #81B3C4FF;
+    --flld-color-first-canopy-teal-82: #9BCEDFFF;
+    --flld-color-first-canopy-teal-91: #B6EAFBFF;
+    --flld-color-first-canopy-teal-99: #E0FFFFFF;
+
+    --flld-color-first-canopy-olive-base: var(--flld-color-first-canopy-olive-70);
+    --flld-color-first-canopy-olive-15: #0D0C00FF;
+    --flld-color-first-canopy-olive-23: #1F1F00FF;
+    --flld-color-first-canopy-olive-31: #323300FF;
+    --flld-color-first-canopy-olive-39: #464814FF;
+    --flld-color-first-canopy-olive-47: #5B5D2CFF;
+    --flld-color-first-canopy-olive-55: #727442FF;
+    --flld-color-first-canopy-olive-62: #898C59FF;
+    --flld-color-first-canopy-olive-70: #A1A470FF;
+    --flld-color-first-canopy-olive-80: #BFC28DFF;
+    --flld-color-first-canopy-olive-89: #DEE1ABFF;
+    --flld-color-first-canopy-olive-99: #FDFFCAFF;
+
+    --flld-color-first-canopy-terracotta-base: var(--flld-color-first-canopy-terracotta-62);
+    --flld-color-first-canopy-terracotta-15: #240000FF;
+    --flld-color-first-canopy-terracotta-23: #3E0000FF;
+    --flld-color-first-canopy-terracotta-31: #56160FFF;
+    --flld-color-first-canopy-terracotta-39: #6E2D23FF;
+    --flld-color-first-canopy-terracotta-46: #864238FF;
+    --flld-color-first-canopy-terracotta-54: #9F594EFF;
+    --flld-color-first-canopy-terracotta-62: #B97064FF;
+    --flld-color-first-canopy-terracotta-71: #D88C7FFF;
+    --flld-color-first-canopy-terracotta-81: #F7A99BFF;
+    --flld-color-first-canopy-terracotta-90: #FFCBC0FF;
+    --flld-color-first-canopy-terracotta-99: #FFF6F1FF;
+
+    --flld-color-first-canopy-slate-base: var(--flld-color-first-canopy-slate-65);
+    --flld-color-first-canopy-slate-15: #010C19FF;
+    --flld-color-first-canopy-slate-23: #0F1F2EFF;
+    --flld-color-first-canopy-slate-32: #233444FF;
+    --flld-color-first-canopy-slate-40: #394A5BFF;
+    --flld-color-first-canopy-slate-48: #4F6173FF;
+    --flld-color-first-canopy-slate-51: #57697AFF;
+    --flld-color-first-canopy-slate-65: #7F92A5FF;
+    --flld-color-first-canopy-slate-74: #99ACC0FF;
+    --flld-color-first-canopy-slate-82: #B3C7DBFF;
+    --flld-color-first-canopy-slate-91: #CEE2F7FF;
+    --flld-color-first-canopy-slate-99: #EEFEFFFF;
+
+    --flld-color-first-canopy-sand-base: var(--flld-color-first-canopy-sand-89);
+    --flld-color-first-canopy-sand-15: #140800FF;
+    --flld-color-first-canopy-sand-23: #281B00FF;
+    --flld-color-first-canopy-sand-32: #3D2F11FF;
+    --flld-color-first-canopy-sand-40: #534526FF;
+    --flld-color-first-canopy-sand-48: #6B5C3DFF;
+    --flld-color-first-canopy-sand-56: #837353FF;
+    --flld-color-first-canopy-sand-65: #9C8C6BFF;
+    --flld-color-first-canopy-sand-73: #B6A584FF;
+    --flld-color-first-canopy-sand-81: #D0BF9DFF;
+    --flld-color-first-canopy-sand-89: #EBDAB7FF;
+    --flld-color-first-canopy-sand-99: #FFFAD6FF;
 
     /* BIOGLOW Colors - Ramps created using https://color-ramp.com/index-oklch*/
 

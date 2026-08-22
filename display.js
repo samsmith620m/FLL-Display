@@ -45,7 +45,7 @@ let previousTableNames = null;
 let previousSponsorLogos = null;
 
 const FLL_DEFAULT_LOGO_SRC = 'media/firstlegoleague-logo-all-formats/FIRSTLEGOLeague-IconHorizontal/FIRSTLego_iconHorz_RGB.png';
-const SEASON_DEFAULT_WORDMARK_SRC = 'media/unearthed-assets/first_age_fll_unearthed_wordmark_rgb_black.png';
+const SEASON_DEFAULT_WORDMARK_SRC = 'media/fll-bioglow-assets/first_canopy_fll_bioglow_logo_horizontal_rgb_fullcolor.png';
 
 function getLogoSrc(customLogos, selectedValue, defaultSrc) {
     if (selectedValue !== 'default' && customLogos?.[selectedValue]) {
@@ -56,7 +56,7 @@ function getLogoSrc(customLogos, selectedValue, defaultSrc) {
 
 function updateBrandingLogos(state) {
     const fllImg = document.getElementById('logoFLL');
-    const wordmarkImg = document.getElementById('wordmarkUnearthed');
+    const wordmarkImg = document.getElementById('wordmarkSeason');
     if (fllImg) fllImg.src = getLogoSrc(state.customFllLogos, state.selectedFllLogo, FLL_DEFAULT_LOGO_SRC);
     if (wordmarkImg) {
         wordmarkImg.src = getLogoSrc(state.customSeasonWordmarks, state.selectedSeasonWordmark, SEASON_DEFAULT_WORDMARK_SRC);
@@ -499,8 +499,7 @@ function updateMarquee() {
                 ? `style="margin-left:${currentState.seasonWordmarkGap ?? 0}vh;margin-right:0"`
                 : '';
             const seasonLogo2 = `<div id="fllLogoAndWordmark">
-                <img id="logoUnearthed" src="media/unearthed-assets/first_age_fll_unearthed_logo_only_rgb_fullcolor.png" alt="Season Logo">
-                <img id="wordmarkUnearthed" src="${seasonWordmarkSrc}" alt="Season Wordmark" ${wordmarkMargin}>
+                <img id="wordmarkSeason" src="${seasonWordmarkSrc}" alt="Season Wordmark" ${wordmarkMargin}>
             </div>`;
 
             const sponsorLogos = currentState.sponsorLogos || [];

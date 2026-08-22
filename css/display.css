@@ -48,17 +48,21 @@
     --white-bg-base: var(--flld-color-surface-1); /* fallback */
     --white-bg-fancy: rgb(from var(--flld-color-surface-1) r g b / 65%); /* 80% alpha in modern browsers */
 
-    --team-1-color: var(--flld-color-unearthed-red-70);
-    --team-1-color-shade: var(--flld-color-unearthed-red-40);
+    --team-1-color: var(--flld-color-first-canopy-teal-74);
+    --team-1-color-shade: var(--flld-color-first-canopy-teal-40);
+    --team-1-pattern-color: var(--flld-color-first-canopy-teal-61);
 
-    --team-2-color: var(--flld-color-unearthed-green-70);
-    --team-2-color-shade: var(--flld-color-unearthed-green-40);
+    --team-2-color: var(--flld-color-bioglow-moss-74);
+    --team-2-color-shade: var(--flld-color-bioglow-moss-40);
+    --team-2-pattern-color: var(--flld-color-bioglow-moss-66);
 
-    --team-3-color: var(--flld-color-unearthed-yellow-70);
-    --team-3-color-shade: var(--flld-color-unearthed-yellow-40);
+    --team-3-color: var(--flld-color-first-canopy-terracotta-71);
+    --team-3-color-shade: var(--flld-color-first-canopy-terracotta-39);
+    --team-3-pattern-color: var(--flld-color-first-canopy-terracotta-62);
 
-    --team-4-color: var(--flld-color-unearthed-teal-70);
-    --team-4-color-shade: var(--flld-color-unearthed-teal-40);
+    --team-4-color: var(--flld-color-first-canopy-sand-73);
+    --team-4-color-shade: var(--flld-color-first-canopy-sand-40);
+    --team-4-pattern-color: var(--flld-color-first-canopy-sand-65);
 }
 
 html.display {
@@ -75,9 +79,22 @@ html.display {
 .display-page {
     width: 100vw;
     height: 100vh;
-    background-image: url("../media/first-canopy-assets/first_canopy_social_ig_postblank.png");
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
+    background-image: url("../media/first-canopy-assets/first-canopy-scrolling-background.png");
+    background-repeat: repeat-x;
+    background-size: auto 100vh;
+    background-position: 0 0;
+    /* image is 1609x1081px; tile width below (aspect ratio * 100vh) keeps the loop seamless */
+    animation: scroll-background 90s linear infinite;
+}
+
+@keyframes scroll-background {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -148.844vh 0;
+    }
 }
 
 /* --- TEXT DISPLAY --- */
@@ -129,13 +146,8 @@ html.display {
         display: flex;
         align-items: center;
 
-        #logoUnearthed {
-            height: 14vh;
-        }
-
-        #wordmarkUnearthed {
+        #wordmarkSeason {
             height: 16vh;
-            margin: 0 -6px;
         }
     }
 }
@@ -202,14 +214,21 @@ html.display {
     &:nth-child(1){
         .team-info {
             background-color: var(--team-1-color);
-            background-image: url('../media/unearthed-assets/background_flag.svg');
-            background-size: 110%;
-            animation: pan-background 16s ease-in-out infinite;
-            
+
+            &::before {
+                mask-image: url('../media/fll-bioglow-assets/background_jellyfish.svg');
+                -webkit-mask-image: url('../media/fll-bioglow-assets/background_jellyfish.svg');
+                background-color: var(--team-1-pattern-color);
+                animation: pan-background 16s ease-in-out infinite;
+            }
+
             &.cheering {
                 border-color: var(--team-1-color-shade);
-                background-image: none;
                 background-color: transparent;
+
+                &::before {
+                    display: none;
+                }
             }
         }
         .table-name { color: var(--team-1-color-shade); }
@@ -218,14 +237,21 @@ html.display {
     &:nth-child(2){
         .team-info {
             background-color: var(--team-2-color);
-            background-image: url('../media/unearthed-assets/background_cross.svg');
-            background-size: 110%;
-            animation: pan-background 18s ease-in-out infinite;
-            
+
+            &::before {
+                mask-image: url('../media/fll-bioglow-assets/background_leaf.svg');
+                -webkit-mask-image: url('../media/fll-bioglow-assets/background_leaf.svg');
+                background-color: var(--team-2-pattern-color);
+                animation: pan-background 18s ease-in-out infinite;
+            }
+
             &.cheering {
                 border-color: var(--team-2-color-shade);
-                background-image: none;
                 background-color: transparent;
+
+                &::before {
+                    display: none;
+                }
             }
         }
         .table-name { color: var(--team-2-color-shade); }
@@ -234,14 +260,21 @@ html.display {
     &:nth-child(3){
         .team-info {
             background-color: var(--team-3-color);
-            background-image: url('../media/unearthed-assets/background_binoculars.svg');
-            background-size: 110%;
-            animation: pan-background 12s ease-in-out infinite;
-            
+
+            &::before {
+                mask-image: url('../media/fll-bioglow-assets/background_firefly.svg');
+                -webkit-mask-image: url('../media/fll-bioglow-assets/background_firefly.svg');
+                background-color: var(--team-3-pattern-color);
+                animation: pan-background 12s ease-in-out infinite;
+            }
+
             &.cheering {
                 border-color: var(--team-3-color-shade);
-                background-image: none;
                 background-color: transparent;
+
+                &::before {
+                    display: none;
+                }
             }
         }
         .table-name { color: var(--team-3-color-shade); }
@@ -249,14 +282,21 @@ html.display {
     &:nth-child(4){
         .team-info {
             background-color: var(--team-4-color);
-            background-image: url('../media/unearthed-assets/background_eclipse.svg');
-            background-size: 110%;
-            animation: pan-background 14s ease-in-out infinite;
-            
+
+            &::before {
+                mask-image: url('../media/fll-bioglow-assets/background_mushroom.svg');
+                -webkit-mask-image: url('../media/fll-bioglow-assets/background_mushroom.svg');
+                background-color: var(--team-4-pattern-color);
+                animation: pan-background 14s ease-in-out infinite;
+            }
+
             &.cheering {
                 border-color: var(--team-4-color-shade);
-                background-image: none;
                 background-color: transparent;
+
+                &::before {
+                    display: none;
+                }
             }
         }
         .table-name { color: var(--team-4-color-shade); }
@@ -270,12 +310,28 @@ html.display {
     text-align: center;
     justify-items: center;
     align-items: center;
-    
+    position: relative;
+    overflow: hidden;
+    isolation: isolate; /* contain the ::before's negative z-index within this element */
 
     /* Viewport Height Update */
     padding: 2vh;
-    background-position: center;
-    
+
+    /* recolorable SVG pattern layer, sits below the text content */
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        mask-repeat: repeat;
+        -webkit-mask-repeat: repeat;
+        mask-position: center;
+        -webkit-mask-position: center;
+        mask-size: 110%;
+        -webkit-mask-size: 110%;
+    }
+
     &.cheering {
         border-width: 0px .75vh .75vh .75vh;
         border-style: solid;
@@ -308,34 +364,44 @@ html.display {
 
 @keyframes pan-background {
     0%, 100% {
-        background-position: 50% 50%;
+        mask-position: 50% 50%;
+        -webkit-mask-position: 50% 50%;
     }
     10% {
-        background-position: 57% 47%;
+        mask-position: 57% 47%;
+        -webkit-mask-position: 57% 47%;
     }
     20% {
-        background-position: 62% 43%;
+        mask-position: 62% 43%;
+        -webkit-mask-position: 62% 43%;
     }
     30% {
-        background-position: 65% 38%;
+        mask-position: 65% 38%;
+        -webkit-mask-position: 65% 38%;
     }
     40% {
-        background-position: 62% 33%;
+        mask-position: 62% 33%;
+        -webkit-mask-position: 62% 33%;
     }
     50% {
-        background-position: 50% 30%;
+        mask-position: 50% 30%;
+        -webkit-mask-position: 50% 30%;
     }
     60% {
-        background-position: 38% 33%;
+        mask-position: 38% 33%;
+        -webkit-mask-position: 38% 33%;
     }
     70% {
-        background-position: 35% 38%;
+        mask-position: 35% 38%;
+        -webkit-mask-position: 35% 38%;
     }
     80% {
-        background-position: 38% 43%;
+        mask-position: 38% 43%;
+        -webkit-mask-position: 38% 43%;
     }
     90% {
-        background-position: 43% 47%;
+        mask-position: 43% 47%;
+        -webkit-mask-position: 43% 47%;
     }
 }
 
@@ -359,7 +425,8 @@ html.display {
     grid-area: timer;
     padding: 16px 64px 0px;
 
-    background-color: var(--flld-color-gray-10);
+    /* background-color: var(--flld-color-gray-10); */
+    background-color: rgb(from var(--flld-color-gray-10) r g b / 0.8);
     border-radius: var(--flld-border-radius-xl);
 
     /* Viewport Height Update */
@@ -412,35 +479,21 @@ html.display {
     padding: 2vh 0;
     background-color: var(--white-bg-base);
     background-color: var(--white-bg-fancy);
-    border-radius: var(--flld-border-radius-xl) var(--flld-border-radius-xl) 0 0;
+    /* border-radius: var(--flld-border-radius-xl) var(--flld-border-radius-xl) 0 0; */
     overflow: hidden;
     position: relative;
     width: 100%;
-}
 
-/* Edge fade/warp effect */
-#brandBar::before,
-#brandBar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 15vh;
-    z-index: 1;
-    pointer-events: none;
-}
-
-#brandBar::before {
-    left: 0;
-    background: linear-gradient(to right, 
-        var(--white-bg-fancy) 0%, 
+    /* fade the whole bar's opacity at the edges, revealing the page background instead of fading to a solid color */
+    mask-image: linear-gradient(to right,
+        transparent 0%,
+        black 15vh,
+        black calc(100% - 15vh),
         transparent 100%);
-}
-
-#brandBar::after {
-    right: 0;
-    background: linear-gradient(to left, 
-        var(--white-bg-fancy) 0%, 
+    -webkit-mask-image: linear-gradient(to right,
+        transparent 0%,
+        black 15vh,
+        black calc(100% - 15vh),
         transparent 100%);
 }
 
@@ -465,13 +518,8 @@ html.display {
         align-items: center;
         gap: .5vh;
 
-        #logoUnearthed {
-            height: 11vh;
-        }
-
-        #wordmarkUnearthed {
+        #wordmarkSeason {
             height: 12vh;
-            margin: 0 -1.5vh;
         }
     }
 
@@ -527,9 +575,6 @@ html.display {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
     gap: var(--flld-spacing-md);
-    padding: var(--flld-spacing-md);
-    border: 1px solid var(--flld-color-border-base);
-    border-radius: var(--flld-border-radius-lg);
 }
 
 .logo-selector-grid {

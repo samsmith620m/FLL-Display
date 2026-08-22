@@ -416,6 +416,50 @@ textarea {
     padding: var(--flld-spacing-sm);
 }
 
+.accordion {
+    border: 1px solid var(--flld-color-gray-50);
+    border-radius: var(--flld-border-radius-md);
+
+    summary {
+        cursor: pointer;
+        font-weight: var(--flld-font-weight-semibold);
+        line-height: 24px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: var(--flld-spacing-xs);
+        padding: var(--flld-spacing-sm) var(--flld-spacing-md);
+        border-radius: var(--flld-border-radius-md);
+
+
+        &:hover {
+            background-color: var(--flld-color-gray-95);
+        }
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &::before {
+            content: 'chevron_right';
+            font-family: 'Material Symbols Rounded';
+            display: inline-block;
+            font-size: 20px;
+            transition: transform 0.15s ease;
+        }
+    }
+
+    &[open] summary::before {
+        transform: rotate(90deg);
+    }
+
+    .accordion-content {
+        display: grid;
+        gap: var(--flld-spacing-md);
+        padding: var(--flld-spacing-md);
+    }
+}
+
 .form-control {
     display: grid;
     gap: var(--flld-spacing-xs);

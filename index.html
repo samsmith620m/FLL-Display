@@ -231,31 +231,40 @@
                             <button id="clearSponsorsBtn" class="destructive"><span class="material-symbols-rounded" translate="no">close</span>Remove All</button>
                         </div>
                         <div id="sponsorPreview" class="logo-selector-grid"></div>
-                        <button id="selectFromLibraryBtn" class="secondary">Open Sponsor Logo Library</button>
-                        <div id="logoLibrary" style="display: none;"></div>
+                        <details class="accordion" id="logoLibraryAccordion">
+                            <summary>Logo Library</summary>
+                            <div class="accordion-content">
+                                <div id="logoLibrary"></div>
+                            </div>
+                        </details>
                         <input type="file" id="sponsorLogosInput" accept="image/*" multiple style="display: none;">
                     </div>
-                    <div class="form-control">
-                        <label>FLL Logo</label>
-                        <p class="description">If needed, upload a custom FLL logo for your region.</p>
-                        <div id="fllLogoSelector" class="logo-selector-grid"></div>
-                        <input type="file" id="fllLogoInput" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="form-control">
-                        <label>Season Wordmark</label>
-                        <p class="description">If needed, upload a custom season wordmark for your region.</p>
-                        <div id="seasonWordmarkSelector" class="logo-selector-grid"></div>
-                        <input type="file" id="seasonWordmarkInput" accept="image/*" style="display: none;">
-                        <div id="seasonWordmarkSpacingControl" style="display: none;">
-                            <label for="seasonWordmarkGapInput" class="description">Wordmark Spacing</label>
-                            <p class="description">Adjust the space between the season icon and your custom wordmark on the display.</p>
-                            <div style="display: flex; width: clamp(300px, 999px, 50%); align-items: center; gap: var(--flld-spacing-sm);">
-                                <span class="description">Less</span>
-                                <input type="range" id="seasonWordmarkGapInput" min="-2.5" max="2.5" step="0.25" value="0" style="flex: 1;">
-                                <span class="description">More</span>
+                    <details class="accordion">
+                        <summary>Advanced Options</summary>
+                        <div class="accordion-content">
+                            <div class="form-control">
+                                <label>FLL Logo</label>
+                                <p class="description">If needed, upload a custom FLL logo for your region.</p>
+                                <div id="fllLogoSelector" class="logo-selector-grid"></div>
+                                <input type="file" id="fllLogoInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-control">
+                                <label>Season Wordmark</label>
+                                <p class="description">If needed, upload a custom season wordmark for your region.</p>
+                                <div id="seasonWordmarkSelector" class="logo-selector-grid"></div>
+                                <input type="file" id="seasonWordmarkInput" accept="image/*" style="display: none;">
+                                <div id="seasonWordmarkSpacingControl" style="display: none;">
+                                    <label for="seasonWordmarkGapInput" class="description">Wordmark Spacing</label>
+                                    <p class="description">Adjust the space between the season icon and your custom wordmark on the display.</p>
+                                    <div style="display: flex; width: clamp(300px, 999px, 50%); align-items: center; gap: var(--flld-spacing-sm);">
+                                        <span class="description">Less</span>
+                                        <input type="range" id="seasonWordmarkGapInput" min="-2.5" max="2.5" step="0.25" value="0" style="flex: 1;">
+                                        <span class="description">More</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </details>
                 </div>
             </div>
 

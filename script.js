@@ -54,7 +54,7 @@ const teamCount = document.getElementById('teamCount');
 const sponsorLogosInput = document.getElementById('sponsorLogosInput');
 const sponsorPreview = document.getElementById('sponsorPreview');
 const clearSponsorsBtn = document.getElementById('clearSponsorsBtn');
-const selectFromLibraryBtn = document.getElementById('selectFromLibraryBtn');
+const logoLibraryAccordion = document.getElementById('logoLibraryAccordion');
 const logoLibrary = document.getElementById('logoLibrary');
 
 // Branding section elements
@@ -1959,23 +1959,11 @@ soundOptionInputs.forEach(input => {
 });
 
 // Sponsor logo upload handlers
-selectFromLibraryBtn.addEventListener('click', () => {
-    toggleLogoLibrary();
-});
-
-
-function toggleLogoLibrary() {
-    const isVisible = logoLibrary.style.display !== 'none';
-    
-    if (isVisible) {
-        logoLibrary.style.display = 'none';
-        selectFromLibraryBtn.textContent = 'Open Sponsor Logo Library';
-    } else {
+logoLibraryAccordion.addEventListener('toggle', () => {
+    if (logoLibraryAccordion.open) {
         renderLogoLibrary();
-        logoLibrary.style.display = 'grid';
-        selectFromLibraryBtn.innerHTML = '<span class="material-symbols-rounded" translate="no">close</span>Close Sponsor Logo Library';
     }
-}
+});
 
 function renderLogoLibrary() {
     const predefinedItems = availableLogos.map((logo, index) => `
@@ -2003,7 +1991,7 @@ function renderLogoLibrary() {
 }
 
 const FLL_DEFAULT_LOGO_SRC = 'media/firstlegoleague-logo-all-formats/FIRSTLEGOLeague-IconHorizontal/FIRSTLego_iconHorz_RGB.png';
-const SEASON_DEFAULT_WORDMARK_SRC = 'media/unearthed-assets/first_age_fll_unearthed_wordmark_rgb_black.png';
+const SEASON_DEFAULT_WORDMARK_SRC = 'media/fll-bioglow-assets/first_canopy_fll_bioglow_logo_horizontal_rgb_fullcolor.png';
 
 function renderLogoSelector(containerEl, logos, defaultSrc, selectedValue, selectFnName, uploadInputId, deleteFnName) {
     const makeBtn = (isSelected, callArg) => isSelected

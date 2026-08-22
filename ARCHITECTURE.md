@@ -288,7 +288,7 @@ Match dropdowns in the schedule table are populated from the `teams` array. If a
 - `customFllLogos` and `customSeasonWordmarks` are arrays of base64 strings; `selectedFllLogo` / `selectedSeasonWordmark` are either `'default'` or a numeric index.
 - `renderFllLogoSelector()` / `renderSeasonLogoSelector()` in `script.js` render the selector grid (styled like `.library-logo-item`). The selected item's button shows "Selected ✓" (primary); others show "Select" (secondary).
 - `selectFllLogo(value)` and `selectSeasonWordmark(value)` are global functions called by inline `onclick` handlers.
-- `display.js` exposes `getLogoSrc(customLogos, selectedValue, defaultSrc)`. `updateBrandingLogos()` updates `#logoFLL` and `#wordmarkUnearthed` img elements (`#logoUnearthed` is the static season icon, not user-replaceable); `updateMarquee()` uses `getLogoSrc()` for both.
+- `display.js` exposes `getLogoSrc(customLogos, selectedValue, defaultSrc)`. `updateBrandingLogos()` updates `#logoFLL` and `#wordmarkSeason` img elements (`#wordmarkSeason` now shows the combined FIRST Canopy / FLL Bioglow logo by default; the separate season icon was removed); `updateMarquee()` uses `getLogoSrc()` for both.
 
 ---
 

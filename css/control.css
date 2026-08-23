@@ -65,10 +65,10 @@ body {
     padding: var(--flld-spacing-lg);
     display: grid;
     grid-template: 
-        "greeting contributors supporters"
-        "message contributors supporters"
-        "sam contributors supporters"
-        "links contributors supporters" / max-content max-content max-content;
+        "greeting supporters"
+        "message supporters"
+        "sam supporters"
+        "links supporters" / max-content max-content;
     gap: var(--flld-spacing-md) var(--flld-spacing-lg);
     max-width: 100%;
     overflow: hidden;
@@ -90,16 +90,16 @@ body {
     align-items: center;
     gap: var(--flld-spacing-sm);
     grid-area: links;
-}
 
-.footer-links a {
-    text-decoration: none;
-    font-weight: var(--flld-font-weight-bold);
-    color: var(--flld-color-white);
-}
+    a {
+        text-decoration: none;
+        font-weight: var(--flld-font-weight-bold);
+        color: var(--flld-color-white);
 
-.footer-links a:hover {
-    text-decoration: underline;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 .footer-avatar {
@@ -116,16 +116,8 @@ body {
     margin-bottom: -4px;
 }
 
-.footer-contributors {
-    grid-area: contributors;
-}
-
 .footer-supporters {
     grid-area: supporters;
-}
-
-.footer-contributors, .footer-supporters {
-    color: var(--flld-color-white);
     border-left: 1px solid var(--flld-color-white);
     padding-left: var(--flld-spacing-lg);
     display: flex;
@@ -134,7 +126,7 @@ body {
     
     p {
         color: var(--flld-color-white);
-        font-size: var(--flld-font-size-lg);
+        font-size: var(--flld-font-size-md);
         font-weight: var(--flld-font-weight-bold);
     }
 

@@ -101,21 +101,4 @@
 #teamsTable th:nth-child(2),
 #teamsTable td:nth-child(2) {
     width: 1fr;
-    position: relative;
-    
-    div.badge {
-        position: absolute;
-        right: calc(var(--flld-spacing-md) - 2px);
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--flld-color-text-primary);
-        cursor: help;
-        pointer-events: auto;
-        z-index: 1;
-    }
-    
-    /* Add padding to input when warning icon is present */
-    &:has(div.badge) .team-input {
-        padding-right: 160px;
-    }
 }

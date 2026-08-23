@@ -48,21 +48,21 @@
     --white-bg-base: var(--flld-color-surface-1); /* fallback */
     --white-bg-fancy: rgb(from var(--flld-color-surface-1) r g b / 65%); /* 80% alpha in modern browsers */
 
-    --team-1-color: var(--flld-color-first-canopy-teal-74);
-    --team-1-color-shade: var(--flld-color-first-canopy-teal-40);
-    --team-1-pattern-color: var(--flld-color-first-canopy-teal-61);
+    --table-1-background-color: var(--flld-color-first-canopy-teal-74);
+    --table-1-name-color: var(--flld-color-first-canopy-teal-32);
+    --table-1-pattern-color: var(--flld-color-first-canopy-teal-61);
 
-    --team-2-color: var(--flld-color-bioglow-moss-74);
-    --team-2-color-shade: var(--flld-color-bioglow-moss-40);
-    --team-2-pattern-color: var(--flld-color-bioglow-moss-66);
+    --table-2-background-color: var(--flld-color-bioglow-moss-74);
+    --table-2-name-color: var(--flld-color-bioglow-moss-32);
+    --table-2-pattern-color: var(--flld-color-bioglow-moss-66);
 
-    --team-3-color: var(--flld-color-first-canopy-terracotta-71);
-    --team-3-color-shade: var(--flld-color-first-canopy-terracotta-39);
-    --team-3-pattern-color: var(--flld-color-first-canopy-terracotta-62);
+    --table-3-background-color: var(--flld-color-first-canopy-terracotta-71);
+    --table-3-name-color: var(--flld-color-first-canopy-terracotta-31);
+    --table-3-pattern-color: var(--flld-color-first-canopy-terracotta-62);
 
-    --team-4-color: var(--flld-color-first-canopy-sand-73);
-    --team-4-color-shade: var(--flld-color-first-canopy-sand-40);
-    --team-4-pattern-color: var(--flld-color-first-canopy-sand-65);
+    --table-4-background-color: var(--flld-color-first-canopy-sand-73);
+    --table-4-name-color: var(--flld-color-first-canopy-sand-32);
+    --table-4-pattern-color: var(--flld-color-first-canopy-sand-65);
 }
 
 html.display {
@@ -187,12 +187,13 @@ html.display {
         "team1 team2 team3 team4" auto
         "timer timer timer timer" 1fr
         "brand-bar brand-bar brand-bar brand-bar" auto;
+    grid-template-columns: repeat(4, 1fr); /* fallback for static markup before ensureTeamCards() runs */
     padding: 0 6vh;
 
     color: var(--flld-color-text-inverse);
 
     /* Viewport Height Update */
-    gap: 4vh;
+    gap: 4vh 2vh;
 }
 
 /* --- TEAMS DISPLAY --- */
@@ -205,107 +206,97 @@ html.display {
     color: var(--flld-color-text-primary);
     display: flex;
     flex-direction: column;
-
-    &:has(.team-info.cheering) {
-        width: fit-content;
-        justify-self: center;
-    }
+    min-width: 0; /* let the grid item shrink to its equal 1fr track instead of its content's min-content width */
 
     &:nth-child(1){
         .team-info {
-            background-color: var(--team-1-color);
+            color: var(--table-1-name-color);
+            background-color: var(--table-1-background-color);
 
             &::before {
                 mask-image: url('../media/fll-bioglow-assets/background_jellyfish.svg');
                 -webkit-mask-image: url('../media/fll-bioglow-assets/background_jellyfish.svg');
-                background-color: var(--team-1-pattern-color);
+                background-color: var(--table-1-pattern-color);
                 animation: pan-background 16s ease-in-out infinite;
             }
 
             &.cheering {
-                border-color: var(--team-1-color-shade);
-                background-color: transparent;
 
                 &::before {
                     display: none;
                 }
             }
         }
-        .table-name { color: var(--team-1-color-shade); }
+        .table-name { color: var(--table-1-name-color); }
     }
 
     &:nth-child(2){
         .team-info {
-            background-color: var(--team-2-color);
+            color: var(--table-2-name-color);
+            background-color: var(--table-2-background-color);
 
             &::before {
                 mask-image: url('../media/fll-bioglow-assets/background_leaf.svg');
                 -webkit-mask-image: url('../media/fll-bioglow-assets/background_leaf.svg');
-                background-color: var(--team-2-pattern-color);
+                background-color: var(--table-2-pattern-color);
                 animation: pan-background 18s ease-in-out infinite;
             }
 
             &.cheering {
-                border-color: var(--team-2-color-shade);
-                background-color: transparent;
 
                 &::before {
                     display: none;
                 }
             }
         }
-        .table-name { color: var(--team-2-color-shade); }
+        .table-name { color: var(--table-2-name-color); }
     }
     
     &:nth-child(3){
         .team-info {
-            background-color: var(--team-3-color);
+            color: var(--table-3-name-color);
+            background-color: var(--table-3-background-color);
 
             &::before {
                 mask-image: url('../media/fll-bioglow-assets/background_firefly.svg');
                 -webkit-mask-image: url('../media/fll-bioglow-assets/background_firefly.svg');
-                background-color: var(--team-3-pattern-color);
+                background-color: var(--table-3-pattern-color);
                 animation: pan-background 12s ease-in-out infinite;
             }
 
             &.cheering {
-                border-color: var(--team-3-color-shade);
-                background-color: transparent;
 
                 &::before {
                     display: none;
                 }
             }
         }
-        .table-name { color: var(--team-3-color-shade); }
+        .table-name { color: var(--table-3-name-color); }
     }
     &:nth-child(4){
         .team-info {
-            background-color: var(--team-4-color);
+            color: var(--table-4-name-color);
+            background-color: var(--table-4-background-color);
 
             &::before {
                 mask-image: url('../media/fll-bioglow-assets/background_mushroom.svg');
                 -webkit-mask-image: url('../media/fll-bioglow-assets/background_mushroom.svg');
-                background-color: var(--team-4-pattern-color);
+                background-color: var(--table-4-pattern-color);
                 animation: pan-background 14s ease-in-out infinite;
             }
 
             &.cheering {
-                border-color: var(--team-4-color-shade);
-                background-color: transparent;
 
                 &::before {
                     display: none;
                 }
             }
         }
-        .table-name { color: var(--team-4-color-shade); }
+        .table-name { color: var(--table-4-name-color); }
     }
 }
 
 .team-info {
-    border-radius: 0 0 var(--flld-border-radius-xl) var(--flld-border-radius-xl);
-    padding: var(--flld-spacing-md) 0;
     display: grid;
     text-align: center;
     justify-items: center;
@@ -315,7 +306,9 @@ html.display {
     isolation: isolate; /* contain the ::before's negative z-index within this element */
 
     /* Viewport Height Update */
-    padding: 2vh;
+    padding: 1vh;
+    width: 100%;
+    min-width: 0;
 
     /* recolorable SVG pattern layer, sits below the text content */
     &::before {
@@ -333,10 +326,7 @@ html.display {
     }
 
     &.cheering {
-        border-width: 0px .75vh .75vh .75vh;
-        border-style: solid;
         flex-grow: 1;
-        width: min-content;
     }
 
     .team-number {
@@ -347,18 +337,58 @@ html.display {
     .team-name {
         font-size: 3vh;
         font-weight: 600;
-        text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        width: min-content;
+        width: 100%;
+        text-align: center;
+    }
+
+    .team-name-inner {
+        display: inline-block;
+        white-space: nowrap;
+
+        &.overflowing {
+            animation: team-name-bounce var(--marquee-duration, 6s) ease-in-out infinite;
+        }
     }
     
     .cheering-message {
         font-size: 3vh;
         font-weight: 600;
         text-align: center;
-        width: min-content;
+        width: 100%;
+        overflow: hidden; /* without this, nowrap descendants force the grid track to grow to fit them */
+    }
+
+    .cheering-name-line {
+        display: block;
+        overflow: hidden;
         white-space: nowrap;
+        width: 100%;
+        text-align: center;
+        margin-top: 1vh
+    }
+
+    .cheering-name-inner {
+        display: inline-block;
+        white-space: nowrap;
+
+        &.overflowing {
+            animation: team-name-bounce var(--marquee-duration, 6s) ease-in-out infinite;
+        }
+    }
+}
+
+/* Back-and-forth scroll for team names too wide for their equal-width card */
+@keyframes team-name-bounce {
+    0%, 10% {
+        transform: translateX(0);
+    }
+    45%, 55% {
+        transform: translateX(calc(-1 * var(--marquee-distance)));
+    }
+    90%, 100% {
+        transform: translateX(0);
     }
 }
 

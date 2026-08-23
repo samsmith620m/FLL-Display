@@ -332,9 +332,9 @@ function ensureTeamCards() {
         card.innerHTML = `
             <div class="team-info">
                 <div class="team-number display-small">Team ${i+1}</div>
-                <div class="team-name" translate="no"></div>
+                <div class="team-name" translate="no"><span class="team-name-inner"></span></div>
                 <div class="cheering-message" style="display: none;">
-                    <em><span translate="no">🎉</span>&nbsp;<span class="cheering-prefix">Good luck,</span><br/><span class="cheering-team-name" translate="no"></span>!</em>
+                    <em><span translate="no">🎉</span>&nbsp;<span class="cheering-prefix">Good luck,</span><br/><span class="cheering-name-line"><span class="cheering-name-inner"><span class="cheering-team-name" translate="no"></span>!</span></span></em>
                 </div>
             </div>
             <div class="table-name heading-large" translate="no">${tableName}</div>`;
@@ -346,7 +346,7 @@ function ensureTeamCards() {
     const timerAreas = tableNames.map(() => 'timer').join(' ');
     const brandAreas = tableNames.map(() => 'brand-bar').join(' ');
     timerDisplay.style.gridTemplate = `"${teamAreas}" auto "${timerAreas}" 1fr "${brandAreas}" auto`;
-    timerDisplay.style.gridTemplateColumns = `repeat(${tableNames.length}, auto)`;
+    timerDisplay.style.gridTemplateColumns = `repeat(${tableNames.length}, 1fr)`;
     timerDisplay.style.paddingTop = '0';
     if (timerContainer) 
         timerContainer.style.gap = '2vh';
@@ -354,6 +354,47 @@ function ensureTeamCards() {
         timerContainer.style.paddingBottom = '4vh';
     const timerTime = timerDisplay.querySelector('.timer-time');
     if (timerTime) timerTime.style.fontSize = '59vh';
+}
+
+// Set a team-name's text and start/stop its bounce marquee based on whether it overflows the card
+function setTeamNameText(nameEl, html, isHtml = false) {
+    const inner = nameEl.querySelector('.team-name-inner');
+    if (!inner) return;
+    if (isHtml) {
+        inner.innerHTML = html;
+    } else {
+        inner.textContent = html;
+    }
+    updateNameMarquee(nameEl);
+}
+
+// Shared bounce-marquee logic for any container/inner pair whose text may overflow its fixed-width box
+function updateOverflowMarquee(containerEl, innerEl) {
+    if (!containerEl || !innerEl) return;
+    innerEl.classList.remove('overflowing');
+    innerEl.style.removeProperty('--marquee-distance');
+    innerEl.style.removeProperty('--marquee-duration');
+
+    const overflow = innerEl.scrollWidth - containerEl.clientWidth;
+    if (overflow > 1) {
+        const pxPerSecond = 40;
+        const pauseSeconds = 3; // combined pause time at both ends of the bounce
+        const duration = (overflow / pxPerSecond) * 2 + pauseSeconds;
+        innerEl.style.setProperty('--marquee-distance', `${overflow}px`);
+        innerEl.style.setProperty('--marquee-duration', `${duration}s`);
+        innerEl.classList.add('overflowing');
+    }
+}
+
+function updateNameMarquee(nameEl) {
+    if (!nameEl) return;
+    updateOverflowMarquee(nameEl, nameEl.querySelector('.team-name-inner'));
+}
+
+function updateAllNameMarquees() {
+    document.querySelectorAll('.team-name').forEach(updateNameMarquee);
+    document.querySelectorAll('.cheering-name-line').forEach(line =>
+        updateOverflowMarquee(line, line.querySelector('.cheering-name-inner')));
 }
 
 function updateMatchDisplay() {
@@ -415,11 +456,11 @@ function updateMatchDisplay() {
                 // Find and display team name
                 const teamData = teams.find(t => t.teamNumber === teamNumber);
                 if (teamData && teamData.teamName) {
-                    nameEl.textContent = teamData.teamName;
                     nameEl.style.display = 'block';
+                    setTeamNameText(nameEl, teamData.teamName);
                 } else {
-                    nameEl.textContent = '';
                     nameEl.style.display = 'none';
+                    setTeamNameText(nameEl, '');
                 }
             } else {
                 // Slot is empty - check if should be cheering
@@ -440,6 +481,7 @@ function updateMatchDisplay() {
                     if (cheeringMessageEl && cheeringTeamNameEl) {
                         cheeringTeamNameEl.textContent = cheeringTeamName;
                         cheeringMessageEl.style.display = 'block';
+                        updateOverflowMarquee(card.querySelector('.cheering-name-line'), card.querySelector('.cheering-name-inner'));
                     }
                     
                     numEl.innerHTML = '';
@@ -449,8 +491,8 @@ function updateMatchDisplay() {
                     teamInfoEl.classList.remove('cheering');
                     if (cheeringMessageEl) cheeringMessageEl.style.display = 'none';
                     numEl.style.display = 'block';
-                    nameEl.innerHTML = '<em> — </em>';
                     nameEl.style.display = 'block';
+                    setTeamNameText(nameEl, '<em> — </em>', true);
                 }
             }
         } else {
@@ -458,16 +500,13 @@ function updateMatchDisplay() {
             teamInfoEl.classList.remove('cheering');
             numEl.innerHTML = '<em> — </em>';
             numEl.style.display = 'block';
-            nameEl.textContent = '';
+            setTeamNameText(nameEl, '');
             nameEl.style.display = 'none';
         }
     });
-    
-    // Dynamically adjust grid columns based on which cards are cheering
-    const gridColumns = Array.from(cards).map(card => 
-        card.querySelector('.team-info.cheering') ? 'auto' : '1fr'
-    ).join(' ');
-    timerDisplay.style.gridTemplateColumns = gridColumns;
+
+    // Grid columns stay equal 1fr tracks (set by ensureTeamCards) regardless of cheering state; re-measure overflow after any content change
+    updateAllNameMarquees();
 }
 
 // Update marquee with season logos and custom sponsor logos
@@ -555,6 +594,13 @@ function updateMarquee() {
         marquee.appendChild(marqueeContent2);
     });
 }
+
+// Re-check team-name overflow when the viewport changes card widths
+let marqueeResizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(marqueeResizeTimeout);
+    marqueeResizeTimeout = setTimeout(updateAllNameMarquees, 200);
+});
 
 // Listen for state changes from control page (cross-tab communication)
 window.addEventListener('storage', (event) => {

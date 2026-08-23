@@ -550,37 +550,7 @@ function updateTeamName(index, value) {
     updatedTeams[index] = { ...updatedTeams[index], teamName: value };
     updateState({ teams: updatedTeams });
     
-    // Update warning badge for this specific team without re-rendering entire table
-    updateTeamWarningBadge(index, value);
-    
-    // Update the summary warning count
-    updateLongTeamNameWarning();
-    
     renderMatchSchedule(); // Update match schedule dropdowns
-}
-
-function updateTeamWarningBadge(index, teamName) {
-    const tbody = teamsBody;
-    const row = tbody.children[index];
-    if (!row) return;
-    
-    const nameCell = row.children[1]; // Second cell is team name
-    if (!nameCell) return;
-    
-    // Remove existing badge
-    const existingBadge = nameCell.querySelector('.badge');
-    if (existingBadge) {
-        existingBadge.remove();
-    }
-    
-    // Add new badge if name is too long
-    if (teamName && teamName.length > 20) {
-        const warningBadge = document.createElement('div');
-        warningBadge.className = 'badge warning';
-        warningBadge.innerHTML = `<span class="material-symbols-rounded" translate="no">warning</span>${teamName.length} characters`;
-        warningBadge.title = 'Team name is longer than 20 characters and may not display well on screen';
-        nameCell.appendChild(warningBadge);
-    }
 }
 
 function toggleTeamsCollapse() {
@@ -617,9 +587,6 @@ function renderTeams() {
     // Update team count
     const count = timerState.teams.length;
     teamCount.textContent = `${count} team${count !== 1 ? 's' : ''}`;
-    
-    // Update long team name warning
-    updateLongTeamNameWarning();
     
     // Show/hide Delete All button and Collapse button
     if (deleteAllTeamsBtn) {
@@ -680,15 +647,6 @@ function renderTeams() {
         });
         nameCell.appendChild(nameInput);
         
-        // Add warning icon if name is too long
-        if (team.teamName && team.teamName.length > 20) {
-            const warningBadge = document.createElement('div');
-            warningBadge.className = 'badge warning';
-            warningBadge.innerHTML = `<span class="material-symbols-rounded" translate="no">warning</span>${team.teamName.length} characters`;
-            warningBadge.title = 'Team name is longer than 20 characters and may not display well on screen';
-            nameCell.appendChild(warningBadge);
-        }
-        
         row.appendChild(nameCell);
         
         // Actions column
@@ -710,28 +668,6 @@ function renderTeams() {
     // Auto-check teams checklist item
     autoCheckChecklistItems();
     syncChecklistUI();
-    
-    // Update long team name warning
-    updateLongTeamNameWarning();
-}
-
-function updateLongTeamNameWarning() {
-    const longTeamNameWarning = document.getElementById('longTeamNameWarning');
-    const longTeamNameCount = document.getElementById('longTeamNameCount');
-    const longTeamNameText = document.getElementById('longTeamNameText');
-    
-    if (!longTeamNameWarning || !longTeamNameCount || !longTeamNameText) return;
-    
-    const longNameTeams = timerState.teams.filter(team => team.teamName && team.teamName.length > 20);
-    const count = longNameTeams.length;
-    
-    if (count > 0) {
-        longTeamNameCount.textContent = count;
-        longTeamNameText.textContent = count === 1 ? 'team with long name' : 'teams with long names';
-        longTeamNameWarning.style.display = 'flex';
-    } else {
-        longTeamNameWarning.style.display = 'none';
-    }
 }
 
 // Helper functions for display type

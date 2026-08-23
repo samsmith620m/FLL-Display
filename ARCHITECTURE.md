@@ -278,6 +278,8 @@ Match dropdowns in the schedule table are populated from the `teams` array. If a
 
 **Cheering feature** (display only): when a slot is empty and another team is competing in this match, that empty slot shows a "Good luck, [Team Name]!" message. The cheering assignment is hardcoded in `display.js`: slot 0 cheers for slots [1,2,3] in order; slot 1 cheers for [0,3,2]; etc.
 
+**Team name sizing/marquee**: non-cheering team cards are always equal width (`grid-template-columns` uses `1fr` per card, set in both `ensureTeamCards()` and the per-render override at the end of `updateMatchDisplay()`); a cheering card still gets `auto` width so it can shrink to fit-content. `.team-name` fills its card at 100% width and clips overflow; the actual text lives in a nested `.team-name-inner` span. `updateNameMarquee()` in `display.js` measures `scrollWidth` vs. the card width and, only when the name overflows, sets `--marquee-distance`/`--marquee-duration` CSS custom properties and adds `.overflowing`, which triggers the `team-name-bounce` keyframe animation (`css/display.css`) scrolling the name left, pausing, then back right, then repeating. Names that fit stay static and centered. `setTeamNameText()` is the single place that sets a card's name text and re-runs the overflow check; a debounced `window.resize` listener calls `updateAllNameMarquees()` to re-check every visible name when the viewport (and therefore card width) changes.
+
 ---
 
 ## 11. Sponsor Logo System

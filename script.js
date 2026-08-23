@@ -43,6 +43,7 @@ const prevMatchSub = document.getElementById('prevMatchSub');
 const currentMatchSub = document.getElementById('currentMatchSub');
 const nextMatchSub = document.getElementById('nextMatchSub');
 const noMatchesMessage = document.getElementById('noMatchesMessage');
+const matchScheduleRoundsAlert = document.getElementById('matchScheduleRoundsAlert');
 const matchCount = document.getElementById('matchCount');
 const addTeamBtn = document.getElementById('addTeamBtn');
 const deleteAllTeamsBtn = document.getElementById('deleteAllTeamsBtn');
@@ -436,6 +437,7 @@ function initializeUI() {
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
+        if (matchScheduleRoundsAlert) matchScheduleRoundsAlert.style.display = 'none';
     }
     
     // Initialize display button state
@@ -1281,11 +1283,13 @@ function toggleScheduleCollapse() {
         uploadScheduleBtn.style.display = 'none';
         addMatchBtn.style.display = 'none';
         deleteAllMatchesBtn.style.display = 'none';
+        if (matchScheduleRoundsAlert) matchScheduleRoundsAlert.style.display = 'none';
     } else {
         uploadScheduleBtn.style.display = 'inline-flex';
         addMatchBtn.style.display = 'inline-flex';
         // Show delete all button only if there are matches
         deleteAllMatchesBtn.style.display = getScheduledMatches(timerState.matches).length > 0 ? 'inline-flex' : 'none';
+        if (matchScheduleRoundsAlert) matchScheduleRoundsAlert.style.display = '';
     }
     
     renderMatchSchedule();
@@ -1320,9 +1324,15 @@ function renderMatchSchedule() {
     matchNumHeader.style.textAlign = 'right';
     headerRow.appendChild(matchNumHeader);
 
-    // Add editable table name headers
+    // Add table name headers
     timerState.tableNames.forEach((tableName, index) => {
         const th = document.createElement('th');
+
+        if (isScheduleCollapsed) {
+            th.textContent = tableName;
+            headerRow.appendChild(th);
+            return;
+        }
         
         // Create container for input and remove button
         const container = document.createElement('div');
@@ -1481,7 +1491,12 @@ function renderMatchSchedule() {
         
         // Match number column
         const matchNumberCell = document.createElement('td');
-        matchNumberCell.innerHTML = `<span class="match-number">${match.roundMatchNumber || 1} <span class="global-match-number">(${match.matchNumber})</span></span>`;
+        const collapsedMatchLabel = isScheduleCollapsed
+            ? `R${match.roundNumber || 1}, M${match.roundMatchNumber || 1}`
+            : `${match.roundMatchNumber || 1}`;
+        matchNumberCell.innerHTML = isScheduleCollapsed
+            ? `<span class="match-number">${collapsedMatchLabel}</span>`
+            : `<span class="match-number">${collapsedMatchLabel} <span class="global-match-number">(${match.matchNumber})</span></span>`;
         row.appendChild(matchNumberCell);
         
         // Team columns based on tableNames length

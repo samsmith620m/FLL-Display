@@ -233,6 +233,11 @@ a.button {
         min-height: 32px;
         padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
         pointer-events: auto;
+        gap: 0;
+        
+        span {
+            font-size: 20px;
+        }
     }
 }
 

@@ -1472,7 +1472,7 @@ function renderMatchSchedule() {
             const addRoundButton = document.createElement('button');
             addRoundButton.className = 'secondary small round-boundary-button';
             addRoundButton.type = 'button';
-            addRoundButton.textContent = '+ Round';
+            addRoundButton.innerHTML = '<span class="material-symbols-rounded" translate="no">add</span>Round';
             addRoundButton.title = 'Start a new round here';
             addRoundButton.addEventListener('click', () => addRoundMarkerBefore(match.matchNumber));
             boundaryCell.appendChild(addRoundButton);

@@ -155,12 +155,14 @@ function getRoundLabel(match, matchIndex = 0) {
 
 function normalizeSchedule(schedule) {
     let currentRound = 1;
+    let markerCount = 0;
     let roundMatchNumber = 0;
     let matchNumber = 0;
 
     return (schedule || []).map(item => {
         if (isRoundMarker(item)) {
-            currentRound = Math.max(1, parseInt(item.roundNumber, 10) || currentRound);
+            // Renumber sequentially by position so inserting/deleting/reordering markers can't create duplicate round numbers
+            currentRound = ++markerCount;
             roundMatchNumber = 0;
             return { type: 'round-marker', roundNumber: currentRound };
         }

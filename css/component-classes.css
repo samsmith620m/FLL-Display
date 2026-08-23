@@ -198,7 +198,7 @@ a.button {
         border: none;
 
         &:hover:not(:disabled) {
-            background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%)
+            background-color: color-mix(in oklab, var(--flld-color-messaging-critical), white 95%);
         }
     }
 
@@ -220,6 +220,19 @@ a.button {
         width: 44px;
         padding: 0px;
         justify-content: center;
+
+        &.small {
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
+            padding: 0;
+        }
+    }
+
+    &.small {
+        min-height: 32px;
+        padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+        pointer-events: auto;
     }
 }
 
@@ -312,12 +325,6 @@ ul, ol {
     font-weight: var(--flld-font-weight-regular);
     gap: var(--flld-spacing-sm);
     pointer-events: none;
-}
-
-.checklist-button {
-    min-height: 32px;
-    padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
-    pointer-events: auto;
 }
 
 input[type="checkbox"] {

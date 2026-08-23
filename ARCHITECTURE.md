@@ -70,7 +70,10 @@ All persistent data lives in one object, `timerState` in `script.js`, serialized
 
   // Match schedule
   matches: [{
-    matchNumber: number,
+    type: 'round-marker' | undefined,    // marker rows contain no teams
+    matchNumber: number,                 // real matches only; markers have none
+    roundNumber: number,                 // marker value or calculated match value
+    roundMatchNumber: number,            // calculated position within the round
     teams: [teamNumber, teamNumber, ...]  // indices map to tableNames
   }],
   currentMatchNumber: number,            // which match is active
@@ -235,7 +238,7 @@ All four modals follow the same pattern: `display: none` → `display: flex`, `d
 4. If auto-detection succeeds → proceed; else showColumnMappingModal()
 5. columnMappingModal shows headers as dropdowns; updateMappingPreview() shows live preview
 6. User clicks "Import Data" → processCSVWithMapping()
-7. buildMatchesFromRows() groups rows by start time → matches array
+7. buildMatchesFromRows() groups rows by start time and retains the numeric Official Match label as the initial round number
 8. extractTeamsFromRows() deduplicates teams by teamNumber
 9. tableNames auto-detected from unique "Room / Table Location" values
 10. updateState(timerState) broadcasts to display
@@ -244,7 +247,7 @@ All four modals follow the same pattern: `display: none` → `display: flex`, `d
 
 **Template download** (`downloadScheduleTemplateBtn`): generates an in-memory CSV blob with example rows (2 teams × 3 matches, 4 columns: Type, Start Time, Room / Table Location, Team Number, Team Name) and triggers a browser download of `schedule_template.csv`.
 
-**Match grouping rule**: rows with the same `startTime` become one match; each row's `tableLocation` maps to a slot in `tableNames`.
+**Match grouping rule**: rows with the same `startTime` become one match; each row's `tableLocation` maps to a slot in `tableNames`. A numeric value in the match type, such as `Official Match 2`, becomes the initial round grouping. Import creates a `round-marker` row before each new round. Marker rows contain no teams; every following match inherits the last marker's round until another marker appears.
 
 ---
 
@@ -255,15 +258,21 @@ All four modals follow the same pattern: `display: none` → `display: flex`, `d
 { teamNumber: '12345', teamName: 'Team Alpha' }
 
 // Match
-{ matchNumber: 1, teams: ['12345', '67890', '', ''] }
+{ matchNumber: 1, roundNumber: 1, roundMatchNumber: 1, teams: ['12345', '67890', '', ''] }
 // teams array length always equals tableNames.length
 // Empty string = no team at that table for this match
 ```
+
+The schedule may also contain `{ type: 'round-marker', roundNumber: 2 }` items. Marker rows are rendered as full-width schedule rows with no team slots. The control page can insert, delete, or move markers across adjacent matches at any time. Moving a marker changes where that round begins without changing the global order or identity of real matches. A marker cannot move across another marker; its move-up button is disabled at the previous marker/first-match boundary, and its move-down button is disabled at the next marker/end-of-schedule boundary. `matchNumber` remains the global identity used for navigation and timer state, while `roundMatchNumber` is recalculated from the most recent marker. The display renders `Round #, Match #`, resetting the match number after each marker. Legacy saved schedules without markers are migrated to a Round 1 marker with sequential match positions.
 
 `tableNames` drives everything:
 - Its `length` determines how many team cards render on the display (2 or 4)
 - Its `length` determines how many columns appear in the match schedule table
 - Each `teams[i]` corresponds to `tableNames[i]`
+
+Schedule rendering keeps marker rows and real match rows distinct. Real match rows always render one match-number cell, one team cell per current table, and one actions cell when expanded. Marker rows render one full-width cell and never receive team slots. Schedule striping is assigned from the visible marker/match sequence; hover boundary rows do not affect the sequence. Collapsed mode renders the current and next real matches plus the immediately preceding marker when present.
+
+Table additions and removals normalize real match team arrays to the supported table count while preserving marker rows unchanged. Control-page initialization runs after modal elements and confirmation callbacks are registered so a render error cannot prevent delete or remove controls from being wired.
 
 Match dropdowns in the schedule table are populated from the `teams` array. If a team is deleted, any match slot referencing that team number becomes empty.
 

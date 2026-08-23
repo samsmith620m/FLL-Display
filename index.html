@@ -11,7 +11,7 @@
 
     <body class="control-page">
         <div class="alert info banner" role="status" aria-live="polite">
-            <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
+            <span class="material-symbols-rounded outlined" aria-hidden="true" translate="no">info</span>
             Hi there! This site is in rapid development as the design and functionality are iterated on. Please share feedback! 😊
         </div>
         <header class="control-header">
@@ -47,52 +47,52 @@
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistUploadSchedule" tabindex="-1">
                         <span>Upload an event schedule (optional)</span>
-                        <button class="checklist-button tertiary" data-target="uploadScheduleBtn">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="uploadScheduleBtn">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistTeams" tabindex="-1">
                         <span>OR manually enter teams</span>
-                        <button class="checklist-button tertiary" data-target="teamsConfig">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="teamsConfig">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistMatches" tabindex="-1">
                         <span>AND manually enter matches</span>
-                        <button class="checklist-button tertiary" data-target="matchScheduleConfig">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="matchScheduleConfig">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistEventName" tabindex="-1">
                         <span>Enter your event name</span>
-                        <button class="checklist-button rainbow" data-target="eventName">Show me!</button>
+                        <button class="checklist-button small rainbow" data-target="eventName">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistSponsors" tabindex="-1">
                         <span>Select/upload sponsor logos</span>
-                        <button class="checklist-button tertiary" data-target="sponsorLogosSection">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="sponsorLogosSection">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistDisplay" tabindex="-1">
                         <span>Open the display window</span>
-                        <button class="checklist-button tertiary" data-target="openDisplayBtn">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="openDisplayBtn">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistSoundOption" tabindex="-1">
                         <span>Disable match sounds if preferred</span>
-                        <button class="checklist-button tertiary" data-target="soundOptions">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="soundOptions">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistMatchTimer" tabindex="-1">
                         <span>Test the Match Timer display and run a match</span>
-                        <button class="checklist-button tertiary" data-target="displayTypeMatchTimer">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="displayTypeMatchTimer">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistCustomText" tabindex="-1">
                         <span>Type a message and test the Message display</span>
-                        <button class="checklist-button tertiary" data-target="displayText">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="displayText">Show me!</button>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="checklistExpandCollapse" tabindex="-1">
                         <span>Get comfortable with the collapse/expand buttons</span>
-                        <button class="checklist-button tertiary" data-target="toggleChecklistBtn">Show me!</button>
+                        <button class="checklist-button small tertiary" data-target="toggleChecklistBtn">Show me!</button>
                     </label>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                 <div class="card-header">
                     <h2>Match Schedule</h2>
                     <div class="schedule-header-right">
-                        <span id="matchCount">0 matches</span>
+                        <span id="matchCount">0 rounds, 0 matches</span>
                         <div class="button-group">
                             <button id="addMatchBtn" class="secondary">Add Match</button>
                             <button id="uploadScheduleBtn" class="primary"><span class="material-symbols-rounded" translate="no">upload</span>Upload</button>
@@ -163,6 +163,10 @@
                             <button id="toggleScheduleBtn" class="secondary icon-only material-symbols-rounded" title="Collapse"><span translate="no">keyboard_arrow_up</span></button>
                         </div>
                     </div>
+                </div>
+                <div class="alert info">
+                    <span class="material-symbols-rounded outlined" aria-hidden="true" translate="no">info</span>
+                    Matches can be separated into rounds by clicking between match rows!
                 </div>
                 <table id="matchScheduleTable" class="match-table">
                     <thead id="matchScheduleHead"></thead>
@@ -337,7 +341,8 @@
                 <div class="body">
                     <p>Uploading a schedule is the best way to get setup quickly and accurately!</p>
                     <h3>Expected Format</h3>
-                    <p>The uploaded schedule should be a ".CSV" file and should include the columns of information shown below. Robot matches will be grouped by matching start times.</p>
+                    <p>The uploaded schedule should be a ".CSV" file and should include these columns.</p>
+                    <div>
                     <table class="csv-example-table">
                         <thead>
                             <tr>
@@ -390,16 +395,9 @@
                                 <td>12345</td>
                                 <td>Team Alpha</td>
                             </tr>
-                            <tr>
-                                <td>Example Tournament</td>
-                                <td>Official Match 3</td>
-                                <td>2:15 PM</td>
-                                <td>Table 1B</td>
-                                <td>67890</td>
-                                <td>Team Beta</td>
-                            </tr>
                         </tbody>
                     </table>
+                    </div>
                     <div class="alert info">
                         <span class="material-symbols-rounded filled" aria-hidden="true" translate="no">info</span>
                         If you don't know where to get the schedule file from, ask your event director or another leadership volunteer!
@@ -426,7 +424,7 @@
                         <!-- Dynamically populated -->
                     </div>
                     <h3>Preview</h3>
-                    <div style="overflow-x: auto;">
+                    <div>
                         <table id="mappingPreviewTable" class="csv-example-table">
                             <!-- Dynamically populated -->
                         </table>

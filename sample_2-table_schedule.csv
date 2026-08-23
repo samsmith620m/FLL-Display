@@ -1,0 +1,87 @@
+Event Name,Type,Date (mm/dd/yyyy),Start Time,End Time,Room / Table Location,Team Number,Team Name
+Test Event,Official Match 1,,9:40 AM,9:47 AM,Table 1A,73319,Iron Phoenixes
+Test Event,Official Match 2,,12:04 PM,12:11 PM,Table 1A,73319,Iron Phoenixes
+Test Event,Official Match 3,,2:28 PM,2:35 PM,Table 1A,73319,Iron Phoenixes
+Test Event,Official Match 1,,10:20 AM,10:27 AM,Table 1B,9795,The Fantastic Gear Grinding Crew
+Test Event,Official Match 2,,10:52 AM,10:59 AM,Table 1A,9795,The Fantastic Gear Grinding Crew
+Test Event,Official Match 3,,1:40 PM,1:47 PM,Table 1B,9795,The Fantastic Gear Grinding Crew
+Test Event,Official Match 1,,9:32 AM,9:39 AM,Table 1A,5415,Mighty Rangers
+Test Event,Official Match 2,,12:04 PM,12:11 PM,Table 1B,5415,Mighty Rangers
+Test Event,Official Match 3,,12:52 PM,12:59 PM,Table 1B,5415,Mighty Rangers
+Test Event,Official Match 1,,9:24 AM,9:31 AM,Table 1B,56947,Titan Squad
+Test Event,Official Match 2,,11:00 AM,11:07 AM,Table 1B,56947,Titan Squad
+Test Event,Official Match 3,,2:04 PM,2:11 PM,Table 1A,56947,Titan Squad
+Test Event,Official Match 1,,9:48 AM,9:55 AM,Table 1B,15573,Precision Engineering Dream Team
+Test Event,Official Match 2,,11:56 AM,12:03 PM,Table 1B,15573,Precision Engineering Dream Team
+Test Event,Official Match 3,,2:12 PM,2:19 PM,Table 1B,15573,Precision Engineering Dream Team
+Test Event,Official Match 1,,9:48 AM,9:55 AM,Table 1A,55050,Nova Force
+Test Event,Official Match 2,,12:12 PM,12:19 PM,Table 1B,55050,Nova Force
+Test Event,Official Match 3,,1:32 PM,1:39 PM,Table 1B,55050,Nova Force
+Test Event,Official Match 1,,9:24 AM,9:31 AM,Table 1A,7796,Robotics Engineering Task Force
+Test Event,Official Match 2,,11:32 AM,11:39 AM,Table 1A,7796,Robotics Engineering Task Force
+Test Event,Official Match 3,,1:56 PM,2:03 PM,Table 1A,7796,Robotics Engineering Task Force
+Test Event,Official Match 1,,9:40 AM,9:47 AM,Table 1B,5525,Shadow Force
+Test Event,Official Match 2,,12:20 PM,12:27 PM,Table 1B,5525,Shadow Force
+Test Event,Official Match 3,,1:24 PM,1:31 PM,Table 1B,5525,Shadow Force
+Test Event,Official Match 1,,9:16 AM,9:23 AM,Table 1B,66868,Neon Builders
+Test Event,Official Match 2,,11:24 AM,11:31 AM,Table 1A,66868,Neon Builders
+Test Event,Official Match 3,,1:24 PM,1:31 PM,Table 1A,66868,Neon Builders
+Test Event,Official Match 1,,10:12 AM,10:19 AM,Table 1B,9619,Quantum Tinkerers
+Test Event,Official Match 2,,11:48 AM,11:55 AM,Table 1B,9619,Quantum Tinkerers
+Test Event,Official Match 3,,2:12 PM,2:19 PM,Table 1A,9619,Quantum Tinkerers
+Test Event,Official Match 1,,9:08 AM,9:15 AM,Table 1B,31573,Shadow Alliance
+Test Event,Official Match 2,,11:00 AM,11:07 AM,Table 1A,31573,Shadow Alliance
+Test Event,Official Match 3,,1:40 PM,1:47 PM,Table 1A,31573,Shadow Alliance
+Test Event,Official Match 1,,10:36 AM,10:43 AM,Table 1B,1471,Solar Circuit Breakers
+Test Event,Official Match 2,,12:12 PM,12:19 PM,Table 1A,1471,Solar Circuit Breakers
+Test Event,Official Match 3,,1:16 PM,1:23 PM,Table 1B,1471,Solar Circuit Breakers
+Test Event,Official Match 1,,10:28 AM,10:35 AM,Table 1A,60513,Rapid Squad
+Test Event,Official Match 2,,11:24 AM,11:31 AM,Table 1B,60513,Rapid Squad
+Test Event,Official Match 3,,2:20 PM,2:27 PM,Table 1A,60513,Rapid Squad
+Test Event,Official Match 1,,10:20 AM,10:27 AM,Table 1A,3560,Quantum Pioneers
+Test Event,Official Match 2,,11:40 AM,11:47 AM,Table 1A,3560,Quantum Pioneers
+Test Event,Official Match 3,,2:28 PM,2:35 PM,Table 1B,3560,Quantum Pioneers
+Test Event,Official Match 1,,10:44 AM,10:51 AM,Table 1B,45018,Flux
+Test Event,Official Match 2,,12:28 PM,12:35 PM,Table 1B,45018,Flux
+Test Event,Official Match 3,,12:44 PM,12:51 PM,Table 1B,45018,Flux
+Test Event,Official Match 1,,9:56 AM,10:03 AM,Table 1A,983,Nova
+Test Event,Official Match 2,,11:48 AM,11:55 AM,Table 1A,983,Nova
+Test Event,Official Match 3,,1:48 PM,1:55 PM,Table 1B,983,Nova
+Test Event,Official Match 1,,9:16 AM,9:23 AM,Table 1A,3953,Electric Force
+Test Event,Official Match 2,,11:08 AM,11:15 AM,Table 1A,3953,Electric Force
+Test Event,Official Match 3,,2:04 PM,2:11 PM,Table 1B,3953,Electric Force
+Test Event,Official Match 1,,10:04 AM,10:11 AM,Table 1A,1925,Titan Innovators
+Test Event,Official Match 2,,12:20 PM,12:27 PM,Table 1A,1925,Titan Innovators
+Test Event,Official Match 3,,1:08 PM,1:15 PM,Table 1B,1925,Titan Innovators
+Test Event,Official Match 1,,9:08 AM,9:15 AM,Table 1A,22208,Fusion Titans
+Test Event,Official Match 2,,10:52 AM,10:59 AM,Table 1B,22208,Fusion Titans
+Test Event,Official Match 3,,1:16 PM,1:23 PM,Table 1A,22208,Fusion Titans
+Test Event,Official Match 1,,10:12 AM,10:19 AM,Table 1A,7270,Fusion Rebels
+Test Event,Official Match 2,,11:16 AM,11:23 AM,Table 1A,7270,Fusion Rebels
+Test Event,Official Match 3,,1:00 PM,1:07 PM,Table 1B,7270,Fusion Rebels
+Test Event,Official Match 1,,10:28 AM,10:35 AM,Table 1B,95701,Frost Wizards
+Test Event,Official Match 2,,11:32 AM,11:39 AM,Table 1B,95701,Frost Wizards
+Test Event,Official Match 3,,12:44 PM,12:51 PM,Table 1A,95701,Frost Wizards
+Test Event,Official Match 1,,10:36 AM,10:43 AM,Table 1A,91037,Fusion Voyagers
+Test Event,Official Match 2,,11:56 AM,12:03 PM,Table 1A,91037,Fusion Voyagers
+Test Event,Official Match 3,,1:08 PM,1:15 PM,Table 1A,91037,Fusion Voyagers
+Test Event,Official Match 1,,9:32 AM,9:39 AM,Table 1B,1300,Turbo Robotics
+Test Event,Official Match 2,,12:28 PM,12:35 PM,Table 1A,1300,Turbo Robotics
+Test Event,Official Match 3,,1:00 PM,1:07 PM,Table 1A,1300,Turbo Robotics
+Test Event,Official Match 1,,9:00 AM,9:07 AM,Table 1B,821,Vortex Coders
+Test Event,Official Match 2,,12:36 PM,12:43 PM,Table 1A,821,Vortex Coders
+Test Event,Official Match 3,,1:48 PM,1:55 PM,Table 1A,821,Vortex Coders
+Test Event,Official Match 1,,9:00 AM,9:07 AM,Table 1A,43453,Turbo Voyagers
+Test Event,Official Match 2,,11:40 AM,11:47 AM,Table 1B,43453,Turbo Voyagers
+Test Event,Official Match 3,,1:32 PM,1:39 PM,Table 1A,43453,Turbo Voyagers
+Test Event,Official Match 1,,9:56 AM,10:03 AM,Table 1B,8081,Volt
+Test Event,Official Match 2,,11:08 AM,11:15 AM,Table 1B,8081,Volt
+Test Event,Official Match 3,,1:56 PM,2:03 PM,Table 1B,8081,Volt
+Test Event,Official Match 1,,10:04 AM,10:11 AM,Table 1B,80283,Neon Force
+Test Event,Official Match 2,,11:16 AM,11:23 AM,Table 1B,80283,Neon Force
+Test Event,Official Match 3,,2:20 PM,2:27 PM,Table 1B,80283,Neon Force
+Test Event,Official Match 1,,10:44 AM,10:51 AM,Table 1A,1219,Lunar Voyagers
+Test Event,Official Match 2,,12:36 PM,12:43 PM,Table 1B,1219,Lunar Voyagers
+Test Event,Official Match 3,,12:52 PM,12:59 PM,Table 1A,1219,Lunar Voyagers
+Test Event,Closing Ceremony,,,,,,
+Test Event,Opening Ceremony,,,,,,

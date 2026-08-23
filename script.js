@@ -96,7 +96,7 @@ const defaultState = {
     // Teams
     teams: [], // Array of team objects: { teamNumber: '1234', teamName: 'Team Name' }
     // Match schedule
-    matches: [], // Array of match objects: { matchNumber: 1, teams: [1234, 5678, 9012, 3456] }
+    matches: [], // Array of match objects: { matchNumber: 1, roundNumber: 1, roundMatchNumber: 1, teams: [...] }
     currentMatchNumber: 1, // Currently displayed/active match
     tableNames: ['Table 1A', 'Table 1B'], // Array of table names, supports 1-4 tables
     timerMode: 'scheduled', // 'scheduled' | 'timeronly'
@@ -140,6 +140,74 @@ let isScheduleCollapsed = false; // Track schedule collapse state
 let isTeamsCollapsed = false; // Track teams collapse state
 let warningPlayed = false; // Track if warning sound has played for this match
 
+function isRoundMarker(item) {
+    return item?.type === 'round-marker';
+}
+
+function getScheduledMatches(schedule) {
+    return (schedule || []).filter(item => !isRoundMarker(item));
+}
+
+function getRoundLabel(match, matchIndex = 0) {
+    return `R${match?.roundNumber || 1}, Match ${match?.roundMatchNumber || matchIndex + 1}`;
+}
+
+function normalizeSchedule(schedule) {
+    let currentRound = 1;
+    let roundMatchNumber = 0;
+    let matchNumber = 0;
+
+    return (schedule || []).map(item => {
+        if (isRoundMarker(item)) {
+            currentRound = Math.max(1, parseInt(item.roundNumber, 10) || currentRound);
+            roundMatchNumber = 0;
+            return { type: 'round-marker', roundNumber: currentRound };
+        }
+
+        matchNumber++;
+        roundMatchNumber++;
+        return {
+            ...item,
+            matchNumber,
+            roundNumber: currentRound,
+            roundMatchNumber
+        };
+    });
+}
+
+function normalizeMatchTeamSlots(schedule, tableCount) {
+    return (schedule || []).map(item => {
+        if (isRoundMarker(item)) return item;
+        return {
+            ...item,
+            teams: [...(item.teams || []), ...new Array(tableCount).fill('')].slice(0, tableCount)
+        };
+    });
+}
+
+function createScheduleWithMarkers(matches) {
+    const schedule = [];
+    let previousRound = null;
+    let matchNumber = 0;
+    matches.forEach(match => {
+        matchNumber++;
+        const roundNumber = Math.max(1, parseInt(match.roundNumber, 10) || 1);
+        const normalizedMatch = { ...match, matchNumber, roundNumber };
+        if (roundNumber !== previousRound) {
+            schedule.push({ type: 'round-marker', roundNumber });
+            previousRound = roundNumber;
+        }
+        schedule.push(normalizedMatch);
+    });
+    return normalizeSchedule(schedule);
+}
+
+function updateMatchRounds(schedule) {
+    const normalized = normalizeSchedule(schedule);
+    updateState({ matches: normalized });
+    renderMatchSchedule();
+}
+
 // Format seconds into M:SS (no styling changes)
 function formatTimer(seconds) {
     const m = Math.floor(seconds / 60);
@@ -178,6 +246,13 @@ function loadState() {
             if (!timerState.tableNames || !Array.isArray(timerState.tableNames) || timerState.tableNames.length === 0) {
                 timerState.tableNames = ['1A', '1B'];
             }
+            timerState.tableNames = timerState.tableNames.slice(0, 4);
+
+            const savedSchedule = timerState.matches || [];
+            const normalizedSchedule = savedSchedule.some(isRoundMarker)
+                ? normalizeSchedule(savedSchedule)
+                : createScheduleWithMarkers(savedSchedule.map(match => ({ ...match, roundNumber: 1 })));
+            timerState.matches = normalizeMatchTeamSlots(normalizedSchedule, timerState.tableNames.length);
             
             // Load collapsed states
             isScheduleCollapsed = timerState.isScheduleCollapsed || false;
@@ -355,7 +430,7 @@ function initializeUI() {
         deleteAllTeamsBtn.style.display = 'none';
     }
     
-    if (isScheduleCollapsed && timerState.matches.length >= 3) {
+    if (isScheduleCollapsed && getScheduledMatches(timerState.matches).length >= 3) {
         toggleScheduleBtn.innerHTML = '<span translate="no">keyboard_arrow_down</span>';
         toggleScheduleBtn.title = 'Expand';
         uploadScheduleBtn.style.display = 'none';
@@ -381,11 +456,14 @@ function addTable() {
     
     const updatedTableNames = [...timerState.tableNames, newName];
     
-    // Expand all matches to include empty slot for new table
-    const updatedMatches = timerState.matches.map(match => ({
-        ...match,
-        teams: [...match.teams, '']
-    }));
+    // Expand only real matches; marker rows intentionally have no team slots.
+    const updatedMatches = timerState.matches.map(match => {
+        if (isRoundMarker(match)) return match;
+        return {
+            ...match,
+            teams: [...(match.teams || []), ''].slice(0, updatedTableNames.length)
+        };
+    });
     
     updateState({ 
         tableNames: updatedTableNames,
@@ -409,7 +487,14 @@ function removeTable() {
 
 function performRemoveTable() {
     const updatedTableNames = timerState.tableNames.slice(0, -1);
-    updateState({ tableNames: updatedTableNames });
+    const updatedMatches = timerState.matches.map(match => {
+        if (isRoundMarker(match)) return match;
+        return {
+            ...match,
+            teams: (match.teams || []).slice(0, updatedTableNames.length)
+        };
+    });
+    updateState({ tableNames: updatedTableNames, matches: updatedMatches });
     renderMatchSchedule();
 }
 
@@ -731,7 +816,8 @@ function updateOpenDisplayButton() {
 
 // Update match control buttons based on state
 function updateMatchControlButtons() {
-    const hasMatches = timerState.matches.length > 0;
+    const scheduledMatches = getScheduledMatches(timerState.matches);
+    const hasMatches = scheduledMatches.length > 0;
     const isMatchTimer = timerState.displayType === 'match-timer';
     const isSimple = timerState.timerMode === 'timeronly';
     const currentMatch = timerState.currentMatchNumber;
@@ -745,9 +831,12 @@ function updateMatchControlButtons() {
         const prevMatch = currentMatch - 1;
         const nextMatch = currentMatch + 1;
 
-        prevMatchSub.textContent = prevMatch >= 1 ? `Match ${prevMatch}` : '--';
-        currentMatchSub.textContent = `Match ${currentMatch} | ${formatTimer(timerState.timerCurrentTime)}`;
-        nextMatchSub.textContent = nextMatch <= timerState.matches.length ? `Match ${nextMatch}` : '--';
+        const currentMatchData = scheduledMatches.find(match => match.matchNumber === currentMatch);
+        const previousMatchData = scheduledMatches.find(match => match.matchNumber === prevMatch);
+        const nextMatchData = scheduledMatches.find(match => match.matchNumber === nextMatch);
+        prevMatchSub.textContent = previousMatchData ? getRoundLabel(previousMatchData) : '--';
+        currentMatchSub.textContent = `${currentMatchData ? getRoundLabel(currentMatchData) : `Match ${currentMatch}`} | ${formatTimer(timerState.timerCurrentTime)}`;
+        nextMatchSub.textContent = nextMatchData ? getRoundLabel(nextMatchData) : '--';
     } else {
         prevMatchSub.textContent = 'Match --';
         currentMatchSub.textContent = 'Match --';
@@ -757,7 +846,7 @@ function updateMatchControlButtons() {
     // Enable/disable match navigation based on available matches and timer state
     // Disable navigation while match is running
     prevMatchBtn.disabled = !hasMatches || currentMatch <= 1 || isRunning;
-    nextMatchBtn.disabled = !hasMatches || currentMatch >= timerState.matches.length || isRunning;
+    nextMatchBtn.disabled = !hasMatches || currentMatch >= scheduledMatches.length || isRunning;
 
     // Start/Abort button logic
     if (!isMatchTimer || (!hasMatches && !isSimple)) {
@@ -809,7 +898,7 @@ function previousMatch() {
 
 // Navigate to next match
 function nextMatch() {
-    if (timerState.currentMatchNumber < timerState.matches.length) {
+    if (timerState.currentMatchNumber < getScheduledMatches(timerState.matches).length) {
         updateState({ currentMatchNumber: timerState.currentMatchNumber + 1 });
         updateMatchControlButtons();
         renderMatchSchedule();
@@ -1114,17 +1203,19 @@ function stopTimerCountdown() {
 
 // Match Schedule Functions
 function addMatch() {
-    const matchNumber = timerState.matches.length + 1;
+    const scheduledMatches = getScheduledMatches(timerState.matches);
     const newMatch = {
-        matchNumber: matchNumber,
         teams: ['', '', '', ''] // Empty team slots
     };
-    
-    const updatedMatches = [...timerState.matches, newMatch];
+
+    const updatedSchedule = scheduledMatches.length
+        ? [...timerState.matches, newMatch]
+        : [{ type: 'round-marker', roundNumber: 1 }, newMatch];
+    const updatedMatches = normalizeSchedule(updatedSchedule);
     const updates = { matches: updatedMatches };
     
     // If this is the first match, set it as current
-    if (timerState.matches.length === 0) {
+    if (scheduledMatches.length === 0) {
         updates.currentMatchNumber = 1;
     }
     
@@ -1133,19 +1224,69 @@ function addMatch() {
     console.log('Match added:', newMatch);
 }
 
+function addRoundMarkerBefore(matchNumber) {
+    const matchIndex = timerState.matches.findIndex(match => match.matchNumber === matchNumber);
+    if (matchIndex < 0) return;
+    const previousMatch = getScheduledMatches(timerState.matches)
+        .find(match => match.matchNumber === matchNumber - 1);
+    const marker = { type: 'round-marker', roundNumber: (previousMatch?.roundNumber || 1) + 1 };
+    const updatedSchedule = [...timerState.matches];
+    updatedSchedule.splice(matchIndex, 0, marker);
+    updateMatchRounds(updatedSchedule);
+}
+
+function deleteRoundMarker(markerIndex) {
+    const updatedSchedule = timerState.matches.filter((_, index) => index !== markerIndex);
+    updateMatchRounds(updatedSchedule);
+}
+
+function moveRoundMarker(markerIndex, direction) {
+    const targetIndex = markerIndex + direction;
+    if (markerIndex < 0 || targetIndex < 0 || targetIndex >= timerState.matches.length) return;
+    if (!isRoundMarker(timerState.matches[markerIndex]) || isRoundMarker(timerState.matches[targetIndex])) return;
+
+    const updatedSchedule = [...timerState.matches];
+    [updatedSchedule[markerIndex], updatedSchedule[targetIndex]] = [
+        updatedSchedule[targetIndex],
+        updatedSchedule[markerIndex]
+    ];
+    updateMatchRounds(updatedSchedule);
+}
+
+function attachRoundBoundaryHover(row, boundaryRow, edge) {
+    row.addEventListener('mousemove', (event) => {
+        if (boundaryRow._hideTimer) clearTimeout(boundaryRow._hideTimer);
+        const bounds = row.getBoundingClientRect();
+        const distanceFromTop = event.clientY - bounds.top;
+        const distanceFromBottom = bounds.bottom - event.clientY;
+        const isNearEdge = edge === 'top' ? distanceFromTop <= 8 : distanceFromBottom <= 8;
+        boundaryRow.classList.toggle('boundary-visible', isNearEdge);
+    });
+    row.addEventListener('mouseleave', () => {
+        boundaryRow._hideTimer = setTimeout(() => {
+            boundaryRow.classList.remove('boundary-visible');
+        }, 250);
+    });
+
+    const button = boundaryRow.querySelector('.round-boundary-button');
+    button?.addEventListener('mouseenter', () => {
+        if (boundaryRow._hideTimer) clearTimeout(boundaryRow._hideTimer);
+        boundaryRow.classList.add('boundary-visible');
+    });
+    button?.addEventListener('mouseleave', () => {
+        boundaryRow.classList.remove('boundary-visible');
+    });
+}
+
 function deleteMatch(matchNumber) {
-    const updatedMatches = timerState.matches
-        .filter(match => match.matchNumber !== matchNumber)
-        .map((match, index) => ({
-            ...match,
-            matchNumber: index + 1 // Renumber matches
-        }));
+    const updatedSchedule = timerState.matches.filter(match => match.matchNumber !== matchNumber);
+    const updatedMatches = normalizeSchedule(updatedSchedule);
     
     // Handle current match selection when removing matches
     let newCurrentMatch = timerState.currentMatchNumber;
     if (matchNumber === timerState.currentMatchNumber) {
         // If removing current match, select the first available match or 1
-        newCurrentMatch = updatedMatches.length > 0 ? 1 : 1;
+        newCurrentMatch = getScheduledMatches(updatedMatches).length > 0 ? 1 : 1;
     } else if (matchNumber < timerState.currentMatchNumber) {
         // If removing a match before current, adjust current match number
         newCurrentMatch = timerState.currentMatchNumber - 1;
@@ -1208,7 +1349,7 @@ function toggleScheduleCollapse() {
         uploadScheduleBtn.style.display = 'inline-flex';
         addMatchBtn.style.display = 'inline-flex';
         // Show delete all button only if there are matches
-        deleteAllMatchesBtn.style.display = timerState.matches.length > 0 ? 'inline-flex' : 'none';
+        deleteAllMatchesBtn.style.display = getScheduledMatches(timerState.matches).length > 0 ? 'inline-flex' : 'none';
     }
     
     renderMatchSchedule();
@@ -1219,9 +1360,11 @@ function renderMatchSchedule() {
     const noMatches = noMatchesMessage;
     const table = matchScheduleTable;
     
-    // Update match count
-    const count = timerState.matches.length;
-    matchCount.textContent = `${count} match${count !== 1 ? 'es' : ''}`;
+    // Update round and match counts
+    const scheduledMatches = getScheduledMatches(timerState.matches);
+    const count = scheduledMatches.length;
+    const roundCount = new Set(scheduledMatches.map(match => match.roundNumber || 1)).size;
+    matchCount.textContent = `${roundCount} round${roundCount !== 1 ? 's' : ''}, ${count} match${count !== 1 ? 'es' : ''}`;
     
     // Show/hide Delete All button and Collapse button
     if (deleteAllMatchesBtn) {
@@ -1237,7 +1380,8 @@ function renderMatchSchedule() {
     // Build header dynamically from tableNames
     const headerRow = document.createElement('tr');
     const matchNumHeader = document.createElement('th');
-    matchNumHeader.textContent = 'Match Number';
+    matchNumHeader.textContent = 'Match';
+    matchNumHeader.style.textAlign = 'right';
     headerRow.appendChild(matchNumHeader);
 
     // Add editable table name headers
@@ -1300,7 +1444,7 @@ function renderMatchSchedule() {
     // Clear existing rows
     tbody.innerHTML = '';
     
-    if (timerState.matches.length === 0) {
+    if (count === 0) {
         table.style.display = 'none';
         noMatches.style.display = 'block';
         isScheduleCollapsed = false; // Reset collapse state
@@ -1312,21 +1456,87 @@ function renderMatchSchedule() {
     
     // Filter matches if collapsed: show only current and next
     let matchesToDisplay = timerState.matches;
-    if (isScheduleCollapsed && timerState.matches.length > 0) {
-        const currentMatchNum = timerState.currentMatchNumber;
-        matchesToDisplay = timerState.matches.filter(match => {
-            const diff = match.matchNumber - currentMatchNum;
-            return diff >= 0 && diff <= 1; // Show current and next only
-        });
-        // If filtered list is empty (edge case), show all
-        if (matchesToDisplay.length === 0) {
-            matchesToDisplay = timerState.matches;
-        }
+    if (isScheduleCollapsed && count > 0) {
+        const scheduledMatches = getScheduledMatches(timerState.matches);
+        const currentMatchIndex = Math.max(0, scheduledMatches.findIndex(match =>
+            match.matchNumber === timerState.currentMatchNumber));
+        const selectedMatches = scheduledMatches.slice(currentMatchIndex, currentMatchIndex + 2);
+        const firstSelectedMatch = selectedMatches[0];
+        const firstSelectedIndex = timerState.matches.findIndex(match => match === firstSelectedMatch);
+        const precedingItem = timerState.matches[firstSelectedIndex - 1];
+        matchesToDisplay = precedingItem && isRoundMarker(precedingItem)
+            ? [precedingItem, ...selectedMatches]
+            : selectedMatches;
     }
-    
-    // Create rows for each match
-    matchesToDisplay.forEach(match => {
+
+    // Create rows for each schedule item
+    let scheduleStripeIndex = 0;
+    matchesToDisplay.forEach((match, scheduleIndex) => {
+        let boundaryRow = null;
+        if (isRoundMarker(match)) {
+            const markerRow = document.createElement('tr');
+            markerRow.className = 'round-marker-row';
+            if (scheduleStripeIndex % 2 === 1) markerRow.classList.add('schedule-row-alt');
+            scheduleStripeIndex++;
+            const markerCell = document.createElement('td');
+            markerCell.colSpan = timerState.tableNames.length + (isScheduleCollapsed ? 1 : 2);
+            const markerLabel = document.createElement('span');
+            markerLabel.className = 'round-marker-label';
+            markerLabel.textContent = `Round ${match.roundNumber}`;
+            markerCell.appendChild(markerLabel);
+            if (!isScheduleCollapsed && match.roundNumber > 1) {
+                const markerActions = document.createElement('span');
+                markerActions.className = 'round-marker-actions';
+                const markerIndex = timerState.matches.indexOf(match);
+                const moveUpBtn = document.createElement('button');
+                moveUpBtn.className = 'secondary icon-only small material-symbols-rounded';
+                moveUpBtn.title = 'Move round marker up';
+                moveUpBtn.innerHTML = '<span translate="no">north</span>';
+                moveUpBtn.disabled = markerIndex <= 0 || isRoundMarker(timerState.matches[markerIndex - 1]);
+                moveUpBtn.addEventListener('click', () => moveRoundMarker(markerIndex, -1));
+                const moveDownBtn = document.createElement('button');
+                moveDownBtn.className = 'secondary icon-only small material-symbols-rounded';
+                moveDownBtn.title = 'Move round marker down';
+                moveDownBtn.innerHTML = '<span translate="no">south</span>';
+                moveDownBtn.disabled = markerIndex >= timerState.matches.length - 1 || isRoundMarker(timerState.matches[markerIndex + 1]);
+                moveDownBtn.addEventListener('click', () => moveRoundMarker(markerIndex, 1));
+                const deleteMarkerBtn = document.createElement('button');
+                deleteMarkerBtn.className = 'destructive icon-only small material-symbols-rounded';
+                deleteMarkerBtn.title = 'Delete round marker';
+                deleteMarkerBtn.innerHTML = '<span translate="no">delete</span>';
+                deleteMarkerBtn.addEventListener('click', () => {
+                    deleteRoundMarker(timerState.matches.indexOf(match));
+                });
+                markerActions.append(moveUpBtn, moveDownBtn, deleteMarkerBtn);
+                markerCell.appendChild(markerActions);
+            }
+            markerRow.appendChild(markerCell);
+            tbody.appendChild(markerRow);
+            return;
+        }
+
+        const previousItem = matchesToDisplay[scheduleIndex - 1];
+        if (!isScheduleCollapsed && previousItem && !isRoundMarker(previousItem)) {
+            boundaryRow = document.createElement('tr');
+            boundaryRow.className = 'round-boundary-row';
+            const boundaryCell = document.createElement('td');
+            boundaryCell.colSpan = timerState.tableNames.length + 2;
+            const addRoundButton = document.createElement('button');
+            addRoundButton.className = 'secondary small round-boundary-button';
+            addRoundButton.type = 'button';
+            addRoundButton.textContent = '+ Round';
+            addRoundButton.title = 'Start a new round here';
+            addRoundButton.addEventListener('click', () => addRoundMarkerBefore(match.matchNumber));
+            boundaryCell.appendChild(addRoundButton);
+            boundaryRow.appendChild(boundaryCell);
+            attachRoundBoundaryHover(tbody.lastElementChild, boundaryRow, 'bottom');
+            tbody.appendChild(boundaryRow);
+        }
+
         const row = document.createElement('tr');
+        row.className = 'match-schedule-row';
+        if (scheduleStripeIndex % 2 === 1) row.classList.add('schedule-row-alt');
+        scheduleStripeIndex++;
         
         // Add highlighting for current match
         if (match.matchNumber === timerState.currentMatchNumber) {
@@ -1335,7 +1545,7 @@ function renderMatchSchedule() {
         
         // Match number column
         const matchNumberCell = document.createElement('td');
-        matchNumberCell.innerHTML = `<span class="match-number">${match.matchNumber}</span>`;
+        matchNumberCell.innerHTML = `<span class="match-number">${match.roundMatchNumber || 1} <span class="global-match-number">(${match.matchNumber})</span></span>`;
         row.appendChild(matchNumberCell);
         
         // Team columns based on tableNames length
@@ -1390,6 +1600,7 @@ function renderMatchSchedule() {
         }
         
         tbody.appendChild(row);
+        if (boundaryRow) attachRoundBoundaryHover(row, boundaryRow, 'top');
     });
     
     // Auto-check matches checklist item
@@ -1433,7 +1644,8 @@ function parseCSV(text) {
         const team = cols[idx.team]?.trim();
         const teamName = cols[idx.teamName]?.trim() || '';
         if (!start || !table || !team) continue;
-        rows.push({ start, table, team, teamName });
+        const roundMatch = matchType.match(/(\d+)/);
+        rows.push({ start, table, team, teamName, roundNumber: roundMatch ? parseInt(roundMatch[1], 10) : null });
     }
     return { rows, eventName };
 }
@@ -1525,7 +1737,12 @@ function buildMatchesFromRows(rows) {
             }
         });
         
-        matches.push({ matchNumber: matches.length + 1, teams: slots });
+        const sourceRounds = group.map(entry => entry.roundNumber).filter(Number.isInteger);
+        matches.push({
+            matchNumber: matches.length + 1,
+            roundNumber: sourceRounds.length ? sourceRounds[0] : 1,
+            teams: slots
+        });
     });
     
     return matches;
@@ -1710,7 +1927,8 @@ function processCSVWithMapping() {
         
         if (!start || !table || !team) return;
         
-        rows.push({ start, table, team, teamName });
+        const roundMatch = matchType.match(/(\d+)/);
+        rows.push({ start, table, team, teamName, roundNumber: roundMatch ? parseInt(roundMatch[1], 10) : null });
     });
     
     if (!rows.length) {
@@ -1718,7 +1936,7 @@ function processCSVWithMapping() {
         return;
     }
     
-    const matches = buildMatchesFromRows(rows);
+    const matches = createScheduleWithMarkers(buildMatchesFromRows(rows));
     const extractedTeams = extractTeamsFromRows(rows);
     
     // Merge with existing teams
@@ -1729,7 +1947,7 @@ function processCSVWithMapping() {
     const stateUpdate = { 
         matches, 
         teams: allTeams,
-        currentMatchNumber: matches.length ? 1 : 1 
+        currentMatchNumber: getScheduledMatches(matches).length ? 1 : 1
     };
     
     if (eventName && (!timerState.eventName || timerState.eventName.trim() === '')) {
@@ -1747,7 +1965,7 @@ function processCSVWithMapping() {
         ? ` ${newTeams.length} new team(s) added.`
         : ' No new teams (all teams already exist).';
     const eventNameMessage = (eventName && stateUpdate.eventName) ? ` Event name set to "${eventName}".` : '';
-    alert(`Imported ${matches.length} matches.${teamsMessage}${eventNameMessage}`);
+    alert(`Imported ${getScheduledMatches(matches).length} matches.${teamsMessage}${eventNameMessage}`);
     
     // Close modal and clean up
     document.getElementById('columnMappingModal').style.display = 'none';
@@ -2307,12 +2525,6 @@ document.querySelectorAll('input[name="timerMode"]').forEach(radio => {
     });
 });
 
-// Initialize when page loads
-loadState();
-initializeUI();
-renderSponsorPreview();
-console.log('Control page initialized with persistent configuration');
-
 // About button - scroll to footer
 const aboutBtn = document.getElementById('aboutBtn');
 if (aboutBtn) {
@@ -2541,3 +2753,9 @@ clearSponsorsModal.addEventListener('click', (e) => {
         closeConfirmationModal(clearSponsorsModal);
     }
 });
+
+// Initialize after all DOM handlers and confirmation callbacks are registered.
+loadState();
+initializeUI();
+renderSponsorPreview();
+console.log('Control page initialized with persistent configuration');

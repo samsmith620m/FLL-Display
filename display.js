@@ -118,6 +118,16 @@ function formatTime(seconds) {
     return `<span class="colon">${minutes}:</span>${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
+function isRoundMarker(item) {
+    return item?.type === 'round-marker';
+}
+
+function getRoundLabel(match, matchIndex) {
+    const roundNumber = match?.roundNumber || 1;
+    const roundMatchNumber = match?.roundMatchNumber || (matchIndex + 1);
+    return `Round ${roundNumber}, Match ${roundMatchNumber}`;
+}
+
 // Update display based on current state
 function updateDisplay() {
     // Show/hide display modes based on type
@@ -347,8 +357,8 @@ function ensureTeamCards() {
 }
 
 function updateMatchDisplay() {
+    const matches = (currentState.matches || []).filter(match => !isRoundMarker(match));
     const currentMatchNumber = currentState.currentMatchNumber || 1;
-    const matches = currentState.matches || [];
     const divider = document.querySelector('.match-divider');
     const isSimple = currentState.timerMode === 'timeronly';
 
@@ -361,7 +371,11 @@ function updateMatchDisplay() {
 
     const matchNumberSpan = displayMatchNumber ? displayMatchNumber.parentElement : null;
     if (matchNumberSpan) matchNumberSpan.style.display = isSimple ? 'none' : '';
-    if (displayMatchNumber) displayMatchNumber.textContent = currentMatchNumber;
+    const currentMatchIndex = matches.findIndex(match => match.matchNumber === currentMatchNumber);
+    const currentMatch = matches[currentMatchIndex];
+    if (displayMatchNumber) displayMatchNumber.textContent = !isSimple
+        ? getRoundLabel(currentMatch, currentMatchIndex)
+        : '--';
     if (displayMatchTotal) displayMatchTotal.textContent = matches.length || '--';
 
     // Only recreate team cards if table names or timer mode changed
@@ -371,7 +385,6 @@ function updateMatchDisplay() {
         ensureTeamCards();
         previousTableNames = tableNamesString;
     }
-    const currentMatch = matches.find(m => m.matchNumber === currentMatchNumber);
     const cards = timerDisplay.querySelectorAll('.team-card');
     const teams = currentState.teams || [];
     

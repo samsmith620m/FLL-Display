@@ -244,3 +244,72 @@ body {
         }
     }
 }
+
+.match-table {
+    .round-marker-row {
+        background-color: var(--flld-color-surface-1);
+        font-weight: var(--flld-font-weight-semibold);
+        height: 41px;
+
+        td {
+            padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+            text-align: left;
+        }
+    }
+
+    .round-marker-row.schedule-row-alt {
+        background-color: var(--flld-color-surface-2);
+    }
+
+    .round-marker-label {
+        display: inline-block;
+        margin-right: var(--flld-spacing-sm);
+    }
+
+    .round-marker-actions {
+        display: inline-flex;
+        gap: var(--flld-spacing-xs);
+        vertical-align: middle;
+    }
+
+    .round-boundary-row {
+        height: 0;
+        position: relative;
+        background-color: transparent;
+        pointer-events: none;
+
+        td {
+            height: 0;
+            padding: 0;
+            position: relative;
+            border: none;
+        }
+    }
+
+    .round-boundary-button {
+        display: flex;
+        position: absolute;
+        z-index: 1;
+        left: var(--flld-spacing-md);
+        top: -1rem;
+        min-height: 32px;
+        padding: var(--flld-spacing-xs) var(--flld-spacing-sm);
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+        pointer-events: auto;
+    }
+
+    .match-schedule-row {
+        position: relative;
+    }
+
+    .round-boundary-row.boundary-visible .round-boundary-button {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .round-boundary-row.boundary-visible .round-boundary-button {
+        pointer-events: auto;
+    }
+}

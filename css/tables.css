@@ -43,8 +43,16 @@
     transition: background-color 0.2s ease;
 }
 
-.match-table tbody tr:nth-child(even) {
+#matchScheduleTable tbody tr {
+    background-color: var(--flld-color-surface-1);
+}
+
+#matchScheduleTable tbody tr.schedule-row-alt {
     background-color: var(--flld-color-surface-2);
+}
+
+#matchScheduleTable tbody tr.round-boundary-row {
+    background-color: transparent;
 }
 
 /* --- TABLE ROW STATES --- */
@@ -62,6 +70,11 @@
 .match-number {
     font-size: var(--flld-font-size-lg);
     font-weight: var(--flld-font-weight-semibold);
+
+    .global-match-number {
+        font-weight: var(--flld-font-weight-regular);
+        font-size: var(--flld-font-size-sm);
+    }
 }
 
 /* --- EMPTY STATE --- */
